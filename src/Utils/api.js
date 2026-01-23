@@ -65,6 +65,12 @@ export const bookingAPI = {
         const response = await api.get("/api/bookings", { params });
         return response.data;
     },
+
+    // Delete booking (admin)
+    deleteBooking: async (id) => {
+        const response = await api.delete(`/api/bookings/${id}`);
+        return response.data;
+    },
 };
 
 // Extras APIs

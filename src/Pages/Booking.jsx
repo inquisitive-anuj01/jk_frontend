@@ -61,7 +61,7 @@ function Booking() {
     setShowSummary(false);
   };
 
-  // Handle proceed to payment - create payment intent and go to step 4
+  // Handle proceed to payment - FIRST save booking with pending status, THEN create payment intent
   const handleProceedToPayment = async () => {
     const totalAmount = bookingData.selectedVehicle?.pricing?.totalPrice;
 
@@ -73,31 +73,7 @@ function Booking() {
     setIsLoadingPayment(true);
 
     try {
-      const response = await paymentAPI.createPaymentIntent({
-        amount: totalAmount,
-        currency: "gbp",
-        bookingData: bookingData,
-      });
-
-      if (response.success) {
-        setClientSecret(response.clientSecret);
-        setShowSummary(false);
-        setCurrentStep(4); // Go to Payment step
-      } else {
-        alert("Failed to initialize payment. Please try again.");
-      }
-    } catch (error) {
-      console.error("Payment initialization error:", error);
-      alert("Failed to initialize payment. Please try again.");
-    } finally {
-      setIsLoadingPayment(false);
-    }
-  };
-
-  // Handle payment success - save booking to DB
-  const handlePaymentSuccess = async (paymentIntent) => {
-    try {
-      // Create booking in database with payment info
+      // Step 1: Save booking to DB with pending payment status (LEAD CAPTURED)
       const isHourly = bookingData.serviceType === "hourly";
 
       const bookingPayload = {
@@ -105,7 +81,6 @@ function Booking() {
           address: bookingData.pickup,
         },
         dropoff: {
-          // For hourly bookings, use pickup address as dropoff (or leave empty)
           address: isHourly ? bookingData.pickup : bookingData.dropoff,
         },
         pickupDate: bookingData.pickupDate,
@@ -143,16 +118,62 @@ function Booking() {
           }
           : null,
         specialInstructions: bookingData.specialInstructions,
-        paymentStatus: "paid",
-        paymentIntentId: paymentIntent.id,
+        // IMPORTANT: Set payment as pending - this is a LEAD
+        paymentStatus: "pending",
+        status: "pending",
       };
 
-      await bookingAPI.createBooking(bookingPayload);
-      console.log("Booking saved successfully!");
+      const bookingResponse = await bookingAPI.createBooking(bookingPayload);
+
+      if (!bookingResponse.success) {
+        throw new Error("Failed to save booking");
+      }
+
+      // Store booking ID for later update after payment
+      const savedBookingId = bookingResponse.data._id;
+      updateBooking("savedBookingId", savedBookingId);
+      console.log("Lead saved with ID:", savedBookingId);
+
+      // Step 2: Create payment intent
+      const response = await paymentAPI.createPaymentIntent({
+        amount: totalAmount,
+        currency: "gbp",
+        bookingData: bookingData,
+        bookingId: savedBookingId,
+      });
+
+      if (response.success) {
+        setClientSecret(response.clientSecret);
+        setShowSummary(false);
+        setCurrentStep(4);
+      } else {
+        alert("Failed to initialize payment. Please try again.");
+      }
     } catch (error) {
-      console.error("Error saving booking:", error);
-      // Payment was successful but booking save failed
-      // You might want to handle this case (e.g., retry, notify admin)
+      console.error("Error:", error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setIsLoadingPayment(false);
+    }
+  };
+
+  // Handle payment success - UPDATE existing booking (don't create new)
+  const handlePaymentSuccess = async (paymentIntent) => {
+    try {
+      const bookingId = bookingData.savedBookingId;
+
+      if (bookingId) {
+        // Update the existing booking with paid status
+        await bookingAPI.updateBookingStatus(bookingId, {
+          paymentStatus: "paid",
+          paymentIntentId: paymentIntent.id,
+        });
+        console.log("Booking updated with payment success!");
+      } else {
+        console.error("No booking ID found to update");
+      }
+    } catch (error) {
+      console.error("Error updating booking:", error);
     }
   };
 

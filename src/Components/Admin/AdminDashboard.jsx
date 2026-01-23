@@ -19,11 +19,17 @@ import {
   ChevronRight,
   Settings,
   MapPin,
+  MapPinPlus,
+  PoundSterling,
+  List,
+  Plus,
+  Target,
 } from "lucide-react";
 import { adminAPI } from "../../Utils/api";
 
-// Sidebar Navigation Items
-const navItems = [
+// Sidebar Navigation Items - Organized by Section
+const NAV_ITEMS = [
+  // ===== OVERVIEW =====
   {
     id: "dashboard",
     icon: LayoutDashboard,
@@ -31,11 +37,33 @@ const navItems = [
     path: "/admin-dashboard",
   },
   {
+    id: "leads",
+    icon: Target,
+    label: "All Leads",
+    path: "/admin/leads",
+  },
+  {
     id: "bookings",
     icon: Calendar,
     label: "All Bookings",
     path: "/admin/bookings",
   },
+
+  // ===== VEHICLES =====
+  {
+    id: "vehicles",
+    icon: List,
+    label: "All Cars",
+    path: "/admin/vehicles",
+  },
+  {
+    id: "add-car",
+    icon: Plus,
+    label: "Add Car",
+    path: "/admin/add-car",
+  },
+
+  // ===== STANDARD PRICING (Per Vehicle) =====
   {
     id: "p2p-pricing",
     icon: DollarSign,
@@ -48,7 +76,26 @@ const navItems = [
     label: "Set Hourly Pricing",
     path: "/admin/hourly-pricing",
   },
-  { id: "vehicles", icon: Car, label: "All Cars", path: "/admin/vehicles" },
+
+  // ===== SPECIAL LOCATIONS (Airports, Stadiums, etc.) =====
+  {
+    id: "all-locations",
+    icon: MapPin,
+    label: "All Locations",
+    path: "/admin/locations",
+  },
+  {
+    id: "add-location",
+    icon: MapPinPlus,
+    label: "Add Location",
+    path: "/admin/add-location",
+  },
+  {
+    id: "location-pricing",
+    icon: PoundSterling,
+    label: "Location Pricing",
+    path: "/admin/location-pricing",
+  },
 ];
 
 // Stat Card Component
@@ -215,16 +262,15 @@ function AdminDashboard() {
 
         {/* Navigation */}
         <nav className="p-4 space-y-1">
-          {navItems.map((item) => (
+          {NAV_ITEMS.map((item) => (
             <button
               key={item.id}
               onClick={() => handleNavClick(item)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                                ${
-                                  activeNav === item.id
-                                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
-                                    : "text-slate-300 hover:bg-slate-700 hover:text-white"
-                                }`}
+                                ${activeNav === item.id
+                  ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
+                  : "text-slate-300 hover:bg-slate-700 hover:text-white"
+                }`}
             >
               <item.icon size={20} />
               <span className="font-medium">{item.label}</span>

@@ -66,12 +66,16 @@ function BookingSummary({ data, onEdit, onProceed, isLoading = false }) {
         dropoff,
         pickupDate,
         pickupTime,
+        serviceType,
+        hours,
         selectedVehicle,
         journeyInfo,
         passengerDetails,
         flightDetails,
         specialInstructions
     } = data;
+
+    const isHourly = serviceType === "hourly";
 
     const pricing = selectedVehicle?.pricing;
     const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -118,22 +122,34 @@ function BookingSummary({ data, onEdit, onProceed, isLoading = false }) {
                             <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
                                 <div className="flex flex-col items-center">
                                     <div className="w-3 h-3 bg-green-500 rounded-full" />
-                                    <div className="w-0.5 h-12 bg-gradient-to-b from-green-500 to-blue-500" />
-                                    <div className="w-3 h-3 bg-blue-500 rounded-full" />
+                                    {!isHourly && (
+                                        <>
+                                            <div className="w-0.5 h-12 bg-gradient-to-b from-green-500 to-blue-500" />
+                                            <div className="w-3 h-3 bg-blue-500 rounded-full" />
+                                        </>
+                                    )}
                                 </div>
                                 <div className="flex-1 space-y-4">
                                     <div>
                                         <p className="text-xs text-gray-500 uppercase tracking-wide">Pickup</p>
                                         <p className="font-medium text-gray-900 text-sm">{pickup || "—"}</p>
                                     </div>
-                                    <div>
-                                        <p className="text-xs text-gray-500 uppercase tracking-wide">Dropoff</p>
-                                        <p className="font-medium text-gray-900 text-sm">{dropoff || "—"}</p>
-                                    </div>
+                                    {!isHourly && dropoff && (
+                                        <div>
+                                            <p className="text-xs text-gray-500 uppercase tracking-wide">Dropoff</p>
+                                            <p className="font-medium text-gray-900 text-sm">{dropoff}</p>
+                                        </div>
+                                    )}
+                                    {isHourly && (
+                                        <div>
+                                            <p className="text-xs text-gray-500 uppercase tracking-wide">Duration</p>
+                                            <p className="font-medium text-purple-600 text-sm">{hours || journeyInfo?.hours || 2} Hours Booking</p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
-                            {/* Date/Time/Distance */}
+                            {/* Date/Time/Distance or Hours */}
                             <div className="grid grid-cols-3 gap-3">
                                 <div className="text-center p-3 bg-gray-50 rounded-xl">
                                     <Calendar size={18} className="mx-auto text-gray-400 mb-1" />
@@ -146,11 +162,23 @@ function BookingSummary({ data, onEdit, onProceed, isLoading = false }) {
                                     <p className="font-semibold text-gray-900 text-sm">{pickupTime || "—"}</p>
                                 </div>
                                 <div className="text-center p-3 bg-gray-50 rounded-xl">
-                                    <MapPin size={18} className="mx-auto text-gray-400 mb-1" />
-                                    <p className="text-xs text-gray-500">Distance</p>
-                                    <p className="font-semibold text-gray-900 text-sm">
-                                        {journeyInfo?.distanceMiles?.toFixed(1) || "—"} mi
-                                    </p>
+                                    {isHourly ? (
+                                        <>
+                                            <Clock size={18} className="mx-auto text-purple-500 mb-1" />
+                                            <p className="text-xs text-gray-500">Hours</p>
+                                            <p className="font-semibold text-purple-600 text-sm">
+                                                {hours || journeyInfo?.hours || 2}h
+                                            </p>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <MapPin size={18} className="mx-auto text-gray-400 mb-1" />
+                                            <p className="text-xs text-gray-500">Distance</p>
+                                            <p className="font-semibold text-gray-900 text-sm">
+                                                {journeyInfo?.distanceMiles?.toFixed(1) || "—"} mi
+                                            </p>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </div>
