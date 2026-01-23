@@ -9,6 +9,7 @@ import {
   ArrowRight,
   ChevronLeft,
   ChevronRight,
+  Timer,
 } from "lucide-react";
 
 // --- 1. CSS FOR GOOGLE MAPS AUTOCOMPLETE STYLING ---
@@ -341,11 +342,50 @@ const CustomDatePicker = ({ value, onChange, onClose }) => {
   );
 };
 
+// --- CUSTOM DURATION PICKER COMPONENT ---
+const CustomDurationPicker = ({ value, onChange, onClose }) => {
+  const wrapperRef = useRef(null);
+  useClickOutside(wrapperRef, onClose);
+
+  // Generate hours from 2 to 24
+  const hoursOptions = Array.from({ length: 23 }, (_, i) => i + 2);
+
+  return (
+    <div
+      ref={wrapperRef}
+      className="absolute bottom-full right-0 mb-3 w-64 bg-white shadow-2xl rounded-xl border border-gray-200 z-50 p-4 max-h-80 overflow-hidden"
+    >
+      <div className="absolute -bottom-2 right-8 w-5 h-5 bg-white transform rotate-45 border-r border-b border-gray-200"></div>
+
+      <h4 className="font-semibold text-gray-700 mb-3 text-center">Select Duration</h4>
+
+      <div className="overflow-y-auto max-h-52 scrollbar-hide">
+        {hoursOptions.map((hour) => (
+          <div
+            key={hour}
+            onClick={() => {
+              onChange(hour);
+              onClose();
+            }}
+            className={`py-3 px-4 cursor-pointer transition-all rounded-lg mb-1 text-center ${value === hour
+                ? "bg-blue-500 text-white font-bold"
+                : "hover:bg-gray-100 text-gray-700"
+              }`}
+          >
+            {hour} hours
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // --- MAIN COMPONENT ---
 function Locations({ data, updateData, onNext }) {
-  const [serviceType, setServiceType] = useState("oneway");
+  const [serviceType, setServiceType] = useState(data.serviceType || "oneway");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [showDurationPicker, setShowDurationPicker] = useState(false);
 
   // Refs for Google Autocomplete
   const pickupAutocompleteRef = useRef(null);
@@ -420,6 +460,19 @@ function Locations({ data, updateData, onNext }) {
   const handleServiceTypeChange = (type) => {
     setServiceType(type);
     updateData("serviceType", type);
+
+    // For hourly booking, initialize hours if not set
+    if (type === "hourly" && !data.hours) {
+      updateData("hours", 2);
+    }
+
+    // Clear dropoff for hourly bookings (not needed)
+    if (type === "hourly") {
+      updateData("dropoff", "");
+      if (dropoffInputRef.current) {
+        dropoffInputRef.current.value = "";
+      }
+    }
   };
 
   // Formatting Date
@@ -452,7 +505,7 @@ function Locations({ data, updateData, onNext }) {
         {/* Tabs */}
         <div className="flex px-6 mt-4 gap-4">
           <button
-            onClick={() => setServiceType("oneway")}
+            onClick={() => handleServiceTypeChange("oneway")}
             className={`flex-1 py-3 text-center font-medium text-sm md:text-base border rounded transition-all ${serviceType === "oneway"
               ? "border-blue-500 text-blue-600 bg-blue-50/50 shadow-inner"
               : "border-gray-200 text-gray-500 hover:bg-gray-50"
@@ -461,7 +514,7 @@ function Locations({ data, updateData, onNext }) {
             One way
           </button>
           <button
-            onClick={() => setServiceType("hourly")}
+            onClick={() => handleServiceTypeChange("hourly")}
             className={`flex-1 py-3 text-center font-medium text-sm md:text-base border rounded transition-all ${serviceType === "hourly"
               ? "border-blue-500 text-blue-600 bg-blue-50/50 shadow-inner"
               : "border-gray-200 text-gray-500 hover:bg-gray-50"
@@ -474,7 +527,10 @@ function Locations({ data, updateData, onNext }) {
         <div className="p-6 space-y-4">
           {/* LOCATIONS */}
           <div className="relative">
-            <div className="absolute left-[1.65rem] top-10 bottom-10 w-0.5 border-l-2 border-dashed border-gray-300 z-0"></div>
+            {/* Dashed line only for one-way */}
+            {serviceType === "oneway" && (
+              <div className="absolute left-[1.65rem] top-10 bottom-10 w-0.5 border-l-2 border-dashed border-gray-300 z-0"></div>
+            )}
 
             {/* PICKUP */}
             <div className="mb-4 relative z-10">
@@ -509,38 +565,74 @@ function Locations({ data, updateData, onNext }) {
               </div>
             </div>
 
-            {/* DROPOFF */}
-            <div className="relative z-10">
-              <label className="block text-xs font-bold text-gray-700 mb-1 ml-1">
-                Where to?
-              </label>
-              <div className="relative flex items-center">
-                <div className="absolute left-4 z-10 text-gray-500">
-                  <div className="w-3 h-3 rounded-full border-2 border-black bg-black"></div>
-                </div>
-                <Autocomplete
-                  className="w-full"
-                  onLoad={(autocomplete) => {
-                    dropoffAutocompleteRef.current = autocomplete;
-                  }}
-                  onPlaceChanged={handleDropoffPlaceChanged}
-                  options={{
-                    componentRestrictions: { country: "gb" }, // UK only
-                    types: ["geocode", "establishment"], // Addresses and places
-                  }}
-                >
-                  <input
-                    ref={dropoffInputRef}
-                    type="text"
-                    placeholder="Enter destination"
-                    className="w-full pl-12 pr-10 py-4 bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 placeholder-gray-400 font-medium transition-shadow"
-                  />
-                </Autocomplete>
-                <div className="absolute right-4 text-gray-400">
-                  <Flag size={20} />
+            {/* DROPOFF - Only show for one-way booking */}
+            {serviceType === "oneway" && (
+              <div className="relative z-10">
+                <label className="block text-xs font-bold text-gray-700 mb-1 ml-1">
+                  Where to?
+                </label>
+                <div className="relative flex items-center">
+                  <div className="absolute left-4 z-10 text-gray-500">
+                    <div className="w-3 h-3 rounded-full border-2 border-black bg-black"></div>
+                  </div>
+                  <Autocomplete
+                    className="w-full"
+                    onLoad={(autocomplete) => {
+                      dropoffAutocompleteRef.current = autocomplete;
+                    }}
+                    onPlaceChanged={handleDropoffPlaceChanged}
+                    options={{
+                      componentRestrictions: { country: "gb" }, // UK only
+                      types: ["geocode", "establishment"], // Addresses and places
+                    }}
+                  >
+                    <input
+                      ref={dropoffInputRef}
+                      type="text"
+                      placeholder="Enter destination"
+                      className="w-full pl-12 pr-10 py-4 bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 placeholder-gray-400 font-medium transition-shadow"
+                    />
+                  </Autocomplete>
+                  <div className="absolute right-4 text-gray-400">
+                    <Flag size={20} />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* DURATION - Only show for hourly booking */}
+            {serviceType === "hourly" && (
+              <div className="relative z-10">
+                <label className="block text-xs font-bold text-gray-700 mb-1 ml-1">
+                  Duration
+                </label>
+                <div
+                  className="relative w-full bg-gray-50 border border-gray-200 rounded px-4 py-4 cursor-pointer hover:border-blue-400 flex items-center justify-between transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowDurationPicker(!showDurationPicker);
+                    setShowDatePicker(false);
+                    setShowTimePicker(false);
+                  }}
+                >
+                  <div className="flex items-center gap-3">
+                    <Timer size={18} className="text-gray-500" />
+                    <span className="text-gray-800 font-medium">
+                      {data.hours || 2} hours
+                    </span>
+                  </div>
+                  <ChevronDown size={16} className="text-gray-400" />
+                </div>
+
+                {showDurationPicker && (
+                  <CustomDurationPicker
+                    value={data.hours || 2}
+                    onChange={(h) => updateData("hours", h)}
+                    onClose={() => setShowDurationPicker(false)}
+                  />
+                )}
+              </div>
+            )}
           </div>
 
           {/* DATE & TIME */}
@@ -607,7 +699,10 @@ function Locations({ data, updateData, onNext }) {
           </div>
 
           <p className="text-xs text-gray-500 mt-2">
-            Chauffeur will wait 15 minutes free of charge.
+            {serviceType === "hourly"
+              ? "Hourly bookings include chauffeur at your disposal for the selected duration."
+              : "Chauffeur will wait 15 minutes free of charge."
+            }
           </p>
 
           <button

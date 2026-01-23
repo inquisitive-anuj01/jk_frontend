@@ -280,13 +280,19 @@ function CarsSelection({ data, updateData, onNext, onBack }) {
 
   // Prepare search data for API
   const searchData = useMemo(() => {
+    // For hourly bookings, we can use pickup as both pickup and dropoff
+    // since the backend needs both addresses for geocoding
+    const dropoffAddress = data.serviceType === "hourly"
+      ? data.pickup  // Use pickup as dropoff for hourly (chauffeur stays with you)
+      : data.dropoff;
+
     const payload = {
       pickupAddress: data.pickup || "",
-      dropoffAddress: data.dropoff || "",
+      dropoffAddress: dropoffAddress || "",
       pickupDate: data.pickupDate instanceof Date ? data.pickupDate.toISOString().split("T")[0] : "",
       pickupTime: data.pickupTime || "12:00",
       bookingType: data.serviceType === "hourly" ? "hourly" : "p2p",
-      hours: data.serviceType === "hourly" ? 4 : undefined,
+      hours: data.serviceType === "hourly" ? (data.hours || 2) : undefined,
     };
     console.log("=== API PAYLOAD being sent ===", payload);
     return payload;
@@ -305,7 +311,10 @@ function CarsSelection({ data, updateData, onNext, onBack }) {
       console.log("=== Making API call with ===", searchData);
       return vehicleAPI.searchVehiclesWithFare(searchData);
     },
-    enabled: !!(data.pickup && data.dropoff),
+    // For hourly, we only need pickup; for p2p we need both
+    enabled: data.serviceType === "hourly"
+      ? !!(data.pickup)
+      : !!(data.pickup && data.dropoff),
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 2,
   });
@@ -369,34 +378,57 @@ function CarsSelection({ data, updateData, onNext, onBack }) {
               <Car size={24} />
             </div>
             <div>
-              <p className="text-blue-100 text-sm font-medium">Your Journey</p>
+              <p className="text-blue-100 text-sm font-medium">
+                {data.serviceType === "hourly" ? "Hourly Booking" : "Your Journey"}
+              </p>
               <p className="font-bold text-lg line-clamp-1">
-                {journeyInfo?.pickup?.address?.split(",")[0] ||
-                  data.pickup?.split(",")[0]}{" "}
-                →{" "}
-                {journeyInfo?.dropoff?.address?.split(",")[0] ||
-                  data.dropoff?.split(",")[0]}
+                {data.serviceType === "hourly" ? (
+                  <>
+                    {data.hours || 2} Hours from{" "}
+                    {journeyInfo?.pickup?.address?.split(",")[0] ||
+                      data.pickup?.split(",")[0]}
+                  </>
+                ) : (
+                  <>
+                    {journeyInfo?.pickup?.address?.split(",")[0] ||
+                      data.pickup?.split(",")[0]}{" "}
+                    →{" "}
+                    {journeyInfo?.dropoff?.address?.split(",")[0] ||
+                      data.dropoff?.split(",")[0]}
+                  </>
+                )}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-6">
-            {journeyInfo?.distanceMiles && (
+            {data.serviceType === "hourly" ? (
               <div className="text-center">
-                <p className="text-3xl font-bold">
-                  {journeyInfo.distanceMiles.toFixed(1)}
-                </p>
+                <p className="text-3xl font-bold">{data.hours || 2}</p>
                 <p className="text-blue-200 text-xs uppercase tracking-wide">
-                  Miles
+                  Hours
                 </p>
               </div>
-            )}
-            {journeyInfo?.durationMins && (
-              <div className="text-center">
-                <p className="text-3xl font-bold">{journeyInfo.durationMins}</p>
-                <p className="text-blue-200 text-xs uppercase tracking-wide">
-                  Mins
-                </p>
-              </div>
+            ) : (
+              <>
+                {journeyInfo?.distanceMiles && (
+                  <div className="text-center">
+                    <p className="text-3xl font-bold">
+                      {journeyInfo.distanceMiles.toFixed(1)}
+                    </p>
+                    <p className="text-blue-200 text-xs uppercase tracking-wide">
+                      Miles
+                    </p>
+                  </div>
+                )}
+                {journeyInfo?.durationMins && (
+                  <div className="text-center">
+                    <p className="text-3xl font-bold">{journeyInfo.durationMins}</p>
+                    <p className="text-blue-200 text-xs uppercase tracking-wide">
+                      Mins
+                    </p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

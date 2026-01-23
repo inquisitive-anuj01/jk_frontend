@@ -34,6 +34,7 @@ function Booking() {
     pickupDate: new Date(),
     pickupTime: "12:00 PM",
     serviceType: "oneway",
+    hours: 2, // Default hours for hourly bookings
     selectedVehicle: null,
     journeyInfo: null,
     passengerDetails: null,
@@ -97,17 +98,23 @@ function Booking() {
   const handlePaymentSuccess = async (paymentIntent) => {
     try {
       // Create booking in database with payment info
+      const isHourly = bookingData.serviceType === "hourly";
+
       const bookingPayload = {
         pickup: {
           address: bookingData.pickup,
         },
         dropoff: {
-          address: bookingData.dropoff,
+          // For hourly bookings, use pickup address as dropoff (or leave empty)
+          address: isHourly ? bookingData.pickup : bookingData.dropoff,
         },
         pickupDate: bookingData.pickupDate,
         pickupTime: bookingData.pickupTime,
         serviceType: bookingData.serviceType,
-        journeyInfo: bookingData.journeyInfo,
+        journeyInfo: {
+          ...bookingData.journeyInfo,
+          hours: isHourly ? (bookingData.hours || 2) : undefined,
+        },
         vehicleId: bookingData.selectedVehicle?._id,
         vehicleDetails: {
           categoryName: bookingData.selectedVehicle?.categoryName,
@@ -117,7 +124,8 @@ function Booking() {
         },
         pricing: bookingData.selectedVehicle?.pricing,
         passengerDetails: bookingData.passengerDetails,
-        isBookingForSomeoneElse: bookingData.passengerDetails?.isBookingForSomeoneElse || false,
+        isBookingForSomeoneElse:
+          bookingData.passengerDetails?.isBookingForSomeoneElse || false,
         guestDetails: bookingData.passengerDetails?.isBookingForSomeoneElse
           ? {
             firstName: bookingData.passengerDetails?.guestFirstName,
@@ -195,7 +203,9 @@ function Booking() {
             transition={{ delay: 0.1 }}
             className="text-gray-600 uppercase tracking-widest text-xs md:text-sm mb-10"
           >
-            {showSummary ? "Review your booking details" : currentStepConfig?.description}
+            {showSummary
+              ? "Review your booking details"
+              : currentStepConfig?.description}
           </motion.p>
 
           {/* Stepper - 4 Steps */}
@@ -330,6 +340,7 @@ function Booking() {
                     pickupDate: new Date(),
                     pickupTime: "12:00 PM",
                     serviceType: "oneway",
+                    hours: 2,
                     selectedVehicle: null,
                     journeyInfo: null,
                     passengerDetails: null,
