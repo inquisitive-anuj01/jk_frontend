@@ -20,7 +20,6 @@ import {
   Settings,
   MapPin,
   MapPinPlus,
-  PoundSterling,
   List,
   Plus,
   Target,
@@ -65,16 +64,16 @@ const NAV_ITEMS = [
 
   // ===== STANDARD PRICING (Per Vehicle) =====
   {
-    id: "p2p-pricing",
+    id: "pricing",
     icon: DollarSign,
-    label: "Set P2P Pricing",
-    path: "/admin/p2p-pricing",
+    label: "Set Pricing",
+    path: "/admin/pricing",
   },
   {
-    id: "hourly-pricing",
-    icon: Clock,
-    label: "Set Hourly Pricing",
-    path: "/admin/hourly-pricing",
+    id: "all-pricing",
+    icon: List,
+    label: "See All Pricing",
+    path: "/admin/all-pricing",
   },
 
   // ===== SPECIAL LOCATIONS (Airports, Stadiums, etc.) =====
@@ -89,12 +88,6 @@ const NAV_ITEMS = [
     icon: MapPinPlus,
     label: "Add Location",
     path: "/admin/add-location",
-  },
-  {
-    id: "location-pricing",
-    icon: PoundSterling,
-    label: "Location Pricing",
-    path: "/admin/location-pricing",
   },
 ];
 
