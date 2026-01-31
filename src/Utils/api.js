@@ -131,7 +131,7 @@ export const locationAPI = {
     },
 };
 
-// Location Pricing APIs
+// Location/Airport Pricing APIs
 export const locationPricingAPI = {
     // Get all location pricing
     getAll: async (params = {}) => {
@@ -174,7 +174,11 @@ export const locationPricingAPI = {
 export const paymentAPI = {
     // Create payment intent
     createPaymentIntent: async (data) => {
-        const response = await api.post("/api/payments/create-intent", data);
+        // Automatically include origin for test/live mode detection
+        const response = await api.post("/api/payments/create-intent", {
+            ...data,
+            origin: window.location.origin,
+        });
         return response.data;
     },
 
@@ -187,7 +191,7 @@ export const paymentAPI = {
 
 // Booking APIs (called after payment is complete)
 export const bookingAPI = {
-    // Create booking (after successful payment)
+    // Create booking 
     createBooking: async (data) => {
         const response = await api.post("/api/bookings", data);
         return response.data;
@@ -214,15 +218,6 @@ export const bookingAPI = {
     // Delete booking (admin)
     deleteBooking: async (id) => {
         const response = await api.delete(`/api/bookings/${id}`);
-        return response.data;
-    },
-};
-
-// Extras APIs
-export const extrasAPI = {
-    // Get all extras
-    getExtras: async () => {
-        const response = await api.get("/api/extras");
         return response.data;
     },
 };

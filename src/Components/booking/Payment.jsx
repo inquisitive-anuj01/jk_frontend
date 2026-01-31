@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { loadStripe } from "@stripe/stripe-js";
 import {
@@ -19,10 +19,54 @@ import {
   Car,
   Shield,
   Lock,
+  TestTube2,
 } from "lucide-react";
 
-// Initialize Stripe
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_TEST_KEY);
+// Test mode origins - must match server configuration
+const TEST_MODE_ORIGINS = [
+  "http://localhost",
+  "http://127.0.0.1",
+  "https://localhost",
+  "https://127.0.0.1",
+];
+
+// Check if current origin should use test mode
+const isTestModeOrigin = () => {
+  const origin = window.location.origin;
+  return TEST_MODE_ORIGINS.some(testOrigin =>
+    origin.startsWith(testOrigin)
+  );
+};
+
+// Get the appropriate Stripe public key based on environment
+const getStripePublicKey = () => {
+  const isTestMode = isTestModeOrigin();
+  return isTestMode
+    ? import.meta.env.VITE_STRIPE_PUBLIC_TEST_KEY
+    : import.meta.env.VITE_STRIPE_PUBLIC_LIVE_KEY;
+};
+
+// Initialize Stripe with the appropriate key
+const stripePromise = loadStripe(getStripePublicKey());
+
+// Test Mode Banner Component
+const TestModeBanner = () => (
+  <motion.div
+    initial={{ opacity: 0, y: -10 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="flex items-center gap-3 p-4 bg-amber-50 border-2 border-amber-300 rounded-2xl mb-6"
+  >
+    <div className="p-2 bg-amber-100 rounded-full">
+      <TestTube2 size={20} className="text-amber-600" />
+    </div>
+    <div>
+      <p className="text-amber-800 font-semibold text-sm">TEST MODE</p>
+      <p className="text-amber-700 text-sm">
+        This is a test payment. Your card will <strong>NOT</strong> be charged.
+      </p>
+    </div>
+  </motion.div>
+);
 
 // Payment Form Component (inside Elements provider)
 const PaymentForm = ({ onSuccess, onError, amount }) => {
@@ -190,9 +234,12 @@ const SuccessModal = ({ isOpen, onClose }) => {
 };
 
 // Main Payment Step Component
-function Payment({ data, clientSecret, onBack, onPaymentSuccess, onComplete, isLoadingIntent }) {
+function Payment({ data, clientSecret, onBack, onPaymentSuccess, onComplete, isLoadingIntent, isTestMode }) {
   const [paymentStatus, setPaymentStatus] = useState("pending"); // pending, success, error
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  // Determine test mode from prop or fallback to origin check
+  const showTestModeBanner = isTestMode ?? isTestModeOrigin();
 
   const handleSuccess = (paymentIntent) => {
     setPaymentStatus("success");
@@ -353,6 +400,9 @@ function Payment({ data, clientSecret, onBack, onPaymentSuccess, onComplete, isL
               transition={{ delay: 0.1 }}
             >
               <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 p-6">
+                {/* Test Mode Banner - Only show when in test mode */}
+                {showTestModeBanner && <TestModeBanner />}
+
                 <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
                   <Lock size={24} className="text-green-600" />
                   Secure Payment
@@ -384,14 +434,6 @@ function Payment({ data, clientSecret, onBack, onPaymentSuccess, onComplete, isL
                     <p>Failed to initialize payment. Please go back and try again.</p>
                   </div>
                 )}
-              </div>
-
-              {/* Test Card Info */}
-              <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                <p className="text-amber-800 text-sm font-medium">🧪 Test Mode</p>
-                <p className="text-amber-700 text-sm mt-1">
-                  Use card <code className="bg-amber-100 px-1 rounded">4242 4242 4242 4242</code> with any future date and CVC.
-                </p>
               </div>
             </motion.div>
           </div>

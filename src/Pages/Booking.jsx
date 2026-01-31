@@ -28,6 +28,7 @@ function Booking() {
   const [showSummary, setShowSummary] = useState(false);
   const [clientSecret, setClientSecret] = useState(null);
   const [isLoadingPayment, setIsLoadingPayment] = useState(false);
+  const [isTestMode, setIsTestMode] = useState(false);
   const [bookingData, setBookingData] = useState({
     pickup: null,
     dropoff: null,
@@ -144,6 +145,7 @@ function Booking() {
 
       if (response.success) {
         setClientSecret(response.clientSecret);
+        setIsTestMode(response.isTestMode || false);
         setShowSummary(false);
         setCurrentStep(4);
       } else {
@@ -373,6 +375,7 @@ function Booking() {
                   setCurrentStep(1);
                 }}
                 isLoadingIntent={isLoadingPayment}
+                isTestMode={isTestMode}
               />
             </motion.div>
           )}

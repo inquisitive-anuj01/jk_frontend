@@ -368,8 +368,8 @@ const CustomDurationPicker = ({ value, onChange, onClose }) => {
               onClose();
             }}
             className={`py-3 px-4 cursor-pointer transition-all rounded-lg mb-1 text-center ${value === hour
-                ? "bg-blue-500 text-white font-bold"
-                : "hover:bg-gray-100 text-gray-700"
+              ? "bg-blue-500 text-white font-bold"
+              : "hover:bg-gray-100 text-gray-700"
               }`}
           >
             {hour} hours
@@ -386,6 +386,7 @@ function Locations({ data, updateData, onNext }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [showDurationPicker, setShowDurationPicker] = useState(false);
+  const [errors, setErrors] = useState({});
 
   // Refs for Google Autocomplete
   const pickupAutocompleteRef = useRef(null);
@@ -418,6 +419,7 @@ function Locations({ data, updateData, onNext }) {
 
       if (fullAddress) {
         updateData("pickup", fullAddress);
+        clearError("pickup");
         if (pickupInputRef.current) {
           pickupInputRef.current.value = fullAddress;
         }
@@ -449,6 +451,7 @@ function Locations({ data, updateData, onNext }) {
 
       if (fullAddress) {
         updateData("dropoff", fullAddress);
+        clearError("dropoff");
         if (dropoffInputRef.current) {
           dropoffInputRef.current.value = fullAddress;
         }
@@ -485,6 +488,34 @@ function Locations({ data, updateData, onNext }) {
       year: "numeric",
     };
     return dateObj.toLocaleDateString("en-US", options);
+  };
+
+  // Clear error when user types
+  const clearError = (field) => {
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: null }));
+    }
+  };
+
+  // Validate form before proceeding
+  const validateAndProceed = () => {
+    const newErrors = {};
+
+    // Check pickup
+    if (!data.pickup || !data.pickup.trim()) {
+      newErrors.pickup = "Pickup location is required";
+    }
+
+    // Check dropoff for one-way bookings
+    if (serviceType === "oneway" && (!data.dropoff || !data.dropoff.trim())) {
+      newErrors.dropoff = "Drop-off location is required";
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      onNext();
+    }
   };
 
   return (
@@ -556,13 +587,17 @@ function Locations({ data, updateData, onNext }) {
                     ref={pickupInputRef}
                     type="text"
                     placeholder="Enter pick-up location"
-                    className="w-full pl-12 pr-10 py-4 bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 placeholder-gray-400 font-medium transition-shadow"
+                    className={`w-full pl-12 pr-10 py-4 bg-white border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 placeholder-gray-400 font-medium transition-shadow ${errors.pickup ? "border-red-400 bg-red-50" : "border-gray-300"
+                      }`}
                   />
                 </Autocomplete>
                 <div className="absolute right-4 text-gray-400">
                   <MapPin size={20} />
                 </div>
               </div>
+              {errors.pickup && (
+                <p className="text-sm text-red-500 mt-1 ml-1">{errors.pickup}</p>
+              )}
             </div>
 
             {/* DROPOFF - Only show for one-way booking */}
@@ -590,13 +625,17 @@ function Locations({ data, updateData, onNext }) {
                       ref={dropoffInputRef}
                       type="text"
                       placeholder="Enter destination"
-                      className="w-full pl-12 pr-10 py-4 bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 placeholder-gray-400 font-medium transition-shadow"
+                      className={`w-full pl-12 pr-10 py-4 bg-white border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 placeholder-gray-400 font-medium transition-shadow ${errors.dropoff ? "border-red-400 bg-red-50" : "border-gray-300"
+                        }`}
                     />
                   </Autocomplete>
                   <div className="absolute right-4 text-gray-400">
                     <Flag size={20} />
                   </div>
                 </div>
+                {errors.dropoff && (
+                  <p className="text-sm text-red-500 mt-1 ml-1">{errors.dropoff}</p>
+                )}
               </div>
             )}
 
@@ -706,7 +745,7 @@ function Locations({ data, updateData, onNext }) {
           </p>
 
           <button
-            onClick={onNext}
+            onClick={validateAndProceed}
             className="w-full mt-6 bg-[#1a73e8] hover:bg-[#155db5] text-white font-bold py-4 rounded shadow-lg flex items-center justify-center gap-3 px-6 transition-transform transform active:scale-[0.99]"
           >
             <span>GET MY PRICES</span>
