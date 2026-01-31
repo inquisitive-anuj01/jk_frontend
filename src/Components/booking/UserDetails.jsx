@@ -233,7 +233,7 @@ const PhoneInput = ({ countryCode, onCountryCodeChange, phone, onPhoneChange, la
 };
 
 // Main UserDetails Component
-function UserDetails({ data, updateData, onNext, onBack }) {
+function UserDetails({ data, updateData, onNext, onBack, isLoading = false }) {
   // Form state
   const [formData, setFormData] = useState({
     firstName: data?.passengerDetails?.firstName || "",
@@ -347,8 +347,8 @@ function UserDetails({ data, updateData, onNext, onBack }) {
   const handleSubmit = () => {
     if (!validateForm()) return;
 
-    // Update parent data
-    updateData("passengerDetails", {
+    // Prepare the data objects
+    const passengerDetailsData = {
       firstName: formData.firstName,
       lastName: formData.lastName,
       email: formData.email,
@@ -362,17 +362,27 @@ function UserDetails({ data, updateData, onNext, onBack }) {
       guestCountryCode: formData.guestCountryCode,
       guestPhone: formData.guestPhone,
       guestEmail: formData.guestEmail,
-    });
+    };
 
-    updateData("flightDetails", {
+    const flightDetailsData = {
       isAirportPickup: formData.isAirportPickup,
       flightNumber: formData.flightNumber,
       nameBoard: formData.nameBoard,
+    };
+
+    const specialInstructionsData = formData.additionalRequirements;
+
+    // Update parent data
+    updateData("passengerDetails", passengerDetailsData);
+    updateData("flightDetails", flightDetailsData);
+    updateData("specialInstructions", specialInstructionsData);
+
+    // Pass the form data directly to onNext to avoid race condition with state updates
+    onNext({
+      passengerDetails: passengerDetailsData,
+      flightDetails: flightDetailsData,
+      specialInstructions: specialInstructionsData,
     });
-
-    updateData("specialInstructions", formData.additionalRequirements);
-
-    onNext();
   };
 
   // Generate passenger/suitcase options
@@ -643,11 +653,25 @@ function UserDetails({ data, updateData, onNext, onBack }) {
 
           <button
             onClick={handleSubmit}
-            className="flex-1 flex items-center justify-center gap-2 py-4 px-6 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl
-              font-semibold text-white hover:from-blue-700 hover:to-blue-600 shadow-lg shadow-blue-500/25 transition-all duration-200"
+            disabled={isLoading}
+            className={`flex-1 flex items-center justify-center gap-2 py-4 px-6 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl
+              font-semibold text-white shadow-lg shadow-blue-500/25 transition-all duration-200
+              ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:from-blue-700 hover:to-blue-600'}`}
           >
-            Proceed
-            <ArrowRight size={20} />
+            {isLoading ? (
+              <>
+                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Saving...
+              </>
+            ) : (
+              <>
+                Proceed
+                <ArrowRight size={20} />
+              </>
+            )}
           </button>
         </motion.div>
       </div>

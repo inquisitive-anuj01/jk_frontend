@@ -28,6 +28,7 @@ function Booking() {
   const [showSummary, setShowSummary] = useState(false);
   const [clientSecret, setClientSecret] = useState(null);
   const [isLoadingPayment, setIsLoadingPayment] = useState(false);
+  const [isLoadingLead, setIsLoadingLead] = useState(false);
   const [isTestMode, setIsTestMode] = useState(false);
   const [bookingData, setBookingData] = useState({
     pickup: null,
@@ -41,6 +42,8 @@ function Booking() {
     passengerDetails: null,
     flightDetails: null,
     specialInstructions: "",
+    savedBookingId: null, // Track saved booking ID
+    originalEmail: null, // Track original email for change detection
   });
 
   const updateBooking = (field, value) => {
@@ -52,77 +55,107 @@ function Booking() {
     setCurrentStep(step);
   };
 
-  // Handle UserDetails form submission - show summary
-  const handleUserDetailsSubmit = () => {
-    setShowSummary(true);
+  // Build booking payload (shared between create and update)
+  // Accepts optional formData to use instead of bookingData state (for avoiding race conditions)
+  const buildBookingPayload = (formData = null) => {
+    const isHourly = bookingData.serviceType === "hourly";
+
+    // Use formData if provided, otherwise fall back to state
+    const passengerDetails = formData?.passengerDetails || bookingData.passengerDetails;
+    const flightDetails = formData?.flightDetails || bookingData.flightDetails;
+    const specialInstructions = formData?.specialInstructions ?? bookingData.specialInstructions;
+
+    return {
+      pickup: {
+        address: bookingData.pickup,
+      },
+      dropoff: {
+        address: isHourly ? bookingData.pickup : bookingData.dropoff,
+      },
+      pickupDate: bookingData.pickupDate,
+      pickupTime: bookingData.pickupTime,
+      serviceType: bookingData.serviceType,
+      journeyInfo: {
+        ...bookingData.journeyInfo,
+        hours: isHourly ? (bookingData.hours || 2) : undefined,
+      },
+      vehicleId: bookingData.selectedVehicle?._id,
+      vehicleDetails: {
+        categoryName: bookingData.selectedVehicle?.categoryName,
+        categoryDetails: bookingData.selectedVehicle?.categoryDetails,
+        numberOfPassengers: bookingData.selectedVehicle?.numberOfPassengers,
+        numberOfBigLuggage: bookingData.selectedVehicle?.numberOfBigLuggage,
+      },
+      pricing: bookingData.selectedVehicle?.pricing,
+      passengerDetails: passengerDetails,
+      isBookingForSomeoneElse: passengerDetails?.isBookingForSomeoneElse || false,
+      guestDetails: passengerDetails?.isBookingForSomeoneElse
+        ? {
+          firstName: passengerDetails?.guestFirstName,
+          lastName: passengerDetails?.guestLastName,
+          email: passengerDetails?.guestEmail,
+          countryCode: passengerDetails?.guestCountryCode,
+          phone: passengerDetails?.guestPhone,
+        }
+        : null,
+      isAirportPickup: flightDetails?.isAirportPickup || false,
+      flightDetails: flightDetails?.isAirportPickup
+        ? {
+          flightNumber: flightDetails?.flightNumber,
+          nameBoard: flightDetails?.nameBoard,
+        }
+        : null,
+      specialInstructions: specialInstructions,
+    };
   };
 
-  // Handle edit from summary - go back to step 3
-  const handleEditFromSummary = () => {
-    setShowSummary(false);
-  };
+  // Handle UserDetails form submission - CREATE LEAD and show summary
+  // formData is passed directly from UserDetails to avoid race condition with state updates
+  const handleUserDetailsSubmit = async (formData = null) => {
+    const existingBookingId = bookingData.savedBookingId;
 
-  // Handle proceed to payment - FIRST save booking with pending status, THEN create payment intent
-  const handleProceedToPayment = async () => {
-    const totalAmount = bookingData.selectedVehicle?.pricing?.totalPrice;
+    // Get the current email from formData or fall back to state
+    const currentPassengerDetails = formData?.passengerDetails || bookingData.passengerDetails;
 
-    if (!totalAmount) {
-      alert("Invalid booking amount");
+    // If booking already exists, this is a re-submit from edit
+    // Just go to summary without creating a new booking
+    if (existingBookingId) {
+      // Check if email changed and update if needed
+      const currentEmail = currentPassengerDetails?.email;
+      const originalEmail = bookingData.originalEmail;
+
+      if (currentEmail !== originalEmail) {
+        // Email changed - update booking and send welcome email to new address
+        setIsLoadingLead(true);
+        try {
+          await bookingAPI.updateBookingDetails(existingBookingId, {
+            ...buildBookingPayload(formData),
+            originalEmail: originalEmail, // Send original email for comparison
+          });
+          // Update original email to current
+          updateBooking("originalEmail", currentEmail);
+          console.log("Booking updated with new email, welcome email sent to:", currentEmail);
+        } catch (error) {
+          console.error("Error updating booking:", error);
+        } finally {
+          setIsLoadingLead(false);
+        }
+      }
+
+      setShowSummary(true);
       return;
     }
 
-    setIsLoadingPayment(true);
-
+    // NEW LEAD - Create booking in database
+    setIsLoadingLead(true);
     try {
-      // Step 1: Save booking to DB with pending payment status (LEAD CAPTURED)
-      const isHourly = bookingData.serviceType === "hourly";
-
       const bookingPayload = {
-        pickup: {
-          address: bookingData.pickup,
-        },
-        dropoff: {
-          address: isHourly ? bookingData.pickup : bookingData.dropoff,
-        },
-        pickupDate: bookingData.pickupDate,
-        pickupTime: bookingData.pickupTime,
-        serviceType: bookingData.serviceType,
-        journeyInfo: {
-          ...bookingData.journeyInfo,
-          hours: isHourly ? (bookingData.hours || 2) : undefined,
-        },
-        vehicleId: bookingData.selectedVehicle?._id,
-        vehicleDetails: {
-          categoryName: bookingData.selectedVehicle?.categoryName,
-          categoryDetails: bookingData.selectedVehicle?.categoryDetails,
-          numberOfPassengers: bookingData.selectedVehicle?.numberOfPassengers,
-          numberOfBigLuggage: bookingData.selectedVehicle?.numberOfBigLuggage,
-        },
-        pricing: bookingData.selectedVehicle?.pricing,
-        passengerDetails: bookingData.passengerDetails,
-        isBookingForSomeoneElse:
-          bookingData.passengerDetails?.isBookingForSomeoneElse || false,
-        guestDetails: bookingData.passengerDetails?.isBookingForSomeoneElse
-          ? {
-            firstName: bookingData.passengerDetails?.guestFirstName,
-            lastName: bookingData.passengerDetails?.guestLastName,
-            email: bookingData.passengerDetails?.guestEmail,
-            countryCode: bookingData.passengerDetails?.guestCountryCode,
-            phone: bookingData.passengerDetails?.guestPhone,
-          }
-          : null,
-        isAirportPickup: bookingData.flightDetails?.isAirportPickup || false,
-        flightDetails: bookingData.flightDetails?.isAirportPickup
-          ? {
-            flightNumber: bookingData.flightDetails?.flightNumber,
-            nameBoard: bookingData.flightDetails?.nameBoard,
-          }
-          : null,
-        specialInstructions: bookingData.specialInstructions,
-        // IMPORTANT: Set payment as pending - this is a LEAD
+        ...buildBookingPayload(formData),
         paymentStatus: "pending",
         status: "pending",
       };
+
+      console.log("Creating booking with payload:", bookingPayload);
 
       const bookingResponse = await bookingAPI.createBooking(bookingPayload);
 
@@ -130,12 +163,49 @@ function Booking() {
         throw new Error("Failed to save booking");
       }
 
-      // Store booking ID for later update after payment
+      // Store booking ID and original email for later
       const savedBookingId = bookingResponse.data._id;
-      updateBooking("savedBookingId", savedBookingId);
-      console.log("Lead saved with ID:", savedBookingId);
+      const originalEmail = currentPassengerDetails?.email;
 
-      // Step 2: Create payment intent
+      updateBooking("savedBookingId", savedBookingId);
+      updateBooking("originalEmail", originalEmail);
+
+      console.log("Lead saved with ID:", savedBookingId);
+      console.log("Welcome emails sent to user and admin notification sent!");
+
+      setShowSummary(true);
+    } catch (error) {
+      console.error("Error creating lead:", error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setIsLoadingLead(false);
+    }
+  };
+
+  // Handle edit from summary - go back to step 3
+  const handleEditFromSummary = () => {
+    setShowSummary(false);
+  };
+
+  // Handle proceed to payment - CREATE PAYMENT INTENT (booking already exists)
+  const handleProceedToPayment = async () => {
+    const totalAmount = bookingData.selectedVehicle?.pricing?.totalPrice;
+    const savedBookingId = bookingData.savedBookingId;
+
+    if (!totalAmount) {
+      alert("Invalid booking amount");
+      return;
+    }
+
+    if (!savedBookingId) {
+      alert("Booking not found. Please try again.");
+      return;
+    }
+
+    setIsLoadingPayment(true);
+
+    try {
+      // Create payment intent (booking already saved in handleUserDetailsSubmit)
       const response = await paymentAPI.createPaymentIntent({
         amount: totalAmount,
         currency: "gbp",
@@ -159,18 +229,19 @@ function Booking() {
     }
   };
 
-  // Handle payment success - UPDATE existing booking (don't create new)
+  // Handle payment success - UPDATE existing booking (triggers confirmation emails)
   const handlePaymentSuccess = async (paymentIntent) => {
     try {
       const bookingId = bookingData.savedBookingId;
 
       if (bookingId) {
         // Update the existing booking with paid status
+        // This triggers confirmation emails on the backend
         await bookingAPI.updateBookingStatus(bookingId, {
           paymentStatus: "paid",
           paymentIntentId: paymentIntent.id,
         });
-        console.log("Booking updated with payment success!");
+        console.log("Booking confirmed! Confirmation emails sent.");
       } else {
         console.error("No booking ID found to update");
       }
@@ -318,6 +389,7 @@ function Booking() {
                 updateData={updateBooking}
                 onNext={handleUserDetailsSubmit}
                 onBack={() => goToStep(2)}
+                isLoading={isLoadingLead}
               />
             </motion.div>
           )}
@@ -369,6 +441,8 @@ function Booking() {
                     passengerDetails: null,
                     flightDetails: null,
                     specialInstructions: "",
+                    savedBookingId: null,
+                    originalEmail: null,
                   });
                   setClientSecret(null);
                   setShowSummary(false);

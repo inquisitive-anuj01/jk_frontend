@@ -209,6 +209,12 @@ export const bookingAPI = {
         return response.data;
     },
 
+    // Update booking details (when user edits from summary)
+    updateBookingDetails: async (id, data) => {
+        const response = await api.put(`/api/bookings/${id}/details`, data);
+        return response.data;
+    },
+
     // Get all bookings (admin)
     getAllBookings: async (params = {}) => {
         const response = await api.get("/api/bookings", { params });
