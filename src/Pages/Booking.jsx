@@ -270,63 +270,43 @@ function Booking() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 font-sans text-gray-900 pb-20">
-      {/* --- HEADER AREA --- */}
-      <div className="bg-white pt-10 pb-8 px-4 shadow-sm border-b border-gray-200">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.p
-            key={displayStep}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-amber-600 font-bold tracking-[0.2em] text-xs uppercase mb-3"
-          >
-            STEP {displayStep} OF {STEPS.length}
-          </motion.p>
-          <motion.h1
-            key={`title-${displayStep}`}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="text-3xl md:text-5xl font-light text-black mb-2 uppercase tracking-tight"
-          >
-            Your Journey
-          </motion.h1>
-          <motion.p
-            key={`desc-${displayStep}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className="text-gray-600 uppercase tracking-widest text-xs md:text-sm mb-10"
-          >
-            {showSummary
-              ? "Review your booking details"
-              : currentStepConfig?.description}
-          </motion.p>
-
-          {/* Stepper - 4 Steps */}
+      {/* --- STEPS INDICATOR (Classic Style with Circles & Lines) --- */}
+      <div className="bg-gray-50 pt-32 md:pt-36 pb-6 ">
+        <div className="max-w-4xl mx-auto px-4">
+          {/* Stepper - 4 Steps with Circles and Connecting Lines */}
           <div className="flex items-center justify-center space-x-1 md:space-x-4 text-sm">
             {STEPS.map((step, index) => (
               <React.Fragment key={step.id}>
                 {index > 0 && (
                   <div
-                    className={`w-6 md:w-12 h-0.5 rounded-full transition-all duration-500 ${displayStep >= step.id
-                      ? "bg-gradient-to-r from-blue-500 to-blue-600"
-                      : "bg-gray-300"
-                      }`}
+                    className="w-8 md:w-16 h-0.5 rounded-full transition-all duration-500"
+                    style={{
+                      background: displayStep >= step.id
+                        ? 'linear-gradient(to right, var(--color-primary), var(--color-primary-dark))'
+                        : '#d1d5db'
+                    }}
                   ></div>
                 )}
                 <div
                   className={`flex items-center gap-1 md:gap-2 transition-all duration-300 ${displayStep >= step.id
-                    ? "text-black font-semibold"
+                    ? "text-gray-900 font-semibold"
                     : "text-gray-400"
                     }`}
                 >
                   <span
-                    className={`flex items-center justify-center w-7 h-7 md:w-8 md:h-8 rounded-full text-xs border-2 transition-all duration-300 ${displayStep > step.id
-                      ? "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-500/30"
-                      : displayStep === step.id
-                        ? "bg-black text-white border-black shadow-lg"
-                        : "bg-white border-gray-300"
-                      }`}
+                    className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full text-sm font-bold border-2 transition-all duration-300"
+                    style={
+                      displayStep > step.id
+                        ? {
+                          backgroundColor: 'var(--color-primary)',
+                          color: 'white',
+                          borderColor: 'var(--color-primary)',
+                          boxShadow: '0 4px 14px rgba(var(--color-primary-rgb), 0.3)'
+                        }
+                        : displayStep === step.id
+                          ? { backgroundColor: '#1f2937', color: 'white', borderColor: '#1f2937', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }
+                          : { backgroundColor: 'white', borderColor: '#d1d5db', color: '#9ca3af' }
+                    }
                   >
                     {displayStep > step.id ? "✓" : step.id}
                   </span>

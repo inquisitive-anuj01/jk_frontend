@@ -1,5 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
+
+import Lenis from "lenis";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Layout from "./Layout/Layout";
+import Home from "./Pages/Home";
 import Booking from "./Pages/Booking";
 import AdminLogin from "./Components/Admin/AdminLogin";
 import AdminDashboard from "./Components/Admin/AdminDashboard";
@@ -14,12 +18,25 @@ import AdminAddLocation from "./Components/Admin/AdminAddLocation";
 import AdminLocationPricing from "./Components/Admin/AdminLocationPricing";
 
 function App() {
+
+  useEffect(() => {
+    const lenis = new Lenis();
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+  }, []);
+
+
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Booking />} />
+        {/* Public Routes with Layout */}
+        <Route path="/" element={<Layout isHeroPage={true}><Home /></Layout>} />
+        <Route path="/booking" element={<Layout isHeroPage={false} headerTheme="light"><Booking /></Layout>} />
 
-        {/* Admin Routes */}
+        {/* Admin Routes (no layout wrapper) */}
         <Route path="/login-admin" element={<AdminLogin />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/admin/leads" element={<AdminAllLeads />} />
@@ -41,4 +58,3 @@ function App() {
 }
 
 export default App;
-

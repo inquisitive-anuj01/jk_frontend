@@ -1,2 +1,191 @@
 @import "tailwindcss";
 
+/* Google Font - Inter for premium look */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ============================================
+   THEME COLOR VARIABLES
+   Change these values to update colors across the entire app
+   ============================================ */
+:root {
+  /* Primary Brand Color - Golden Yellow */
+  --color-primary: #D7B75E;
+  --color-primary-hover: #C5A54D;
+  --color-primary-light: #E8D089;
+  --color-primary-dark: #B9994A;
+
+  /* Primary RGB values for use with rgba() */
+  --color-primary-rgb: 215, 183, 94;
+
+  /* Dark/Black colors */
+  --color-dark: #1a1a1a;
+  --color-dark-secondary: #2a2a2a;
+  --color-dark-rgb: 26, 26, 26;
+
+  /* Light/White colors */
+  --color-light: #ffffff;
+  --color-light-secondary: #f9fafb;
+  --color-light-tertiary: #f3f4f6;
+
+  /* Text colors */
+  --color-text-dark: #111827;
+  --color-text-gray: #6b7280;
+  --color-text-light: #ffffff;
+
+  /* Success/Error colors */
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+}
+
+/* Base styles */
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-hover);
+}
+
+/* Video background fix for mobile */
+video::-webkit-media-controls {
+  display: none !important;
+}
+
+video::-webkit-media-controls-panel {
+  display: none !important;
+}
+
+video::-webkit-media-controls-play-button {
+  display: none !important;
+}
+
+/* Nav link underline animation */
+.nav-link-underline {
+  position: relative;
+}
+
+.nav-link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-dark));
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+.nav-link-underline:hover::after {
+  width: 80%;
+  left: 10%;
+}
+
+/* Gradient text utility */
+.text-gradient {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glow effect for buttons */
+.btn-glow {
+  box-shadow: 0 0 20px rgba(var(--color-primary-rgb), 0.3);
+}
+
+.btn-glow:hover {
+  box-shadow: 0 0 30px rgba(var(--color-primary-rgb), 0.5);
+}
+
+/* Primary button utility */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-dark);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+  box-shadow: 0 4px 20px rgba(var(--color-primary-rgb), 0.4);
+}
+
+/* Header transparency transition */
+.header-transparent {
+  background: transparent;
+}
+
+.header-solid {
+  background: rgba(var(--color-dark-rgb), 0.95);
+  backdrop-filter: blur(12px);
+}
+
+/* Mobile menu animation */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Focus styles for accessibility */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Prevent layout shift from scrollbar */
+html {
+  overflow-y: scroll;
+}
+
+/* ============================================
+   TAILWIND CUSTOM UTILITIES
+   Use these classes in your components
+   ============================================ */
+@layer utilities {
+  .bg-primary {
+    background-color: var(--color-primary);
+  }
+
+  .bg-primary-hover {
+    background-color: var(--color-primary-hover);
+  }
+
+  .text-primary {
+    color: var(--color-primary);
+  }
+
+  .border-primary {
+    border-color: var(--color-primary);
+  }
+
+  .shadow-primary {
+    box-shadow: 0 4px 14px rgba(var(--color-primary-rgb), 0.3);
+  }
+}
