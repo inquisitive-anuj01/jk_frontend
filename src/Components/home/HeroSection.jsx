@@ -38,13 +38,13 @@ function HeroSection() {
                     <source src={bgVideo} type="video/mp4" />
                 </video>
                 {/* Dark Overlay */}
-                <div className="absolute inset-0 bg-black/40" />
+                <div className="absolute inset-0 bg-black/60" />
                 {/* Gradient Overlay for depth */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
             </div>
 
-            {/* Content */}
-            <div className="relative z-10 text-left px-6 md:px-12 lg:px-20 max-w-6xl mx-auto pt-24 w-full">
+            {/* Content - aligned with header (max-w-7xl px-4 md:px-8) */}
+            <div className="relative z-10 text-left max-w-7xl mx-auto px-4 md:px-8 pt-24 w-full">
                 {/* Small Tagline - positioned left above Chauffeur */}
                 <motion.p
                     initial={{ opacity: 0, y: 20 }}
