@@ -5,6 +5,15 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Layout from "./Layout/Layout";
 import Home from "./Pages/Home";
 import Booking from "./Pages/Booking";
+import Services from "./Pages/Services";
+import ServiceWrapper from "./Pages/ServiceWrapper";
+import Fleet from "./Pages/Fleet";
+import FleetDetail from "./Pages/FleetDetail";
+import EventWrapper from "./Pages/EventWrapper";
+import Blog from "./Pages/Blog";
+import BlogWrapper from "./Pages/BlogWrapper";
+import AboutUs from "./Pages/AboutUs";
+import ContactUs from "./Pages/ContactUs";
 import AdminLogin from "./Components/Admin/AdminLogin";
 import AdminDashboard from "./Components/Admin/AdminDashboard";
 import AdminAllBookings from "./Components/Admin/AdminAllBookings";
@@ -35,6 +44,15 @@ function App() {
         {/* Public Routes with Layout */}
         <Route path="/" element={<Layout isHeroPage={true}><Home /></Layout>} />
         <Route path="/booking" element={<Layout isHeroPage={false} headerTheme="light"><Booking /></Layout>} />
+        <Route path="/services" element={<Layout isHeroPage={false}><Services /></Layout>} />
+        <Route path="/services/:slug" element={<Layout isHeroPage={false}><ServiceWrapper /></Layout>} />
+        <Route path="/fleet" element={<Layout isHeroPage={false}><Fleet /></Layout>} />
+        <Route path="/fleet/:slug" element={<Layout isHeroPage={false}><FleetDetail /></Layout>} />
+        <Route path="/events/:slug" element={<Layout isHeroPage={false}><EventWrapper /></Layout>} />
+        <Route path="/blog" element={<Layout isHeroPage={false}><Blog /></Layout>} />
+        <Route path="/blog/:slug" element={<Layout isHeroPage={false}><BlogWrapper /></Layout>} />
+        <Route path="/about" element={<Layout isHeroPage={false}><AboutUs /></Layout>} />
+        <Route path="/contact" element={<Layout isHeroPage={false}><ContactUs /></Layout>} />
 
         {/* Admin Routes (no layout wrapper) */}
         <Route path="/login-admin" element={<AdminLogin />} />

@@ -267,4 +267,65 @@ export const adminAPI = {
     },
 };
 
+
+// Service APIs
+export const serviceAPI = {
+    // Get all services (paginated)
+    getAllServices: async (page = 1, limit = 10) => {
+        const response = await api.get("/api/services", { params: { page, limit } });
+        return response.data;
+    },
+
+    // Get single service by slug
+    getServiceBySlug: async (slug) => {
+        const response = await api.get(`/api/services/${slug}`);
+        return response.data;
+    },
+
+    // Get nav menu structure (services grouped by category + airports)
+    getNavMenu: async () => {
+        const response = await api.get("/api/services/nav-menu");
+        return response.data;
+    },
+};
+
+
+export const fleetAPI = {
+    // Get all fleet entries (paginated)
+    getAll: async (page = 1, limit = 9) => {
+        const response = await api.get("/api/fleet", { params: { page, limit } });
+        return response.data;
+    },
+
+    // Get fleet entry by slug
+    getBySlug: async (slug) => {
+        const response = await api.get(`/api/fleet/${slug}`);
+        return response.data;
+    },
+};
+
+// Event APIs
+export const eventAPI = {
+    // Get event by slug
+    getBySlug: async (slug) => {
+        const response = await api.get(`/api/events/${slug}`);
+        return response.data;
+    },
+};
+
+// Blog APIs
+export const blogAPI = {
+    // Get all blogs (paginated)
+    getAll: async (page = 1, limit = 9) => {
+        const response = await api.get("/api/blogs", { params: { page, limit } });
+        return response.data;
+    },
+
+    // Get blog by slug (full body with HTML)
+    getBySlug: async (slug) => {
+        const response = await api.get(`/api/blogs/${slug}`);
+        return response.data;
+    },
+};
+
 export default api;
