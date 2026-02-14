@@ -54,14 +54,15 @@ const TestModeBanner = () => (
   <motion.div
     initial={{ opacity: 0, y: -10 }}
     animate={{ opacity: 1, y: 0 }}
-    className="flex items-center gap-3 p-4 bg-amber-50 border-2 border-amber-300 rounded-2xl mb-6"
+    className="flex items-center gap-3 p-4 rounded-xl mb-6"
+    style={{ backgroundColor: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)' }}
   >
-    <div className="p-2 bg-amber-100 rounded-full">
-      <TestTube2 size={20} className="text-amber-600" />
+    <div className="p-2 rounded-full" style={{ backgroundColor: 'rgba(245,158,11,0.15)' }}>
+      <TestTube2 size={20} style={{ color: '#f59e0b' }} />
     </div>
     <div>
-      <p className="text-amber-800 font-semibold text-sm">TEST MODE</p>
-      <p className="text-amber-700 text-sm">
+      <p className="font-semibold text-sm" style={{ color: '#f59e0b' }}>TEST MODE</p>
+      <p className="text-sm" style={{ color: 'rgba(245,158,11,0.8)' }}>
         This is a test payment. Your card will <strong>NOT</strong> be charged.
       </p>
     </div>
@@ -117,7 +118,7 @@ const PaymentForm = ({ onSuccess, onError, amount }) => {
       />
 
       {errorMessage && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 text-red-600 rounded-xl text-sm">
+        <div className="flex items-center gap-2 p-3 rounded-xl text-sm" style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: '#ef4444' }}>
           <AlertCircle size={18} />
           {errorMessage}
         </div>
@@ -126,9 +127,9 @@ const PaymentForm = ({ onSuccess, onError, amount }) => {
       <button
         type="submit"
         disabled={!stripe || isProcessing}
-        className="w-full flex items-center justify-center gap-2 py-4 px-6 bg-gradient-to-r from-green-600 to-emerald-500 rounded-2xl
-          font-semibold text-white hover:from-green-700 hover:to-emerald-600 shadow-lg shadow-green-500/25 
-          transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+        className="w-full flex items-center justify-center gap-2 py-4 px-6 rounded-xl
+          font-semibold shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+        style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-dark)' }}
       >
         {isProcessing ? (
           <>
@@ -143,7 +144,7 @@ const PaymentForm = ({ onSuccess, onError, amount }) => {
         )}
       </button>
 
-      <div className="flex items-center justify-center gap-2 text-gray-500 text-sm">
+      <div className="flex items-center justify-center gap-2 text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
         <Shield size={16} />
         <span>Secured by Stripe. Your payment info is encrypted.</span>
       </div>
@@ -160,7 +161,7 @@ const SuccessModal = ({ isOpen, onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
       onClick={onClose}
     >
       <motion.div
@@ -169,23 +170,25 @@ const SuccessModal = ({ isOpen, onClose }) => {
         exit={{ opacity: 0, scale: 0.8, y: 20 }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center"
+        className="rounded-2xl shadow-2xl p-8 max-w-md w-full text-center"
+        style={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(215,183,94,0.2)' }}
       >
         {/* Success Animation */}
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: "spring", damping: 15 }}
-          className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full mb-6 shadow-lg shadow-green-500/30"
+          className="inline-flex items-center justify-center w-24 h-24 rounded-full mb-6 shadow-lg"
+          style={{ background: 'linear-gradient(135deg, var(--color-primary), #c9a84c)', boxShadow: '0 8px 30px rgba(215,183,94,0.3)' }}
         >
-          <CheckCircle size={50} className="text-white" />
+          <CheckCircle size={50} style={{ color: 'var(--color-dark)' }} />
         </motion.div>
 
         <motion.h2
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="text-3xl font-bold text-gray-900 mb-3"
+          className="text-3xl font-bold text-white mb-3"
         >
           🎉 Booking Confirmed!
         </motion.h2>
@@ -194,7 +197,8 @@ const SuccessModal = ({ isOpen, onClose }) => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="text-gray-600 mb-2 text-lg"
+          className="text-lg mb-2"
+          style={{ color: 'rgba(255,255,255,0.7)' }}
         >
           Your payment was successful.
         </motion.p>
@@ -203,7 +207,8 @@ const SuccessModal = ({ isOpen, onClose }) => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="text-gray-500 mb-8"
+          className="mb-8"
+          style={{ color: 'rgba(255,255,255,0.5)' }}
         >
           A confirmation email with your booking details will be sent to you shortly. Thank you for choosing us!
         </motion.p>
@@ -213,9 +218,9 @@ const SuccessModal = ({ isOpen, onClose }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
           onClick={onClose}
-          className="w-full px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-500 rounded-2xl
-                        font-semibold text-white text-lg hover:from-green-700 hover:to-emerald-600 transition-all duration-200
-                        shadow-lg shadow-green-500/25 transform hover:scale-[1.02] active:scale-[0.98]"
+          className="w-full px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200
+                        shadow-lg transform hover:scale-[1.02] active:scale-[0.98]"
+          style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-dark)', boxShadow: '0 4px 14px rgba(215,183,94,0.3)' }}
         >
           Done
         </motion.button>
@@ -224,7 +229,8 @@ const SuccessModal = ({ isOpen, onClose }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.7 }}
-          className="text-gray-400 text-sm mt-4"
+          className="text-sm mt-4"
+          style={{ color: 'rgba(255,255,255,0.4)' }}
         >
           ✈️ Have a safe journey!
         </motion.p>
@@ -235,16 +241,15 @@ const SuccessModal = ({ isOpen, onClose }) => {
 
 // Main Payment Step Component
 function Payment({ data, clientSecret, onBack, onPaymentSuccess, onComplete, isLoadingIntent, isTestMode }) {
-  const [paymentStatus, setPaymentStatus] = useState("pending"); // pending, success, error
+  const [paymentStatus, setPaymentStatus] = useState("pending");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  // Determine test mode from prop or fallback to origin check
   const showTestModeBanner = isTestMode ?? isTestModeOrigin();
 
   const handleSuccess = (paymentIntent) => {
     setPaymentStatus("success");
     onPaymentSuccess(paymentIntent);
-    setShowSuccessModal(true); // Show success modal
+    setShowSuccessModal(true);
   };
 
   const handleError = (error) => {
@@ -254,22 +259,47 @@ function Payment({ data, clientSecret, onBack, onPaymentSuccess, onComplete, isL
 
   const handleModalClose = () => {
     setShowSuccessModal(false);
-    // Call onComplete to reset and go back to Step 1
     if (onComplete) {
       onComplete();
     }
   };
 
   const appearance = {
-    theme: "stripe",
+    theme: "night",
     variables: {
-      colorPrimary: "#2563eb",
-      colorBackground: "#ffffff",
-      colorText: "#1f2937",
+      colorPrimary: "#d7b75e",
+      colorBackground: "#1a1a1a",
+      colorText: "#ffffff",
       colorDanger: "#ef4444",
       fontFamily: "Inter, system-ui, sans-serif",
       spacingUnit: "4px",
       borderRadius: "12px",
+      colorTextSecondary: "rgba(255,255,255,0.6)",
+      colorTextPlaceholder: "rgba(255,255,255,0.3)",
+    },
+    rules: {
+      '.Input': {
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        borderColor: 'rgba(255,255,255,0.1)',
+        color: '#ffffff',
+      },
+      '.Input:focus': {
+        borderColor: '#d7b75e',
+        boxShadow: '0 0 0 2px rgba(215,183,94,0.2)',
+      },
+      '.Tab': {
+        backgroundColor: 'rgba(255,255,255,0.04)',
+        borderColor: 'rgba(255,255,255,0.1)',
+        color: 'rgba(255,255,255,0.6)',
+      },
+      '.Tab--selected': {
+        backgroundColor: 'rgba(215,183,94,0.1)',
+        borderColor: '#d7b75e',
+        color: '#d7b75e',
+      },
+      '.Label': {
+        color: 'rgba(255,255,255,0.7)',
+      },
     },
   };
 
@@ -293,7 +323,7 @@ function Payment({ data, clientSecret, onBack, onPaymentSuccess, onComplete, isL
       {/* Success Modal */}
       <SuccessModal isOpen={showSuccessModal} onClose={handleModalClose} />
 
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 py-8 px-4">
+      <div className="py-8 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Left: Order Summary */}
@@ -302,83 +332,83 @@ function Payment({ data, clientSecret, onBack, onPaymentSuccess, onComplete, isL
               animate={{ opacity: 1, x: 0 }}
               className="space-y-6"
             >
-              <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <CreditCard size={24} className="text-blue-600" />
+              <div className="rounded-xl shadow-xl p-6" style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                  <CreditCard size={24} style={{ color: 'var(--color-primary)' }} />
                   Order Summary
                 </h2>
 
                 {/* Journey Info */}
                 <div className="space-y-4 mb-6">
                   <div className="flex items-start gap-3">
-                    <div className="p-2 bg-green-100 rounded-lg">
-                      <MapPin size={16} className="text-green-600" />
+                    <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(215,183,94,0.1)' }}>
+                      <MapPin size={16} style={{ color: 'var(--color-primary)' }} />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 uppercase">Pickup</p>
-                      <p className="font-medium text-gray-900 text-sm">{data.pickup || "—"}</p>
+                      <p className="text-xs uppercase" style={{ color: 'rgba(255,255,255,0.5)' }}>Pickup</p>
+                      <p className="font-medium text-white text-sm">{data.pickup || "—"}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="p-2 bg-blue-100 rounded-lg">
-                      <MapPin size={16} className="text-blue-600" />
+                    <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}>
+                      <MapPin size={16} style={{ color: 'rgba(255,255,255,0.5)' }} />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 uppercase">Dropoff</p>
-                      <p className="font-medium text-gray-900 text-sm">{data.dropoff || "—"}</p>
+                      <p className="text-xs uppercase" style={{ color: 'rgba(255,255,255,0.5)' }}>Dropoff</p>
+                      <p className="font-medium text-white text-sm">{data.dropoff || "—"}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Date/Time & Vehicle */}
                 <div className="grid grid-cols-2 gap-3 mb-6">
-                  <div className="p-3 bg-gray-50 rounded-xl text-center">
-                    <Calendar size={16} className="mx-auto text-gray-400 mb-1" />
-                    <p className="text-xs text-gray-500">Date</p>
-                    <p className="font-semibold text-gray-900 text-sm">{formatDate(data.pickupDate)}</p>
+                  <div className="p-3 rounded-xl text-center" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}>
+                    <Calendar size={16} className="mx-auto mb-1" style={{ color: 'var(--color-primary)' }} />
+                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Date</p>
+                    <p className="font-semibold text-white text-sm">{formatDate(data.pickupDate)}</p>
                   </div>
-                  <div className="p-3 bg-gray-50 rounded-xl text-center">
-                    <Clock size={16} className="mx-auto text-gray-400 mb-1" />
-                    <p className="text-xs text-gray-500">Time</p>
-                    <p className="font-semibold text-gray-900 text-sm">{data.pickupTime || "—"}</p>
+                  <div className="p-3 rounded-xl text-center" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}>
+                    <Clock size={16} className="mx-auto mb-1" style={{ color: 'var(--color-primary)' }} />
+                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Time</p>
+                    <p className="font-semibold text-white text-sm">{data.pickupTime || "—"}</p>
                   </div>
                 </div>
 
                 {/* Vehicle */}
-                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl mb-6">
-                  <Car size={24} className="text-gray-400" />
+                <div className="flex items-center gap-4 p-4 rounded-xl mb-6" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}>
+                  <Car size={24} style={{ color: 'var(--color-primary)' }} />
                   <div>
-                    <p className="font-bold text-gray-900">{data.selectedVehicle?.categoryName}</p>
-                    <p className="text-sm text-gray-500">{data.selectedVehicle?.categoryDetails}</p>
+                    <p className="font-bold text-white">{data.selectedVehicle?.categoryName}</p>
+                    <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>{data.selectedVehicle?.categoryDetails}</p>
                   </div>
                 </div>
 
                 {/* Price Breakdown */}
-                <div className="border-t border-gray-100 pt-4 space-y-2">
-                  <div className="flex justify-between text-gray-600">
+                <div className="pt-4 space-y-2" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                  <div className="flex justify-between" style={{ color: 'rgba(255,255,255,0.6)' }}>
                     <span>Base Fare</span>
-                    <span>£{pricing?.basePrice?.toFixed(2) || "0.00"}</span>
+                    <span className="text-white">£{pricing?.basePrice?.toFixed(2) || "0.00"}</span>
                   </div>
                   {pricing?.airportCharges > 0 && (
-                    <div className="flex justify-between text-gray-600">
+                    <div className="flex justify-between" style={{ color: 'rgba(255,255,255,0.6)' }}>
                       <span>Airport Charges</span>
-                      <span>£{pricing?.airportCharges?.toFixed(2)}</span>
+                      <span className="text-white">£{pricing?.airportCharges?.toFixed(2)}</span>
                     </div>
                   )}
                   {pricing?.congestionCharge > 0 && (
-                    <div className="flex justify-between text-gray-600">
+                    <div className="flex justify-between" style={{ color: 'rgba(255,255,255,0.6)' }}>
                       <span>Congestion Charge</span>
-                      <span>£{pricing?.congestionCharge?.toFixed(2)}</span>
+                      <span className="text-white">£{pricing?.congestionCharge?.toFixed(2)}</span>
                     </div>
                   )}
-                  <div className="flex justify-between text-gray-600">
+                  <div className="flex justify-between" style={{ color: 'rgba(255,255,255,0.6)' }}>
                     <span>VAT ({pricing?.vatRate || 20}%)</span>
-                    <span>£{pricing?.tax?.toFixed(2) || "0.00"}</span>
+                    <span className="text-white">£{pricing?.tax?.toFixed(2) || "0.00"}</span>
                   </div>
-                  <div className="border-t border-gray-200 my-2" />
+                  <div className="my-2" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }} />
                   <div className="flex justify-between items-center">
-                    <span className="text-lg font-bold text-gray-900">Total</span>
-                    <span className="text-2xl font-bold text-blue-600">£{totalAmount.toFixed(2)}</span>
+                    <span className="text-lg font-bold text-white">Total</span>
+                    <span className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>£{totalAmount.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -386,7 +416,10 @@ function Payment({ data, clientSecret, onBack, onPaymentSuccess, onComplete, isL
               {/* Back Button */}
               <button
                 onClick={onBack}
-                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium transition-colors"
+                className="flex items-center gap-2 font-medium transition-colors"
+                style={{ color: 'rgba(255,255,255,0.6)' }}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
+                onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
               >
                 <ArrowLeft size={20} />
                 Back to Summary
@@ -399,20 +432,20 @@ function Payment({ data, clientSecret, onBack, onPaymentSuccess, onComplete, isL
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 p-6">
+              <div className="rounded-xl shadow-xl p-6" style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
                 {/* Test Mode Banner - Only show when in test mode */}
                 {showTestModeBanner && <TestModeBanner />}
 
-                <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
-                  <Lock size={24} className="text-green-600" />
+                <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                  <Lock size={24} style={{ color: 'var(--color-primary)' }} />
                   Secure Payment
                 </h2>
-                <p className="text-gray-500 mb-6">Enter your card details to complete the booking</p>
+                <p className="mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>Enter your card details to complete the booking</p>
 
                 {isLoadingIntent ? (
                   <div className="flex flex-col items-center justify-center py-16">
-                    <Loader2 size={40} className="animate-spin text-blue-600 mb-4" />
-                    <p className="text-gray-500">Initializing secure payment...</p>
+                    <Loader2 size={40} className="animate-spin mb-4" style={{ color: 'var(--color-primary)' }} />
+                    <p style={{ color: 'rgba(255,255,255,0.5)' }}>Initializing secure payment...</p>
                   </div>
                 ) : clientSecret ? (
                   <Elements
@@ -429,7 +462,7 @@ function Payment({ data, clientSecret, onBack, onPaymentSuccess, onComplete, isL
                     />
                   </Elements>
                 ) : (
-                  <div className="flex flex-col items-center justify-center py-16 text-red-500">
+                  <div className="flex flex-col items-center justify-center py-16" style={{ color: '#ef4444' }}>
                     <AlertCircle size={40} className="mb-4" />
                     <p>Failed to initialize payment. Please go back and try again.</p>
                   </div>

@@ -53,6 +53,7 @@ function Booking() {
   const goToStep = (step) => {
     setShowSummary(false);
     setCurrentStep(step);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Build booking payload (shared between create and update)
@@ -185,6 +186,7 @@ function Booking() {
   // Handle edit from summary - go back to step 3
   const handleEditFromSummary = () => {
     setShowSummary(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Handle proceed to payment - CREATE PAYMENT INTENT (booking already exists)
@@ -218,6 +220,7 @@ function Booking() {
         setIsTestMode(response.isTestMode || false);
         setShowSummary(false);
         setCurrentStep(4);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         alert("Failed to initialize payment. Please try again.");
       }
@@ -253,12 +256,12 @@ function Booking() {
   // Loading state
   if (!isLoaded) {
     return (
-      <div className="h-screen flex flex-col items-center justify-center bg-gray-50">
+      <div className="h-screen flex flex-col items-center justify-center" style={{ backgroundColor: 'var(--color-dark)' }}>
         <div className="relative">
-          <div className="w-16 h-16 border-4 border-blue-200 rounded-full animate-pulse"></div>
-          <div className="absolute inset-0 w-16 h-16 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
+          <div className="w-16 h-16 border-4 rounded-full animate-pulse" style={{ borderColor: 'rgba(215,183,94,0.2)' }}></div>
+          <div className="absolute inset-0 w-16 h-16 border-4 rounded-full border-t-transparent animate-spin" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }}></div>
         </div>
-        <p className="mt-6 text-gray-600 font-medium tracking-widest uppercase text-sm">
+        <p className="mt-6 font-medium tracking-widest uppercase text-sm" style={{ color: 'var(--color-primary)' }}>
           Loading Booking Engine...
         </p>
       </div>
@@ -269,11 +272,11 @@ function Booking() {
   const displayStep = showSummary ? 3 : currentStep;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 font-sans text-gray-900 pb-20">
-      {/* --- STEPS INDICATOR (Classic Style with Circles & Lines) --- */}
-      <div className="bg-gray-50 pt-32 md:pt-36 pb-6 ">
+    <div className="min-h-screen font-sans pb-20" style={{ backgroundColor: 'var(--color-dark)', color: '#fff' }}>
+      {/* --- STEPS INDICATOR --- */}
+      <div className="pt-32 md:pt-36 pb-6" style={{ backgroundColor: 'var(--color-dark)' }}>
         <div className="max-w-4xl mx-auto px-4">
-          {/* Stepper - 4 Steps with Circles and Connecting Lines */}
+          {/* Stepper */}
           <div className="flex items-center justify-center space-x-1 md:space-x-4 text-sm">
             {STEPS.map((step, index) => (
               <React.Fragment key={step.id}>
@@ -282,16 +285,17 @@ function Booking() {
                     className="w-8 md:w-16 h-0.5 rounded-full transition-all duration-500"
                     style={{
                       background: displayStep >= step.id
-                        ? 'linear-gradient(to right, var(--color-primary), var(--color-primary-dark))'
-                        : '#d1d5db'
+                        ? 'linear-gradient(to right, var(--color-primary), var(--color-primary))'
+                        : 'rgba(255,255,255,0.15)'
                     }}
                   ></div>
                 )}
                 <div
                   className={`flex items-center gap-1 md:gap-2 transition-all duration-300 ${displayStep >= step.id
-                    ? "text-gray-900 font-semibold"
-                    : "text-gray-400"
+                    ? "font-semibold"
+                    : ""
                     }`}
+                  style={{ color: displayStep >= step.id ? '#fff' : 'rgba(255,255,255,0.35)' }}
                 >
                   <span
                     className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full text-sm font-bold border-2 transition-all duration-300"
@@ -299,13 +303,22 @@ function Booking() {
                       displayStep > step.id
                         ? {
                           backgroundColor: 'var(--color-primary)',
-                          color: 'white',
+                          color: 'var(--color-dark)',
                           borderColor: 'var(--color-primary)',
-                          boxShadow: '0 4px 14px rgba(var(--color-primary-rgb), 0.3)'
+                          boxShadow: '0 4px 14px rgba(215,183,94,0.3)'
                         }
                         : displayStep === step.id
-                          ? { backgroundColor: '#1f2937', color: 'white', borderColor: '#1f2937', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }
-                          : { backgroundColor: 'white', borderColor: '#d1d5db', color: '#9ca3af' }
+                          ? {
+                            backgroundColor: 'rgba(215,183,94,0.15)',
+                            color: 'var(--color-primary)',
+                            borderColor: 'var(--color-primary)',
+                            boxShadow: '0 4px 14px rgba(215,183,94,0.2)'
+                          }
+                          : {
+                            backgroundColor: 'transparent',
+                            borderColor: 'rgba(255,255,255,0.15)',
+                            color: 'rgba(255,255,255,0.35)'
+                          }
                     }
                   >
                     {displayStep > step.id ? "✓" : step.id}

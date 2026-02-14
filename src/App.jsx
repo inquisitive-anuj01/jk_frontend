@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 
 import Lenis from "lenis";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
 import Layout from "./Layout/Layout";
 import Home from "./Pages/Home";
 import Booking from "./Pages/Booking";
@@ -14,6 +14,9 @@ import Blog from "./Pages/Blog";
 import BlogWrapper from "./Pages/BlogWrapper";
 import AboutUs from "./Pages/AboutUs";
 import ContactUs from "./Pages/ContactUs";
+import TermsAndConditions from "./Pages/TermsAndConditions";
+import PrivacyPolicy from "./Pages/PrivacyPolicy";
+import GDPRPolicy from "./Pages/GDPRPolicy";
 import AdminLogin from "./Components/Admin/AdminLogin";
 import AdminDashboard from "./Components/Admin/AdminDashboard";
 import AdminAllBookings from "./Components/Admin/AdminAllBookings";
@@ -25,6 +28,15 @@ import AdminAllPricing from "./Components/Admin/AdminAllPricing";
 import AdminAllLocations from "./Components/Admin/AdminAllLocations";
 import AdminAddLocation from "./Components/Admin/AdminAddLocation";
 import AdminLocationPricing from "./Components/Admin/AdminLocationPricing";
+
+// Scroll to top on every route change
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
 
 function App() {
 
@@ -40,10 +52,11 @@ function App() {
 
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         {/* Public Routes with Layout */}
         <Route path="/" element={<Layout isHeroPage={true}><Home /></Layout>} />
-        <Route path="/booking" element={<Layout isHeroPage={false} headerTheme="light"><Booking /></Layout>} />
+        <Route path="/booking" element={<Layout isHeroPage={false}><Booking /></Layout>} />
         <Route path="/services" element={<Layout isHeroPage={false}><Services /></Layout>} />
         <Route path="/services/:slug" element={<Layout isHeroPage={false}><ServiceWrapper /></Layout>} />
         <Route path="/fleet" element={<Layout isHeroPage={false}><Fleet /></Layout>} />
@@ -53,6 +66,9 @@ function App() {
         <Route path="/blog/:slug" element={<Layout isHeroPage={false}><BlogWrapper /></Layout>} />
         <Route path="/about" element={<Layout isHeroPage={false}><AboutUs /></Layout>} />
         <Route path="/contact" element={<Layout isHeroPage={false}><ContactUs /></Layout>} />
+        <Route path="/terms-and-conditions" element={<Layout isHeroPage={false}><TermsAndConditions /></Layout>} />
+        <Route path="/privacy-policy" element={<Layout isHeroPage={false}><PrivacyPolicy /></Layout>} />
+        <Route path="/gdpr-policy" element={<Layout isHeroPage={false}><GDPRPolicy /></Layout>} />
 
         {/* Admin Routes (no layout wrapper) */}
         <Route path="/login-admin" element={<AdminLogin />} />

@@ -20,13 +20,13 @@ import {
 
 // Info Row Component
 const InfoRow = ({ icon: Icon, label, value, highlight = false }) => (
-    <div className="flex items-start gap-3 py-2">
-        <div className={`p-2 rounded-lg ${highlight ? "bg-blue-100" : "bg-gray-100"}`}>
-            <Icon size={16} className={highlight ? "text-blue-600" : "text-gray-500"} />
+    <div className="flex items-center gap-2 py-1.5">
+        <div className="p-1.5 rounded-md" style={{ backgroundColor: highlight ? 'rgba(215,183,94,0.1)' : 'rgba(255,255,255,0.06)' }}>
+            <Icon size={14} style={{ color: highlight ? 'var(--color-primary)' : 'rgba(255,255,255,0.5)' }} />
         </div>
         <div className="flex-1 min-w-0">
-            <p className="text-sm text-gray-500">{label}</p>
-            <p className="font-medium text-gray-900 break-words">{value || "—"}</p>
+            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>{label}</p>
+            <p className="font-medium text-white text-sm break-words">{value || "—"}</p>
         </div>
     </div>
 );
@@ -34,30 +34,19 @@ const InfoRow = ({ icon: Icon, label, value, highlight = false }) => (
 // Section Card Component
 const SectionCard = ({ title, icon: Icon, children, className = "" }) => (
     <motion.div
-        initial={{ opacity: 0, y: 10 }}
+        initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`bg-white rounded-2xl p-5 shadow-sm border border-gray-100 ${className}`}
+        className={`rounded-xl p-4 ${className}`}
+        style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
     >
-        <h3 className="font-semibold text-gray-900 flex items-center gap-2 mb-4 pb-3 border-b border-gray-100">
-            <div className="p-2 bg-blue-100 rounded-lg">
-                <Icon size={18} className="text-blue-600" />
+        <h3 className="font-semibold text-white text-sm flex items-center gap-2 mb-3 pb-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            <div className="p-1.5 rounded-md" style={{ backgroundColor: 'rgba(215,183,94,0.1)' }}>
+                <Icon size={15} style={{ color: 'var(--color-primary)' }} />
             </div>
             {title}
         </h3>
         {children}
     </motion.div>
-);
-
-// Price Row Component
-const PriceRow = ({ label, amount, isTotal = false }) => (
-    <div className={`flex justify-between items-center py-2 ${isTotal ? "border-t-2 border-gray-200 mt-2 pt-3" : ""}`}>
-        <span className={`${isTotal ? "text-lg font-bold text-gray-900" : "text-gray-600"}`}>
-            {label}
-        </span>
-        <span className={`${isTotal ? "text-2xl font-bold text-blue-600" : "font-medium text-gray-900"}`}>
-            £{typeof amount === "number" ? amount.toFixed(2) : amount}
-        </span>
-    </div>
 );
 
 function BookingSummary({ data, onEdit, onProceed, isLoading = false }) {
@@ -98,83 +87,80 @@ function BookingSummary({ data, onEdit, onProceed, isLoading = false }) {
         : "/placeholder-car.png";
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 py-8 px-4">
+        <div className="py-2 px-4">
             <div className="max-w-2xl mx-auto">
-                {/* Header */}
+                {/* Header - compact, no icon */}
                 <motion.div
-                    initial={{ opacity: 0, y: -20 }}
+                    initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-center mb-8"
+                    className="mb-4"
                 >
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-2xl mb-4">
-                        <Check size={32} className="text-green-600" />
-                    </div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Review Your Booking</h1>
-                    <p className="text-gray-500 mt-2">Please confirm your details before proceeding to payment</p>
+                    <h1 className="text-xl font-bold text-white">Review Your Booking</h1>
+                    <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>Please confirm your details before proceeding to payment</p>
                 </motion.div>
 
                 {/* Summary Cards */}
-                <div className="space-y-4">
+                <div className="space-y-3">
                     {/* Journey Details */}
                     <SectionCard title="Journey Details" icon={MapPin}>
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             {/* Route Visual */}
-                            <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
+                            <div className="flex items-center gap-3 p-3 rounded-lg" style={{ backgroundColor: 'rgba(215,183,94,0.05)', border: '1px solid rgba(215,183,94,0.1)' }}>
                                 <div className="flex flex-col items-center">
-                                    <div className="w-3 h-3 bg-green-500 rounded-full" />
+                                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: 'var(--color-primary)' }} />
                                     {!isHourly && (
                                         <>
-                                            <div className="w-0.5 h-12 bg-gradient-to-b from-green-500 to-blue-500" />
-                                            <div className="w-3 h-3 bg-blue-500 rounded-full" />
+                                            <div className="w-0.5 h-8" style={{ background: 'linear-gradient(to bottom, var(--color-primary), rgba(255,255,255,0.3))' }} />
+                                            <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.5)' }} />
                                         </>
                                     )}
                                 </div>
-                                <div className="flex-1 space-y-4">
+                                <div className="flex-1 space-y-2">
                                     <div>
-                                        <p className="text-xs text-gray-500 uppercase tracking-wide">Pickup</p>
-                                        <p className="font-medium text-gray-900 text-sm">{pickup || "—"}</p>
+                                        <p className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--color-primary)' }}>Pickup</p>
+                                        <p className="font-medium text-white text-sm">{pickup || "—"}</p>
                                     </div>
                                     {!isHourly && dropoff && (
                                         <div>
-                                            <p className="text-xs text-gray-500 uppercase tracking-wide">Dropoff</p>
-                                            <p className="font-medium text-gray-900 text-sm">{dropoff}</p>
+                                            <p className="text-[10px] uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.5)' }}>Dropoff</p>
+                                            <p className="font-medium text-white text-sm">{dropoff}</p>
                                         </div>
                                     )}
                                     {isHourly && (
                                         <div>
-                                            <p className="text-xs text-gray-500 uppercase tracking-wide">Duration</p>
-                                            <p className="font-medium text-purple-600 text-sm">{hours || journeyInfo?.hours || 2} Hours Booking</p>
+                                            <p className="text-[10px] uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.5)' }}>Duration</p>
+                                            <p className="font-medium text-sm" style={{ color: 'var(--color-primary)' }}>{hours || journeyInfo?.hours || 2} Hours Booking</p>
                                         </div>
                                     )}
                                 </div>
                             </div>
 
                             {/* Date/Time/Distance or Hours */}
-                            <div className="grid grid-cols-3 gap-3">
-                                <div className="text-center p-3 bg-gray-50 rounded-xl">
-                                    <Calendar size={18} className="mx-auto text-gray-400 mb-1" />
-                                    <p className="text-xs text-gray-500">Date</p>
-                                    <p className="font-semibold text-gray-900 text-sm">{formatDate(pickupDate)}</p>
+                            <div className="grid grid-cols-3 gap-2">
+                                <div className="text-center p-2 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}>
+                                    <Calendar size={14} className="mx-auto mb-0.5" style={{ color: 'var(--color-primary)' }} />
+                                    <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.5)' }}>Date</p>
+                                    <p className="font-semibold text-white text-xs">{formatDate(pickupDate)}</p>
                                 </div>
-                                <div className="text-center p-3 bg-gray-50 rounded-xl">
-                                    <Clock size={18} className="mx-auto text-gray-400 mb-1" />
-                                    <p className="text-xs text-gray-500">Time</p>
-                                    <p className="font-semibold text-gray-900 text-sm">{pickupTime || "—"}</p>
+                                <div className="text-center p-2 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}>
+                                    <Clock size={14} className="mx-auto mb-0.5" style={{ color: 'var(--color-primary)' }} />
+                                    <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.5)' }}>Time</p>
+                                    <p className="font-semibold text-white text-xs">{pickupTime || "—"}</p>
                                 </div>
-                                <div className="text-center p-3 bg-gray-50 rounded-xl">
+                                <div className="text-center p-2 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}>
                                     {isHourly ? (
                                         <>
-                                            <Clock size={18} className="mx-auto text-purple-500 mb-1" />
-                                            <p className="text-xs text-gray-500">Hours</p>
-                                            <p className="font-semibold text-purple-600 text-sm">
+                                            <Clock size={14} className="mx-auto mb-0.5" style={{ color: 'var(--color-primary)' }} />
+                                            <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.5)' }}>Hours</p>
+                                            <p className="font-semibold text-xs" style={{ color: 'var(--color-primary)' }}>
                                                 {hours || journeyInfo?.hours || 2}h
                                             </p>
                                         </>
                                     ) : (
                                         <>
-                                            <MapPin size={18} className="mx-auto text-gray-400 mb-1" />
-                                            <p className="text-xs text-gray-500">Distance</p>
-                                            <p className="font-semibold text-gray-900 text-sm">
+                                            <MapPin size={14} className="mx-auto mb-0.5" style={{ color: 'var(--color-primary)' }} />
+                                            <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.5)' }}>Distance</p>
+                                            <p className="font-semibold text-white text-xs">
                                                 {journeyInfo?.distanceMiles?.toFixed(1) || "—"} mi
                                             </p>
                                         </>
@@ -187,7 +173,7 @@ function BookingSummary({ data, onEdit, onProceed, isLoading = false }) {
                     {/* Vehicle */}
                     <SectionCard title="Selected Vehicle" icon={Car}>
                         <div className="flex items-center gap-4">
-                            <div className="w-24 h-16 bg-gray-100 rounded-xl overflow-hidden">
+                            <div className="w-24 h-16 rounded-xl overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}>
                                 <img
                                     src={vehicleImageUrl}
                                     alt={selectedVehicle?.categoryName}
@@ -198,14 +184,14 @@ function BookingSummary({ data, onEdit, onProceed, isLoading = false }) {
                                 />
                             </div>
                             <div>
-                                <h4 className="font-bold text-gray-900">{selectedVehicle?.categoryName || "—"}</h4>
-                                <p className="text-sm text-gray-500">{selectedVehicle?.categoryDetails}</p>
-                                <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
+                                <h4 className="font-bold text-white">{selectedVehicle?.categoryName || "—"}</h4>
+                                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>{selectedVehicle?.categoryDetails}</p>
+                                <div className="flex items-center gap-3 mt-1 text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
                                     <span className="flex items-center gap-1">
-                                        <Users size={14} /> {selectedVehicle?.numberOfPassengers}
+                                        <Users size={14} style={{ color: 'var(--color-primary)' }} /> {selectedVehicle?.numberOfPassengers}
                                     </span>
                                     <span className="flex items-center gap-1">
-                                        <Briefcase size={14} /> {selectedVehicle?.numberOfBigLuggage}
+                                        <Briefcase size={14} style={{ color: 'var(--color-primary)' }} /> {selectedVehicle?.numberOfBigLuggage}
                                     </span>
                                 </div>
                             </div>
@@ -235,8 +221,8 @@ function BookingSummary({ data, onEdit, onProceed, isLoading = false }) {
 
                         {/* Guest Details */}
                         {passengerDetails?.isBookingForSomeoneElse && (
-                            <div className="mt-4 pt-4 border-t border-gray-100">
-                                <p className="text-sm font-medium text-purple-600 mb-3">Booking for Someone Else</p>
+                            <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                                <p className="text-xs font-medium mb-2" style={{ color: 'var(--color-primary)' }}>Booking for Someone Else</p>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                     <InfoRow
                                         icon={User}
@@ -267,7 +253,7 @@ function BookingSummary({ data, onEdit, onProceed, isLoading = false }) {
                                     value={flightDetails?.nameBoard || "—"}
                                 />
                             </div>
-                            <p className="text-sm text-sky-600 bg-sky-50 px-3 py-2 rounded-lg mt-3">
+                            <p className="text-xs px-3 py-1.5 rounded-lg mt-2" style={{ backgroundColor: 'rgba(215,183,94,0.08)', color: 'var(--color-primary)' }}>
                                 ✈️ We'll track your flight and adjust pickup time if needed
                             </p>
                         </SectionCard>
@@ -276,45 +262,46 @@ function BookingSummary({ data, onEdit, onProceed, isLoading = false }) {
                     {/* Special Instructions */}
                     {specialInstructions && (
                         <SectionCard title="Additional Requirements" icon={MessageSquare}>
-                            <p className="text-gray-700 bg-gray-50 p-3 rounded-xl">{specialInstructions}</p>
+                            <p className="p-3 rounded-xl text-white" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}>{specialInstructions}</p>
                         </SectionCard>
                     )}
 
                     {/* Price Breakdown */}
                     <motion.div
-                        initial={{ opacity: 0, y: 10 }}
+                        initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 text-white shadow-xl shadow-blue-500/25"
+                        className="rounded-xl p-4 text-white shadow-xl"
+                        style={{ background: 'linear-gradient(135deg, rgba(215,183,94,0.15), rgba(215,183,94,0.05))', border: '1px solid rgba(215,183,94,0.25)' }}
                     >
-                        <h3 className="font-semibold flex items-center gap-2 mb-4">
-                            <CreditCard size={20} />
+                        <h3 className="font-semibold text-sm flex items-center gap-2 mb-3">
+                            <CreditCard size={16} style={{ color: 'var(--color-primary)' }} />
                             Price Summary
                         </h3>
-                        <div className="space-y-2">
-                            <div className="flex justify-between text-blue-100">
+                        <div className="space-y-1.5 text-sm">
+                            <div className="flex justify-between" style={{ color: 'rgba(255,255,255,0.6)' }}>
                                 <span>Base Fare</span>
-                                <span>£{pricing?.basePrice?.toFixed(2) || "0.00"}</span>
+                                <span className="text-white font-medium">£{pricing?.basePrice?.toFixed(2) || "0.00"}</span>
                             </div>
                             {pricing?.airportCharges > 0 && (
-                                <div className="flex justify-between text-blue-100">
+                                <div className="flex justify-between" style={{ color: 'rgba(255,255,255,0.6)' }}>
                                     <span>Airport Charges</span>
-                                    <span>£{pricing?.airportCharges?.toFixed(2)}</span>
+                                    <span className="text-white font-medium">£{pricing?.airportCharges?.toFixed(2)}</span>
                                 </div>
                             )}
                             {pricing?.congestionCharge > 0 && (
-                                <div className="flex justify-between text-blue-100">
+                                <div className="flex justify-between" style={{ color: 'rgba(255,255,255,0.6)' }}>
                                     <span>Congestion Charge</span>
-                                    <span>£{pricing?.congestionCharge?.toFixed(2)}</span>
+                                    <span className="text-white font-medium">£{pricing?.congestionCharge?.toFixed(2)}</span>
                                 </div>
                             )}
-                            <div className="flex justify-between text-blue-100">
+                            <div className="flex justify-between" style={{ color: 'rgba(255,255,255,0.6)' }}>
                                 <span>VAT ({pricing?.vatRate || 20}%)</span>
-                                <span>£{pricing?.tax?.toFixed(2) || "0.00"}</span>
+                                <span className="text-white font-medium">£{pricing?.tax?.toFixed(2) || "0.00"}</span>
                             </div>
-                            <div className="border-t border-blue-400/30 my-3" />
+                            <div className="my-2" style={{ borderTop: '1px solid rgba(215,183,94,0.2)' }} />
                             <div className="flex justify-between items-center">
-                                <span className="text-lg font-bold">Total</span>
-                                <span className="text-3xl font-bold">£{pricing?.totalPrice?.toFixed(2) || "0.00"}</span>
+                                <span className="text-base font-bold">Total</span>
+                                <span className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>£{pricing?.totalPrice?.toFixed(2) || "0.00"}</span>
                             </div>
                         </div>
                     </motion.div>
@@ -322,34 +309,36 @@ function BookingSummary({ data, onEdit, onProceed, isLoading = false }) {
 
                 {/* Action Buttons */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="flex gap-4 mt-8"
+                    transition={{ delay: 0.1 }}
+                    className="flex gap-4 mt-5"
                 >
                     <button
                         onClick={onEdit}
-                        className="flex-1 flex items-center justify-center gap-2 py-4 px-6 border-2 border-gray-200 rounded-2xl
-              font-semibold text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-300 transition-all duration-200"
+                        className="flex-1 flex items-center justify-center gap-2 py-3.5 px-6 border rounded-xl font-semibold transition-all duration-200 text-sm"
+                        style={{ borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.7)' }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
-                        <Edit3 size={20} />
-                        Edit Details
+                        <Edit3 size={16} />
+                        Edit
                     </button>
 
                     <button
                         onClick={onProceed}
                         disabled={isLoading}
-                        className="flex-1 flex items-center justify-center gap-2 py-4 px-6 bg-gradient-to-r from-green-600 to-emerald-500 rounded-2xl
-              font-semibold text-white hover:from-green-700 hover:to-emerald-600 shadow-lg shadow-green-500/25 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-semibold shadow-lg transition-all duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-dark)' }}
                     >
                         {isLoading ? (
                             <>
-                                <Loader2 size={20} className="animate-spin" />
+                                <Loader2 size={18} className="animate-spin" />
                                 Processing...
                             </>
                         ) : (
                             <>
-                                <CreditCard size={20} />
+                                <CreditCard size={18} />
                                 Proceed to Payment
                             </>
                         )}

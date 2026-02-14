@@ -11,16 +11,20 @@ import {
   ChevronUp,
   Filter,
   Loader2,
+  MapPin,
+  Clock,
+  Route,
   Shield,
-  Sparkles,
   Users,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { vehicleAPI } from "../../Utils/api";
 
-// Vehicle Card Component with expandable price breakdown
+/* ─────────────────────────────────────────────
+   COMPACT VEHICLE CARD
+   ───────────────────────────────────────────── */
 const VehicleCard = ({ vehicle, isSelected, onSelect, isDisabled }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [showBreakdown, setShowBreakdown] = useState(false);
   const pricing = vehicle.pricing;
   const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -28,277 +32,284 @@ const VehicleCard = ({ vehicle, isSelected, onSelect, isDisabled }) => {
     ? `${API_BASE}/${vehicle.image.url.replace(/\\/g, "/")}`
     : "/placeholder-car.png";
 
+  // Type badge color mapping
+  const typeBadge = {
+    Luxury: { bg: "rgba(215,183,94,0.15)", text: "var(--color-primary)", label: "LUXURY" },
+    Executive: { bg: "rgba(147,130,220,0.12)", text: "#9382dc", label: "EXECUTIVE" },
+    Business: { bg: "rgba(59,130,246,0.12)", text: "#60a5fa", label: "BUSINESS" },
+    Standard: { bg: "rgba(255,255,255,0.06)", text: "rgba(255,255,255,0.5)", label: "STANDARD" },
+  };
+  const badge = typeBadge[vehicle.vehicleType] || typeBadge.Standard;
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className={`relative bg-white rounded-2xl border-2 transition-all duration-300 overflow-hidden group
-        ${isDisabled ? "opacity-40 grayscale pointer-events-none" : ""}
-        ${isSelected
-          ? "border-blue-500 shadow-xl shadow-blue-500/20 ring-2 ring-blue-500/30"
-          : "border-gray-100 hover:border-gray-300 hover:shadow-lg"
-        }`}
+      transition={{ duration: 0.25 }}
+      onClick={() => !isDisabled && onSelect(vehicle)}
+      className={`relative rounded-xl cursor-pointer transition-all duration-300 overflow-hidden group
+        ${isDisabled ? "opacity-35 grayscale pointer-events-none" : ""}`}
+      style={{
+        backgroundColor: isSelected ? "rgba(215,183,94,0.06)" : "rgba(255,255,255,0.03)",
+        border: isSelected
+          ? "1.5px solid var(--color-primary)"
+          : "1px solid rgba(255,255,255,0.06)",
+        boxShadow: isSelected ? "0 0 30px rgba(215,183,94,0.1)" : "none",
+      }}
     >
-      {/* Premium Badge */}
-      {vehicle.vehicleType === "Luxury" && (
-        <div className="absolute top-4 left-4 z-10 bg-linear-to-r from-amber-500 to-yellow-400 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow-lg">
-          <Sparkles size={12} />
-          LUXURY
-        </div>
-      )}
-
-      {/* Disabled Overlay */}
-      {isDisabled && (
-        <div className="absolute inset-0 z-20 bg-gray-900/10 flex items-center justify-center">
-          <div className="bg-white/95 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg">
-            <p className="text-sm font-semibold text-gray-600">
-              Not available for your requirements
-            </p>
-          </div>
-        </div>
-      )}
-
       {/* Main Content */}
-      <div className="p-5">
-        <div className="flex gap-5">
-          {/* Vehicle Image */}
-          <div className="w-32 h-20 md:w-40 md:h-24 shrink-0 relative overflow-hidden rounded-xl bg-linear-to-br from-gray-50 to-gray-100">
-            <img
-              src={imageUrl}
-              alt={vehicle.categoryName}
-              className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-500"
-              onError={(e) => {
-                e.target.src =
-                  "https://via.placeholder.com/160x100?text=Vehicle";
-              }}
-            />
+      <div className="flex items-center gap-5 p-5">
+        {/* Vehicle Image - LARGER */}
+        <div
+          className="w-36 h-24 md:w-44 md:h-28 shrink-0 rounded-xl overflow-hidden flex items-center justify-center"
+          style={{ backgroundColor: "rgba(255,255,255,0.04)" }}
+        >
+          <img
+            src={imageUrl}
+            alt={vehicle.categoryName}
+            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+            onError={(e) => {
+              e.target.src = "https://via.placeholder.com/176x112?text=Car";
+            }}
+          />
+        </div>
+
+        {/* Info - LARGER TEXT */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-3 mb-1.5">
+            <h3 className="text-lg md:text-xl font-bold text-white">
+              {vehicle.categoryName}
+            </h3>
           </div>
-
-          {/* Vehicle Info */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <h3 className="text-lg md:text-xl font-bold text-gray-900 tracking-tight">
-                  {vehicle.categoryName}
-                </h3>
-                <p className="text-sm text-gray-500 mt-0.5 line-clamp-1">
-                  {vehicle.categoryDetails}
-                </p>
-              </div>
-
-              {/* Price */}
-              <div className="text-right shrink-0">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl md:text-3xl font-bold text-gray-900">
-                    £{pricing?.totalPrice?.toFixed(2) || "—"}
-                  </span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsExpanded(!isExpanded);
-                    }}
-                    className="ml-1 p-1 hover:bg-gray-100 rounded-full transition-colors"
-                  >
-                    {isExpanded ? (
-                      <ChevronUp size={18} className="text-gray-400" />
-                    ) : (
-                      <ChevronDown size={18} className="text-gray-400" />
-                    )}
-                  </button>
-                </div>
-                {pricing?.vatInclusive && (
-                  <p className="text-xs text-gray-400 mt-0.5">incl. VAT</p>
-                )}
-              </div>
+          <p
+            className="text-sm mb-3"
+            style={{ color: "rgba(255,255,255,0.45)" }}
+          >
+            {vehicle.categoryDetails}
+          </p>
+          <div className="flex items-center gap-4">
+            <div
+              className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg"
+              style={{
+                backgroundColor: "rgba(255,255,255,0.05)",
+                color: "rgba(255,255,255,0.7)",
+              }}
+            >
+              <Users size={16} style={{ color: "var(--color-primary)" }} />
+              <span className="font-semibold">{vehicle.numberOfPassengers}</span>
             </div>
-
-            {/* Capacity Badges */}
-            <div className="flex flex-wrap items-center gap-3 mt-3">
-              <div className="flex items-center gap-1.5 text-gray-600 bg-gray-50 px-2.5 py-1 rounded-lg">
-                <Users size={15} className="text-blue-500" />
-                <span className="text-sm font-medium">
-                  {vehicle.numberOfPassengers}
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5 text-gray-600 bg-gray-50 px-2.5 py-1 rounded-lg">
-                <Briefcase size={15} className="text-amber-500" />
-                <span className="text-sm font-medium">
-                  {vehicle.numberOfBigLuggage}
-                </span>
-              </div>
-              {vehicle.vehicleType && (
-                <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-lg uppercase tracking-wide">
-                  {vehicle.vehicleType}
-                </span>
-              )}
+            <div
+              className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg"
+              style={{
+                backgroundColor: "rgba(255,255,255,0.05)",
+                color: "rgba(255,255,255,0.7)",
+              }}
+            >
+              <Briefcase size={16} style={{ color: "var(--color-primary)" }} />
+              <span className="font-semibold">{vehicle.numberOfBigLuggage}</span>
             </div>
           </div>
         </div>
 
-        {/* Expandable Features & Price Breakdown */}
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="overflow-hidden"
+        {/* Price + Action - LARGER */}
+        <div className="shrink-0 text-right flex flex-col items-end gap-3">
+          <div>
+            <span
+              className="text-2xl md:text-3xl font-bold"
+              style={{ color: "var(--color-primary)" }}
             >
-              <div className="mt-4 pt-4 border-t border-gray-100">
-                {/* Features */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
-                  {vehicle.companyFeatures
-                    ?.slice(0, 4)
-                    .map((feature, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-2 text-sm text-gray-600"
-                      >
-                        <Check
-                          size={14}
-                          className="text-green-500 flex-shrink-0"
-                        />
-                        <span className="line-clamp-1">{feature}</span>
-                      </div>
-                    ))}
-                </div>
+              £{pricing?.totalPrice?.toFixed(2) || "—"}
+            </span>
+            {pricing?.vatInclusive && (
+              <p
+                className="text-xs mt-1"
+                style={{ color: "rgba(255,255,255,0.35)" }}
+              >
+                incl. VAT
+              </p>
+            )}
+          </div>
 
-                {/* Price Breakdown */}
-                {pricing && (
-                  <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-xl p-4 mt-3">
-                    <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                      <Shield size={14} className="text-blue-500" />
-                      Price Breakdown
-                    </h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between text-gray-600">
-                        <span>Base fare</span>
-                        <span className="font-medium">
-                          £{pricing.basePrice?.toFixed(2)}
-                        </span>
+          {/* Select Indicator / Button - LARGER */}
+          {isSelected ? (
+            <span
+              className="flex items-center gap-1.5 text-sm font-bold px-5 py-2.5 rounded-lg"
+              style={{
+                backgroundColor: "var(--color-primary)",
+                color: "var(--color-dark)",
+              }}
+            >
+              <Check size={18} /> SELECTED
+            </span>
+          ) : (
+            <button
+              className="flex items-center gap-1.5 text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
+              style={{
+                backgroundColor: "rgba(255,255,255,0.06)",
+                color: "rgba(255,255,255,0.6)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(215,183,94,0.12)";
+                e.currentTarget.style.color = "var(--color-primary)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.06)";
+                e.currentTarget.style.color = "rgba(255,255,255,0.6)";
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!isDisabled) onSelect(vehicle);
+              }}
+            >
+              SELECT <ArrowRight size={16} />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Expandable Price Breakdown Toggle - LARGER */}
+      {pricing && (
+        <>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowBreakdown(!showBreakdown);
+            }}
+            className="w-full flex items-center justify-center gap-1.5 py-2.5 text-sm font-medium transition-colors"
+            style={{
+              borderTop: "1px solid rgba(255,255,255,0.06)",
+              color: "rgba(255,255,255,0.35)",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-primary)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.35)")}
+          >
+            {showBreakdown ? "Hide" : "Price"} Breakdown
+            {showBreakdown ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          </button>
+
+          <AnimatePresence>
+            {showBreakdown && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div
+                  className="px-6 pb-5 pt-3 space-y-3"
+                  style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
+                >
+                  {/* Price rows */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm" style={{ color: "rgba(255,255,255,0.55)" }}>
+                      <span>Base fare</span>
+                      <span className="text-white font-semibold">£{pricing.basePrice?.toFixed(2)}</span>
+                    </div>
+                    {pricing.congestionCharge > 0 && (
+                      <div className="flex justify-between text-sm" style={{ color: "rgba(255,255,255,0.55)" }}>
+                        <span>Congestion charge</span>
+                        <span className="text-white font-semibold">£{pricing.congestionCharge?.toFixed(2)}</span>
                       </div>
-                      {pricing.congestionCharge > 0 && (
-                        <div className="flex justify-between text-gray-600">
-                          <span>Congestion charge</span>
-                          <span className="font-medium">
-                            £{pricing.congestionCharge?.toFixed(2)}
-                          </span>
-                        </div>
-                      )}
-                      <div className="flex justify-between text-gray-600">
-                        <span>Estimated tax ({pricing.vatRate}%)</span>
-                        <span className="font-medium">
-                          £{pricing.tax?.toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between pt-2 border-t border-gray-200 font-bold text-gray-900">
-                        <span>Total</span>
-                        <span>£{pricing.totalPrice?.toFixed(2)}</span>
-                      </div>
+                    )}
+                    <div className="flex justify-between text-sm" style={{ color: "rgba(255,255,255,0.55)" }}>
+                      <span>Tax ({pricing.vatRate}%)</span>
+                      <span className="text-white font-semibold">£{pricing.tax?.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-base font-bold pt-2" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+                      <span style={{ color: "var(--color-primary)" }}>Total</span>
+                      <span style={{ color: "var(--color-primary)" }}>£{pricing.totalPrice?.toFixed(2)}</span>
                     </div>
                   </div>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
-        {/* Select Button */}
-        <button
-          onClick={() => !isDisabled && onSelect(vehicle)}
-          disabled={isDisabled}
-          className={`w-full mt-4 py-3.5 rounded-xl font-bold text-sm uppercase tracking-wide flex items-center justify-center gap-2 transition-all duration-300
-            ${isSelected
-              ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
-              : isDisabled
-                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                : "bg-gray-900 text-white hover:bg-gray-800 hover:shadow-lg"
-            }`}
-        >
-          {isSelected ? (
-            <>
-              <Check size={18} />
-              SELECTED
-            </>
-          ) : (
-            <>
-              SELECT THIS VEHICLE
-              <ArrowRight size={16} />
-            </>
-          )}
-        </button>
-      </div>
+                  {/* Features */}
+                  {vehicle.companyFeatures?.length > 0 && (
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      {vehicle.companyFeatures.slice(0, 4).map((feat, i) => (
+                        <span
+                          key={i}
+                          className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg"
+                          style={{
+                            backgroundColor: "rgba(215,183,94,0.08)",
+                            color: "var(--color-primary)",
+                          }}
+                        >
+                          <Check size={12} /> {feat}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>
+      )}
     </motion.div>
   );
 };
 
-// Filter Dropdown Component
-const FilterDropdown = ({ label, value, onChange, options, icon: Icon }) => {
-  return (
+/* ─────────────────────────────────────────────
+   FILTER DROPDOWN (compact)
+   ───────────────────────────────────────────── */
+const FilterDropdown = ({ label, value, onChange, options, icon: Icon }) => (
+  <div>
+    <label
+      className="block text-[10px] font-bold mb-1 uppercase tracking-widest"
+      style={{ color: "var(--color-primary)" }}
+    >
+      {label}
+    </label>
     <div className="relative">
-      <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">
-        {label}
-      </label>
-      <div className="relative">
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-          <Icon size={18} />
-        </div>
-        <select
-          value={value}
-          onChange={(e) => onChange(Number(e.target.value))}
-          className="w-full appearance-none bg-white border border-gray-200 rounded-xl pl-10 pr-10 py-3 text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all cursor-pointer hover:border-gray-300"
-        >
-          {options.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-          <ChevronDown size={18} />
-        </div>
+      <div className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "rgba(255,255,255,0.35)" }}>
+        <Icon size={15} />
       </div>
+      <select
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="w-full appearance-none rounded-lg pl-9 pr-8 py-2.5 text-sm font-medium focus:outline-none cursor-pointer"
+        style={{
+          backgroundColor: "rgba(255,255,255,0.05)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          color: "#fff",
+        }}
+      >
+        {options.map((opt) => (
+          <option key={opt} value={opt} style={{ backgroundColor: "#1a1a1a", color: "#fff" }}>
+            {opt}
+          </option>
+        ))}
+      </select>
+      <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "rgba(255,255,255,0.3)" }} />
     </div>
-  );
-};
+  </div>
+);
 
-// Main CarsSelection Component
+/* ─────────────────────────────────────────────
+   MAIN COMPONENT
+   ───────────────────────────────────────────── */
 function CarsSelection({ data, updateData, onNext, onBack }) {
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [passengerFilter, setPassengerFilter] = useState(1);
   const [luggageFilter, setLuggageFilter] = useState(1);
 
-  // DEBUG: Log incoming data
-  console.log("=== CarsSelection DEBUG ===");
-  console.log("data.pickup:", data.pickup);
-  console.log("data.dropoff:", data.dropoff);
-  console.log("data.pickupDate:", data.pickupDate);
-  console.log("data.pickupTime:", data.pickupTime);
-  console.log("data.serviceType:", data.serviceType);
-
   // Prepare search data for API
   const searchData = useMemo(() => {
-    // For hourly bookings, we can use pickup as both pickup and dropoff
-    // since the backend needs both addresses for geocoding
-    const dropoffAddress = data.serviceType === "hourly"
-      ? data.pickup  // Use pickup as dropoff for hourly (chauffeur stays with you)
-      : data.dropoff;
-
-    const payload = {
+    const dropoffAddress =
+      data.serviceType === "hourly" ? data.pickup : data.dropoff;
+    return {
       pickupAddress: data.pickup || "",
       dropoffAddress: dropoffAddress || "",
-      pickupDate: data.pickupDate instanceof Date ? data.pickupDate.toISOString().split("T")[0] : "",
+      pickupDate:
+        data.pickupDate instanceof Date
+          ? data.pickupDate.toISOString().split("T")[0]
+          : "",
       pickupTime: data.pickupTime || "12:00",
       bookingType: data.serviceType === "hourly" ? "hourly" : "p2p",
-      hours: data.serviceType === "hourly" ? (data.hours || 2) : undefined,
+      hours: data.serviceType === "hourly" ? data.hours || 2 : undefined,
     };
-    console.log("=== API PAYLOAD being sent ===", payload);
-    return payload;
   }, [data]);
 
-  // TanStack Query for fetching vehicles
   const {
     data: response,
     isLoading,
@@ -307,38 +318,33 @@ function CarsSelection({ data, updateData, onNext, onBack }) {
     refetch,
   } = useQuery({
     queryKey: ["vehicles", searchData],
-    queryFn: async () => {
-      console.log("=== Making API call with ===", searchData);
-      return vehicleAPI.searchVehiclesWithFare(searchData);
-    },
-    // For hourly, we only need pickup; for p2p we need both
-    enabled: data.serviceType === "hourly"
-      ? !!(data.pickup)
-      : !!(data.pickup && data.dropoff),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    queryFn: () => vehicleAPI.searchVehiclesWithFare(searchData),
+    enabled:
+      data.serviceType === "hourly"
+        ? !!data.pickup
+        : !!(data.pickup && data.dropoff),
+    staleTime: 5 * 60 * 1000,
     retry: 2,
   });
 
   const vehicles = response?.data || [];
   const journeyInfo = response?.journey || {};
 
-  // Filter vehicles in frontend
-  const filteredVehicles = useMemo(() => {
-    return vehicles.map((vehicle) => ({
-      ...vehicle,
-      isDisabled:
-        vehicle.numberOfPassengers < passengerFilter ||
-        vehicle.numberOfBigLuggage < luggageFilter,
-    }));
-  }, [vehicles, passengerFilter, luggageFilter]);
+  const filteredVehicles = useMemo(
+    () =>
+      vehicles.map((v) => ({
+        ...v,
+        isDisabled:
+          v.numberOfPassengers < passengerFilter ||
+          v.numberOfBigLuggage < luggageFilter,
+      })),
+    [vehicles, passengerFilter, luggageFilter]
+  );
 
-  // Sort: Available first, then disabled
-  const sortedVehicles = useMemo(() => {
-    return [...filteredVehicles].sort((a, b) => {
-      if (a.isDisabled === b.isDisabled) return 0;
-      return a.isDisabled ? 1 : -1;
-    });
-  }, [filteredVehicles]);
+  const sortedVehicles = useMemo(
+    () => [...filteredVehicles].sort((a, b) => (a.isDisabled === b.isDisabled ? 0 : a.isDisabled ? 1 : -1)),
+    [filteredVehicles]
+  );
 
   const handleSelectVehicle = (vehicle) => {
     setSelectedVehicle(vehicle);
@@ -352,188 +358,235 @@ function CarsSelection({ data, updateData, onNext, onBack }) {
     }
   };
 
-  // Generate filter options
-  const maxPassengers = Math.max(
-    ...vehicles.map((v) => v.numberOfPassengers),
-    1
-  );
+  const maxPassengers = Math.max(...vehicles.map((v) => v.numberOfPassengers), 1);
   const maxLuggage = Math.max(...vehicles.map((v) => v.numberOfBigLuggage), 1);
-  const passengerOptions = Array.from(
-    { length: maxPassengers },
-    (_, i) => i + 1
-  );
+  const passengerOptions = Array.from({ length: maxPassengers }, (_, i) => i + 1);
   const luggageOptions = Array.from({ length: maxLuggage }, (_, i) => i + 1);
 
+  const isHourly = data.serviceType === "hourly";
+
+  /* ────── LOADING ────── */
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24">
+        <Loader2 size={44} className="animate-spin mb-4" style={{ color: "var(--color-primary)" }} />
+        <p className="font-medium text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>
+          Finding the best vehicles for you…
+        </p>
+      </div>
+    );
+  }
+
+  /* ────── ERROR ────── */
+  if (isError) {
+    return (
+      <div className="rounded-xl p-8 text-center" style={{ backgroundColor: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}>
+        <AlertCircle size={44} className="mx-auto mb-3" style={{ color: "#ef4444" }} />
+        <h3 className="font-bold mb-2 text-red-400">Something went wrong</h3>
+        <p className="text-red-300 text-sm mb-4">{error?.message || "Failed to load vehicles"}</p>
+        <button onClick={() => refetch()} className="px-6 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors">
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
+  /* ────── MAIN LAYOUT ────── */
   return (
-    <div className="space-y-6">
-      {/* Journey Summary Card */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-5 text-white shadow-xl shadow-blue-500/20"
-      >
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-              <Car size={24} />
+    <div className="space-y-5">
+      {/* ══════ TWO‑COLUMN LAYOUT (desktop) ══════ */}
+      <div className="flex flex-col lg:flex-row gap-5">
+        {/* ── LEFT SIDEBAR ── */}
+        <div className="lg:w-56 xl:w-60 shrink-0 space-y-4 lg:sticky lg:top-36 lg:self-start">
+          {/* Journey Card */}
+          <motion.div
+            initial={{ opacity: 0, x: -12 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="rounded-xl p-4 overflow-hidden"
+            style={{
+              background: "linear-gradient(160deg, rgba(215,183,94,0.10) 0%, rgba(215,183,94,0.03) 100%)",
+              border: "1px solid rgba(215,183,94,0.15)",
+            }}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <Car size={18} style={{ color: "var(--color-primary)" }} />
+              <h3 className="text-sm font-bold" style={{ color: "var(--color-primary)" }}>
+                {isHourly ? "Hourly Booking" : "Your Journey"}
+              </h3>
             </div>
-            <div>
-              <p className="text-blue-100 text-sm font-medium">
-                {data.serviceType === "hourly" ? "Hourly Booking" : "Your Journey"}
-              </p>
-              <p className="font-bold text-lg line-clamp-1">
-                {data.serviceType === "hourly" ? (
-                  <>
-                    {data.hours || 2} Hours from{" "}
-                    {journeyInfo?.pickup?.address?.split(",")[0] ||
-                      data.pickup?.split(",")[0]}
-                  </>
-                ) : (
-                  <>
-                    {journeyInfo?.pickup?.address?.split(",")[0] ||
-                      data.pickup?.split(",")[0]}{" "}
-                    →{" "}
-                    {journeyInfo?.dropoff?.address?.split(",")[0] ||
-                      data.dropoff?.split(",")[0]}
-                  </>
-                )}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-6">
-            {data.serviceType === "hourly" ? (
-              <div className="text-center">
-                <p className="text-3xl font-bold">{data.hours || 2}</p>
-                <p className="text-blue-200 text-xs uppercase tracking-wide">
-                  Hours
+
+            {/* Route */}
+            <div className="space-y-2 mb-3">
+              <div className="flex items-start gap-2">
+                <div className="mt-1 w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: "var(--color-primary)" }} />
+                <p className="text-xs text-white leading-snug">
+                  {journeyInfo?.pickup?.address?.split(",")[0] || data.pickup?.split(",")[0] || "—"}
                 </p>
               </div>
-            ) : (
-              <>
-                {journeyInfo?.distanceMiles && (
-                  <div className="text-center">
-                    <p className="text-3xl font-bold">
-                      {journeyInfo.distanceMiles.toFixed(1)}
-                    </p>
-                    <p className="text-blue-200 text-xs uppercase tracking-wide">
-                      Miles
-                    </p>
-                  </div>
-                )}
-                {journeyInfo?.durationMins && (
-                  <div className="text-center">
-                    <p className="text-3xl font-bold">{journeyInfo.durationMins}</p>
-                    <p className="text-blue-200 text-xs uppercase tracking-wide">
-                      Mins
-                    </p>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-      </motion.div>
+              {!isHourly && (
+                <div className="flex items-start gap-2">
+                  <div className="mt-1 w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: "rgba(255,255,255,0.3)" }} />
+                  <p className="text-xs text-white leading-snug">
+                    {journeyInfo?.dropoff?.address?.split(",")[0] || data.dropoff?.split(",")[0] || "—"}
+                  </p>
+                </div>
+              )}
+            </div>
 
-      {/* Filters */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="bg-white rounded-2xl p-5 shadow-lg border border-gray-100"
-      >
-        <div className="flex items-center gap-2 mb-4">
-          <Filter size={18} className="text-gray-500" />
-          <h3 className="font-bold text-gray-800">Filter Vehicles</h3>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <FilterDropdown
-            label="Passengers"
-            value={passengerFilter}
-            onChange={setPassengerFilter}
-            options={passengerOptions}
-            icon={Users}
-          />
-          <FilterDropdown
-            label="Luggage"
-            value={luggageFilter}
-            onChange={setLuggageFilter}
-            options={luggageOptions}
-            icon={Briefcase}
-          />
-        </div>
-      </motion.div>
+            {/* Stats */}
+            <div
+              className="flex items-stretch divide-x rounded-lg overflow-hidden"
+              style={{ backgroundColor: "rgba(0,0,0,0.2)", divideColor: "rgba(255,255,255,0.06)" }}
+            >
+              {isHourly ? (
+                <div className="flex-1 text-center py-2.5">
+                  <p className="text-lg font-bold" style={{ color: "var(--color-primary)" }}>
+                    {data.hours || 2}
+                  </p>
+                  <p className="text-[10px] uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.4)" }}>
+                    Hours
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {journeyInfo?.distanceMiles && (
+                    <div className="flex-1 text-center py-2.5">
+                      <p className="text-lg font-bold" style={{ color: "var(--color-primary)" }}>
+                        {journeyInfo.distanceMiles.toFixed(1)}
+                      </p>
+                      <p className="text-[10px] uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.4)" }}>
+                        Miles
+                      </p>
+                    </div>
+                  )}
+                  {journeyInfo?.durationMins && (
+                    <div className="flex-1 text-center py-2.5" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                      <p className="text-lg font-bold" style={{ color: "var(--color-primary)" }}>
+                        {journeyInfo.durationMins}
+                      </p>
+                      <p className="text-[10px] uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.4)" }}>
+                        Mins
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </motion.div>
 
-      {/* Loading State */}
-      {isLoading && (
-        <div className="flex flex-col items-center justify-center py-16">
-          <Loader2 size={48} className="text-blue-500 animate-spin mb-4" />
-          <p className="text-gray-600 font-medium">
-            Finding the best vehicles for you...
-          </p>
-        </div>
-      )}
-
-      {/* Error State */}
-      {isError && (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
-          <AlertCircle size={48} className="text-red-400 mx-auto mb-3" />
-          <h3 className="font-bold text-red-800 mb-2">Something went wrong</h3>
-          <p className="text-red-600 text-sm mb-4">
-            {error?.message || "Failed to load vehicles"}
-          </p>
-          <button
-            onClick={() => refetch()}
-            className="px-6 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+          {/* Filters Card */}
+          <motion.div
+            initial={{ opacity: 0, x: -12 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.05 }}
+            className="rounded-xl p-4"
+            style={{
+              backgroundColor: "rgba(255,255,255,0.03)",
+              border: "1px solid rgba(255,255,255,0.06)",
+            }}
           >
-            Try Again
+            <div className="flex items-center gap-2 mb-3">
+              <Filter size={14} style={{ color: "var(--color-primary)" }} />
+              <span className="text-xs font-bold text-white uppercase tracking-wider">
+                Filters
+              </span>
+            </div>
+            <div className="space-y-3">
+              <FilterDropdown
+                label="Passengers"
+                value={passengerFilter}
+                onChange={setPassengerFilter}
+                options={passengerOptions}
+                icon={Users}
+              />
+              <FilterDropdown
+                label="Luggage"
+                value={luggageFilter}
+                onChange={setLuggageFilter}
+                options={luggageOptions}
+                icon={Briefcase}
+              />
+            </div>
+          </motion.div>
+
+          {/* Back button (desktop only) */}
+          <button
+            onClick={onBack}
+            className="hidden lg:flex items-center gap-1.5 text-xs font-medium transition-colors w-full justify-center py-2"
+            style={{ color: "rgba(255,255,255,0.4)" }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}
+          >
+            <ArrowLeft size={14} /> Back to Locations
           </button>
         </div>
-      )}
 
-      {/* Vehicle Cards */}
-      {!isLoading && !isError && (
-        <div className="space-y-4">
-          {sortedVehicles.map((vehicle) => (
-            <VehicleCard
-              key={vehicle._id}
-              vehicle={vehicle}
-              isSelected={selectedVehicle?._id === vehicle._id}
-              onSelect={handleSelectVehicle}
-              isDisabled={vehicle.isDisabled}
-            />
-          ))}
+        {/* ── RIGHT: VEHICLE LIST ── */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+              Select Your Vehicle
+            </h2>
+            <span
+              className="text-xs font-medium"
+              style={{ color: "rgba(255,255,255,0.35)" }}
+            >
+              {sortedVehicles.filter((v) => !v.isDisabled).length} available
+            </span>
+          </div>
 
-          {sortedVehicles.length === 0 && (
-            <div className="text-center py-12">
-              <Car size={48} className="text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">
-                No vehicles available for this route
-              </p>
+          {sortedVehicles.length === 0 ? (
+            <div className="text-center py-16">
+              <Car size={44} className="mx-auto mb-3" style={{ color: "rgba(255,255,255,0.15)" }} />
+              <p style={{ color: "rgba(255,255,255,0.4)" }}>No vehicles available for this route</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {sortedVehicles.map((vehicle, i) => (
+                <VehicleCard
+                  key={vehicle._id}
+                  vehicle={vehicle}
+                  isSelected={selectedVehicle?._id === vehicle._id}
+                  onSelect={handleSelectVehicle}
+                  isDisabled={vehicle.isDisabled}
+                />
+              ))}
             </div>
           )}
         </div>
-      )}
+      </div>
 
-      {/* Navigation Buttons */}
-      <div className="flex gap-4 pt-4">
+      {/* ══════ BOTTOM NAVIGATION ══════ */}
+      <div className="flex gap-4 pt-2">
         <button
           onClick={onBack}
-          className="flex-1 py-4 border-2 border-gray-200 rounded-xl font-bold text-gray-600 flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
+          className="lg:hidden flex-1 py-3.5 border rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-colors"
+          style={{ borderColor: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.6)" }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.04)")}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
         >
-          <ArrowLeft size={18} />
-          BACK
+          <ArrowLeft size={16} /> BACK
         </button>
         <button
           onClick={handleContinue}
           disabled={!selectedVehicle}
-          className={`flex-1 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all duration-300
-            ${selectedVehicle
-              ? "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/30"
-              : "bg-gray-200 text-gray-400 cursor-not-allowed"
-            }`}
+          className="flex-1 py-3.5 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300"
+          style={
+            selectedVehicle
+              ? {
+                backgroundColor: "var(--color-primary)",
+                color: "var(--color-dark)",
+                boxShadow: "0 4px 20px rgba(215,183,94,0.25)",
+              }
+              : {
+                backgroundColor: "rgba(255,255,255,0.04)",
+                color: "rgba(255,255,255,0.2)",
+                cursor: "not-allowed",
+              }
+          }
         >
           CONTINUE
-          <ArrowRight size={18} />
+          <ArrowRight size={16} />
         </button>
       </div>
     </div>

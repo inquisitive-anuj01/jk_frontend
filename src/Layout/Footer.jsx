@@ -1,119 +1,267 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock } from 'lucide-react';
+import JkLogo from '../assets/JkLogo.png';
+
+// SVG Social Icons
+const WhatsAppIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="w-4.5 h-4.5" width="18" height="18">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+  </svg>
+);
+
+const FacebookIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="w-4.5 h-4.5" width="18" height="18">
+    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+  </svg>
+);
+
+const InstagramIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="w-4.5 h-4.5" width="18" height="18">
+    <path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678a6.162 6.162 0 100 12.324 6.162 6.162 0 100-12.324zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405a1.441 1.441 0 11-2.882 0 1.441 1.441 0 012.882 0z" />
+  </svg>
+);
+
+const LinkedInIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="w-4.5 h-4.5" width="18" height="18">
+    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+  </svg>
+);
+
+const socialLinks = [
+  {
+    name: 'WhatsApp',
+    icon: WhatsAppIcon,
+    href: 'https://wa.me/442034759906',
+    hoverColor: '#25D366',
+    hoverBg: 'rgba(37, 211, 102, 0.15)',
+  },
+  {
+    name: 'Facebook',
+    icon: FacebookIcon,
+    href: 'https://www.facebook.com/jkexecutivechauffeurs',
+    hoverColor: '#1877F2',
+    hoverBg: 'rgba(24, 119, 242, 0.15)',
+  },
+  {
+    name: 'Instagram',
+    icon: InstagramIcon,
+    href: 'https://www.instagram.com/jkexecutivechauffeurs?igsh=NnFwN3B0d2Q0NHZk',
+    hoverColor: '#E4405F',
+    hoverBg: 'linear-gradient(45deg, rgba(253,29,29,0.15), rgba(131,58,180,0.15), rgba(252,175,69,0.15))',
+  },
+  {
+    name: 'LinkedIn',
+    icon: LinkedInIcon,
+    href: 'https://www.linkedin.com/company/jk-executive-chauffeurs',
+    hoverColor: '#0A66C2',
+    hoverBg: 'rgba(10, 102, 194, 0.15)',
+  },
+];
+
+function SocialIcon({ social }) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div className="relative group">
+      <a
+        href={social.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-300"
+        style={{
+          backgroundColor: hovered ? (social.hoverBg.includes('gradient') ? undefined : social.hoverBg) : 'rgba(255,255,255,0.06)',
+          background: hovered && social.hoverBg.includes('gradient') ? social.hoverBg : undefined,
+          color: hovered ? social.hoverColor : 'rgba(255,255,255,0.5)',
+          border: `1px solid ${hovered ? social.hoverColor + '30' : 'rgba(255,255,255,0.08)'}`,
+          transform: hovered ? 'translateY(-3px)' : 'translateY(0)',
+          boxShadow: hovered ? `0 6px 20px ${social.hoverColor}25` : 'none',
+        }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        <social.icon />
+      </a>
+      {/* Tooltip */}
+      <div
+        className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded text-[10px] font-medium whitespace-nowrap pointer-events-none transition-all duration-200"
+        style={{
+          backgroundColor: hovered ? 'rgba(0,0,0,0.85)' : 'transparent',
+          color: hovered ? social.hoverColor : 'transparent',
+          opacity: hovered ? 1 : 0,
+          transform: hovered ? 'translateY(0)' : 'translateY(-4px)',
+          border: hovered ? `1px solid ${social.hoverColor}30` : '1px solid transparent',
+        }}
+      >
+        {social.name}
+      </div>
+    </div>
+  );
+}
 
 function Footer() {
-  // Style for footer links hover effect
-  const linkHoverStyle = {
-    transition: 'color 0.3s ease'
-  };
-
   const handleLinkHover = (e, isEnter) => {
     e.currentTarget.style.color = isEnter ? 'var(--color-primary)' : '';
   };
 
+  const linkStyle = { transition: 'color 0.3s ease' };
+
   return (
-    <footer className="bg-[#0d0d0d] text-white/80">
+    <footer className="bg-[#0a0a0a] text-white/80">
       {/* Main Footer */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-10 md:gap-12">
+
           {/* Brand Column */}
-          <div className="lg:col-span-1">
-            <Link to="/" className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 flex items-center justify-center">
-                <svg
-                  viewBox="0 0 40 40"
-                  className="w-8 h-8"
-                  style={{ color: 'var(--color-primary)' }}
-                  fill="currentColor"
-                >
-                  <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M12 14h4v12h-4zM18 14h4l2 5-2 5v2h-4v-2l2-5-2-5z" />
-                  <circle cx="20" cy="20" r="4" fill="none" stroke="currentColor" strokeWidth="1" />
-                </svg>
-              </div>
-              <span className="text-xl font-light text-white tracking-wider">
-                <span className="font-semibold">JK</span> Executive
-              </span>
+          <div className="lg:col-span-1 text-center lg:text-left flex flex-col items-center lg:items-start">
+            <Link to="/" className="inline-block mb-5">
+              <img
+                src={JkLogo}
+                alt="JK Executive Chauffeurs"
+                className="w-20 h-16 object-contain"
+              />
             </Link>
-            <p className="text-sm leading-relaxed text-white/60 mb-6">
-              London's premier chauffeur service. Experience luxury, reliability,
-              and professionalism with every journey.
+            <h3 className="text-lg font-light text-white tracking-wider mb-3">
+              <span className="font-semibold">JK</span> Executive <span className="font-semibold">Chauffeur</span>
+            </h3>
+            <p className="text-[13px] leading-relaxed text-white/50 mb-4 max-w-xs">
+              London's premier chauffeur service. Experience luxury, reliability, and professionalism with every journey.
             </p>
-            <div className="flex gap-4">
-              {/* Social Icons */}
-              <a
-                href="#"
-                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center transition-colors"
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(var(--color-primary-rgb), 0.2)'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
-              >
-                <span className="text-xs">FB</span>
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center transition-colors"
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(var(--color-primary-rgb), 0.2)'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
-              >
-                <span className="text-xs">IG</span>
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center transition-colors"
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(var(--color-primary-rgb), 0.2)'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
-              >
-                <span className="text-xs">TW</span>
-              </a>
+
+            {/* Company & VAT */}
+            <div className="space-y-1 mb-5">
+              <p className="text-xs text-white/40">
+                <span className="text-white/50 font-medium">Company No</span> — 10696876
+              </p>
+              <p className="text-xs text-white/40">
+                <span className="text-white/50 font-medium">VAT No</span> — 280189982
+              </p>
+            </div>
+
+            {/* Social Icons */}
+            <div className="flex gap-3 pb-2">
+              {socialLinks.map((social) => (
+                <SocialIcon key={social.name} social={social} />
+              ))}
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-white font-semibold uppercase tracking-wider text-sm mb-6">Quick Links</h3>
-            <ul className="space-y-3">
-              <li><Link to="/booking" className="text-sm transition-colors" style={linkHoverStyle} onMouseEnter={(e) => handleLinkHover(e, true)} onMouseLeave={(e) => handleLinkHover(e, false)}>Book a Ride</Link></li>
-              <li><a href="#" className="text-sm transition-colors" style={linkHoverStyle} onMouseEnter={(e) => handleLinkHover(e, true)} onMouseLeave={(e) => handleLinkHover(e, false)}>Our Fleet</a></li>
-              <li><a href="#" className="text-sm transition-colors" style={linkHoverStyle} onMouseEnter={(e) => handleLinkHover(e, true)} onMouseLeave={(e) => handleLinkHover(e, false)}>Services</a></li>
-              <li><a href="#" className="text-sm transition-colors" style={linkHoverStyle} onMouseEnter={(e) => handleLinkHover(e, true)} onMouseLeave={(e) => handleLinkHover(e, false)}>About Us</a></li>
-              <li><a href="#" className="text-sm transition-colors" style={linkHoverStyle} onMouseEnter={(e) => handleLinkHover(e, true)} onMouseLeave={(e) => handleLinkHover(e, false)}>Contact</a></li>
-            </ul>
-          </div>
+          {/* Quick Links + Services — 2-col on mobile, each 1 col on lg */}
+          <div className="grid grid-cols-2 lg:contents gap-8">
+            {/* Quick Links */}
+            <div className="text-center lg:text-left">
+              <h3 className="text-white font-semibold uppercase tracking-wider text-xs mb-5 flex items-center justify-center lg:justify-start gap-2">
+                <span className="w-5 h-px hidden lg:block" style={{ backgroundColor: 'var(--color-primary)' }} />
+                Quick Links
+              </h3>
+              <ul className="space-y-2.5">
+                {[
+                  { label: 'Book a Ride', href: '/booking' },
+                  { label: 'Our Fleet', href: '/fleet' },
+                  { label: 'Services', href: '/services' },
+                  { label: 'Blog', href: '/blog' },
+                  { label: 'About Us', href: '/about' },
+                  { label: 'Contact Us', href: '/contact' },
+                ].map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      to={link.href}
+                      className="text-sm text-white/50 transition-colors"
+                      style={linkStyle}
+                      onMouseEnter={(e) => handleLinkHover(e, true)}
+                      onMouseLeave={(e) => handleLinkHover(e, false)}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Services */}
-          <div>
-            <h3 className="text-white font-semibold uppercase tracking-wider text-sm mb-6">Services</h3>
-            <ul className="space-y-3">
-              <li><a href="#" className="text-sm transition-colors" style={linkHoverStyle} onMouseEnter={(e) => handleLinkHover(e, true)} onMouseLeave={(e) => handleLinkHover(e, false)}>Airport Transfers</a></li>
-              <li><a href="#" className="text-sm transition-colors" style={linkHoverStyle} onMouseEnter={(e) => handleLinkHover(e, true)} onMouseLeave={(e) => handleLinkHover(e, false)}>Business Travel</a></li>
-              <li><a href="#" className="text-sm transition-colors" style={linkHoverStyle} onMouseEnter={(e) => handleLinkHover(e, true)} onMouseLeave={(e) => handleLinkHover(e, false)}>Wedding Cars</a></li>
-              <li><a href="#" className="text-sm transition-colors" style={linkHoverStyle} onMouseEnter={(e) => handleLinkHover(e, true)} onMouseLeave={(e) => handleLinkHover(e, false)}>Event Transport</a></li>
-              <li><a href="#" className="text-sm transition-colors" style={linkHoverStyle} onMouseEnter={(e) => handleLinkHover(e, true)} onMouseLeave={(e) => handleLinkHover(e, false)}>Corporate Accounts</a></li>
-            </ul>
+            {/* Services */}
+            <div className="text-center lg:text-left">
+              <h3 className="text-white font-semibold uppercase tracking-wider text-xs mb-5 flex items-center justify-center lg:justify-start gap-2">
+                <span className="w-5 h-px hidden lg:block" style={{ backgroundColor: 'var(--color-primary)' }} />
+                Services
+              </h3>
+              <ul className="space-y-2.5">
+                {[
+                  { label: 'Airport Transfers', href: '/services/airport-chauffeur-service' },
+                  { label: 'Executive Chauffeur', href: '/services/executive-chauffeur-service-in-london' },
+                  { label: 'Luxury Chauffeur', href: '/services/luxury-chauffeur-service-in-london' },
+                  { label: 'London Chauffeur', href: '/services/london-chauffeur-service' },
+                  { label: 'Event Chauffeur', href: '/events/event-chauffeur-service' },
+                  { label: 'Sports Events', href: '/events/chauffeur-service-for-sports' },
+                ].map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      to={link.href}
+                      className="text-sm text-white/50 transition-colors"
+                      style={linkStyle}
+                      onMouseEnter={(e) => handleLinkHover(e, true)}
+                      onMouseLeave={(e) => handleLinkHover(e, false)}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           {/* Contact Info */}
-          <div>
-            <h3 className="text-white font-semibold uppercase tracking-wider text-sm mb-6">Contact Us</h3>
+          <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+            <h3 className="text-white font-semibold uppercase tracking-wider text-xs mb-5 flex items-center justify-center lg:justify-start gap-2">
+              <span className="w-5 h-px hidden lg:block" style={{ backgroundColor: 'var(--color-primary)' }} />
+              Contact Us
+            </h3>
             <ul className="space-y-4">
+              {/* Phone */}
               <li className="flex items-start gap-3">
-                <Phone className="w-4 h-4 mt-1" style={{ color: 'var(--color-primary)' }} />
-                <div>
-                  <p className="text-sm">+44 (0)20 1234 5678</p>
-                  <p className="text-xs text-white/50">Available 24/7</p>
+                <div
+                  className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-0.5"
+                  style={{ backgroundColor: 'rgba(215,183,94,0.08)' }}
+                >
+                  <Phone className="w-3.5 h-3.5" style={{ color: 'var(--color-primary)' }} />
+                </div>
+                <div className="text-left">
+                  <a href="tel:+442034759906" className="text-sm text-white/70 hover:text-white transition-colors block">
+                    UK: +44 (0) 203 475 9906
+                  </a>
+                  <a href="tel:+19175085481" className="text-sm text-white/70 hover:text-white transition-colors block">
+                    US: +1 917 508 5481
+                  </a>
+                  <p className="text-[11px] text-white/30 mt-0.5">Available 24/7</p>
                 </div>
               </li>
+
+              {/* Email */}
               <li className="flex items-start gap-3">
-                <Mail className="w-4 h-4 mt-1" style={{ color: 'var(--color-primary)' }} />
-                <div>
-                  <p className="text-sm">info@jkexecutive.co.uk</p>
+                <div
+                  className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-0.5"
+                  style={{ backgroundColor: 'rgba(215,183,94,0.08)' }}
+                >
+                  <Mail className="w-3.5 h-3.5" style={{ color: 'var(--color-primary)' }} />
+                </div>
+                <div className="text-left">
+                  <a href="mailto:info@jkexecutivechauffeurs.com" className="text-sm text-white/70 hover:text-white transition-colors">
+                    info@jkexecutivechauffeurs.com
+                  </a>
                 </div>
               </li>
+
+              {/* Address */}
               <li className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 mt-1" style={{ color: 'var(--color-primary)' }} />
-                <div>
-                  <p className="text-sm">London, United Kingdom</p>
+                <div
+                  className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-0.5"
+                  style={{ backgroundColor: 'rgba(215,183,94,0.08)' }}
+                >
+                  <MapPin className="w-3.5 h-3.5" style={{ color: 'var(--color-primary)' }} />
+                </div>
+                <div className="text-left">
+                  <p className="text-sm text-white/70 leading-relaxed">
+                    1.01, 6-9 The Square, Stockley Park Uxbridge, England, UB11 1FW
+                  </p>
                 </div>
               </li>
             </ul>
@@ -121,16 +269,50 @@ function Footer() {
         </div>
       </div>
 
+      {/* Gradient Border (matches header style) */}
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        <div
+          className="h-px w-full"
+          style={{
+            background: 'linear-gradient(90deg, transparent, rgba(215,183,94,0.3), rgba(255,255,255,0.15), rgba(215,183,94,0.3), transparent)',
+          }}
+        />
+      </div>
+
       {/* Bottom Bar */}
-      <div className="border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-white/50">
-            © 2026 JK Executive. All rights reserved.
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-5">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-3">
+          <p className="text-[11px] text-white/40">
+            © {new Date().getFullYear()} JK Executive Chauffeurs. All rights reserved.
           </p>
-          <div className="flex gap-6">
-            <a href="#" className="text-xs text-white/50 hover:text-white/80 transition-colors">Privacy Policy</a>
-            <a href="#" className="text-xs text-white/50 hover:text-white/80 transition-colors">Terms of Service</a>
-            <a href="#" className="text-xs text-white/50 hover:text-white/80 transition-colors">Cookie Policy</a>
+          <div className="flex flex-wrap justify-center gap-4 md:gap-6">
+            <Link
+              to="/terms-and-conditions"
+              className="text-[11px] text-white/40 transition-colors"
+              style={linkStyle}
+              onMouseEnter={(e) => handleLinkHover(e, true)}
+              onMouseLeave={(e) => handleLinkHover(e, false)}
+            >
+              Terms & Conditions
+            </Link>
+            <Link
+              to="/privacy-policy"
+              className="text-[11px] text-white/40 transition-colors"
+              style={linkStyle}
+              onMouseEnter={(e) => handleLinkHover(e, true)}
+              onMouseLeave={(e) => handleLinkHover(e, false)}
+            >
+              Privacy Policy
+            </Link>
+            <Link
+              to="/gdpr-policy"
+              className="text-[11px] text-white/40 transition-colors"
+              style={linkStyle}
+              onMouseEnter={(e) => handleLinkHover(e, true)}
+              onMouseLeave={(e) => handleLinkHover(e, false)}
+            >
+              GDPR Data Protection Policy
+            </Link>
           </div>
         </div>
       </div>
