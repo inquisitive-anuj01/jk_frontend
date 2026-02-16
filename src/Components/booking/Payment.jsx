@@ -28,6 +28,9 @@ const TEST_MODE_ORIGINS = [
   "http://127.0.0.1",
   "https://localhost",
   "https://127.0.0.1",
+  "http://localhost:5000",
+  "https://jk-frontend-nine.vercel.app",
+  "https://jk-backend-aj.vercel.app"
 ];
 
 // Check if current origin should use test mode
