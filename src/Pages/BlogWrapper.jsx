@@ -67,9 +67,9 @@ function BlogWrapper() {
         : getImageSrc(blog.heroImage);
 
     return (
-        <main style={{ backgroundColor: 'var(--color-dark)', minHeight: '100vh' }}>
+        <main style={{ backgroundColor: 'var(--color-dark)', minHeight: '100vh' }} >
             {/* Hero Image */}
-            <div className="relative h-[45vh] md:h-[55vh] overflow-hidden">
+            <div className="relative h-[45vh] md:h-[55vh] overflow-hidden ">
                 {heroSrc ? (
                     <motion.img
                         initial={{ scale: 1.1 }}
@@ -122,13 +122,13 @@ function BlogWrapper() {
 
                 {/* Title & Meta on Image */}
                 <div className="absolute bottom-8 md:bottom-12 left-0 right-0 px-4 md:px-8">
-                    <div className="max-w-4xl mx-auto">
+                    <div className="max-w-7xl mx-auto">
                         {blog.category && (
                             <motion.span
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
-                                className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-4"
+                                className="inline-block px-3 py-1 rounded-full text-xs font-base uppercase tracking-wider mb-4"
                                 style={{
                                     backgroundColor: 'rgba(215,183,94,0.2)',
                                     color: 'var(--color-primary)',
@@ -154,7 +154,7 @@ function BlogWrapper() {
                         >
                             <span className="flex items-center gap-1.5">
                                 <Calendar className="w-4 h-4" />
-                                {formatDate(blog.createdAt)}
+                                {formatDate(blog.publishDate || blog.createdAt)}
                             </span>
                             {blog.author && (
                                 <span className="flex items-center gap-1.5">
@@ -168,7 +168,7 @@ function BlogWrapper() {
             </div>
 
             {/* Blog Content */}
-            <div className="max-w-4xl mx-auto px-4 md:px-8 py-12 md:py-20">
+            <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20">
                 <div className="grid lg:grid-cols-3 gap-10 md:gap-16">
                     {/* Main Content — 2/3 */}
                     <motion.div

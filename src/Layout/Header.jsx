@@ -73,12 +73,12 @@ function Header({ isTransparent = false, theme = 'dark' }) {
         // Store the cascading service menu items separately
         setServiceMenuItems(menu);
 
-        // Build the "Our Services" nav item (cascading dropdown handled separately)
+        // Build the "Our Services" nav item 
         const servicesItem = {
           label: 'Our Services',
           href: '/services',
           hasDropdown: true,
-          isCascading: true, // special flag for cascading rendering
+          isCascading: true, 
           dropdownItems: [],
         };
 

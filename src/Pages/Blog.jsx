@@ -1,33 +1,60 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Loader2, ChevronLeft, ChevronRight, Calendar, User, ArrowRight } from 'lucide-react';
+import { Loader2, Calendar, User, ArrowRight } from 'lucide-react';
 import { blogAPI } from '../Utils/api';
 
-function Blog() {
-    const [currentPage, setCurrentPage] = useState(1);
-    const [isMobile, setIsMobile] = useState(false);
-    const [mobileDisplayCount, setMobileDisplayCount] = useState(6);
-    const ITEMS_PER_PAGE = 9;
+const ITEMS_PER_PAGE = 12;
 
+function Blog() {
     const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-    useEffect(() => {
-        const check = () => setIsMobile(window.innerWidth < 768);
-        check();
-        window.addEventListener('resize', check);
-        return () => window.removeEventListener('resize', check);
-    }, []);
-
-    const { data, isLoading, isError } = useQuery({
-        queryKey: ['blogs', currentPage],
-        queryFn: () => blogAPI.getAll(currentPage, ITEMS_PER_PAGE),
+    const {
+        data,
+        isLoading,
+        isError,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+    } = useInfiniteQuery({
+        queryKey: ['blogs'],
+        queryFn: ({ pageParam = 1 }) => blogAPI.getAll(pageParam, ITEMS_PER_PAGE),
+        getNextPageParam: (lastPage) => {
+            if (lastPage.currentPage < lastPage.totalPages) {
+                return lastPage.currentPage + 1;
+            }
+            return undefined;
+        },
     });
 
-    const blogs = data?.blogs || [];
-    const totalPages = data?.totalPages || 1;
-    const displayedBlogs = isMobile ? blogs.slice(0, mobileDisplayCount) : blogs;
+    // Flatten all pages into a single blogs array
+    const blogs = data?.pages?.flatMap((page) => page.blogs) || [];
+
+    // Sentinel ref for IntersectionObserver
+    const sentinelRef = useRef(null);
+
+    const handleObserver = useCallback(
+        (entries) => {
+            const [entry] = entries;
+            if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+                fetchNextPage();
+            }
+        },
+        [fetchNextPage, hasNextPage, isFetchingNextPage]
+    );
+
+    useEffect(() => {
+        const el = sentinelRef.current;
+        if (!el) return;
+
+        const observer = new IntersectionObserver(handleObserver, {
+            rootMargin: '200px',
+        });
+
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, [handleObserver]);
 
     const getImageSrc = (blog) => {
         const url = blog.heroImage?.url || blog.heroImageUrl;
@@ -42,10 +69,6 @@ function Blog() {
             month: 'short',
             year: 'numeric',
         });
-    };
-
-    const handleLoadMore = () => {
-        setMobileDisplayCount((prev) => prev + 6);
     };
 
     return (
@@ -90,7 +113,7 @@ function Blog() {
             {/* Blog Cards Grid */}
             <section className="pb-16 md:pb-24 px-4 md:px-8">
                 <div className="max-w-6xl mx-auto">
-                    {/* Loading State */}
+                    {/* Initial Loading State */}
                     {isLoading && (
                         <div className="flex items-center justify-center py-20">
                             <Loader2 className="w-10 h-10 animate-spin" style={{ color: 'var(--color-primary)' }} />
@@ -105,15 +128,16 @@ function Blog() {
                     )}
 
                     {/* Blog Grid */}
-                    {!isLoading && displayedBlogs.length > 0 && (
+                    {!isLoading && blogs.length > 0 && (
                         <>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                                {displayedBlogs.map((blog, index) => (
+                                {blogs.map((blog, index) => (
                                     <motion.div
                                         key={blog._id}
                                         initial={{ opacity: 0, y: 30 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.5, delay: index * 0.05 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true, margin: '-50px' }}
+                                        transition={{ duration: 0.5, delay: (index % ITEMS_PER_PAGE) * 0.05 }}
                                     >
                                         <Link to={`/blog/${blog.slug}`} className="block h-full group">
                                             <div
@@ -140,6 +164,7 @@ function Blog() {
                                                             src={getImageSrc(blog)}
                                                             alt={blog.heroImage?.alt || blog.title}
                                                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                            loading="lazy"
                                                         />
                                                     ) : (
                                                         <div
@@ -150,19 +175,7 @@ function Blog() {
                                                         </div>
                                                     )}
 
-                                                    {/* Category Badge */}
-                                                    {blog.category && (
-                                                        <div
-                                                            className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm"
-                                                            style={{
-                                                                backgroundColor: 'rgba(215,183,94,0.2)',
-                                                                color: 'var(--color-primary)',
-                                                                border: '1px solid rgba(215,183,94,0.3)',
-                                                            }}
-                                                        >
-                                                            {blog.category}
-                                                        </div>
-                                                    )}
+
                                                 </div>
 
                                                 {/* Content */}
@@ -171,7 +184,7 @@ function Blog() {
                                                     <div className="flex items-center gap-4 mb-3 text-xs text-white/40">
                                                         <span className="flex items-center gap-1">
                                                             <Calendar className="w-3 h-3" />
-                                                            {formatDate(blog.createdAt)}
+                                                            {formatDate(blog.publishDate || blog.createdAt)}
                                                         </span>
                                                         {blog.author && (
                                                             <span className="flex items-center gap-1">
@@ -208,67 +221,18 @@ function Blog() {
                                 ))}
                             </div>
 
-                            {/* Desktop Pagination */}
-                            {!isMobile && totalPages > 1 && (
-                                <div className="flex items-center justify-center gap-3 mt-12">
-                                    <button
-                                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                                        disabled={currentPage === 1}
-                                        className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 disabled:opacity-30"
-                                        style={{
-                                            backgroundColor: 'rgba(255,255,255,0.05)',
-                                            color: 'white',
-                                            border: '1px solid rgba(255,255,255,0.1)',
-                                        }}
-                                    >
-                                        <ChevronLeft className="w-5 h-5" />
-                                    </button>
-
-                                    {Array.from({ length: totalPages }, (_, i) => (
-                                        <button
-                                            key={i + 1}
-                                            onClick={() => setCurrentPage(i + 1)}
-                                            className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300"
-                                            style={{
-                                                backgroundColor: currentPage === i + 1 ? 'var(--color-primary)' : 'rgba(255,255,255,0.05)',
-                                                color: currentPage === i + 1 ? 'var(--color-dark)' : 'white',
-                                                border: currentPage === i + 1 ? 'none' : '1px solid rgba(255,255,255,0.1)',
-                                            }}
-                                        >
-                                            {i + 1}
-                                        </button>
-                                    ))}
-
-                                    <button
-                                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                                        disabled={currentPage === totalPages}
-                                        className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 disabled:opacity-30"
-                                        style={{
-                                            backgroundColor: 'rgba(255,255,255,0.05)',
-                                            color: 'white',
-                                            border: '1px solid rgba(255,255,255,0.1)',
-                                        }}
-                                    >
-                                        <ChevronRight className="w-5 h-5" />
-                                    </button>
-                                </div>
-                            )}
-
-                            {/* Mobile Load More */}
-                            {isMobile && mobileDisplayCount < blogs.length && (
-                                <div className="flex justify-center mt-10">
-                                    <button
-                                        onClick={handleLoadMore}
-                                        className="px-8 py-3 rounded-lg font-semibold text-sm uppercase tracking-wider transition-all duration-300 border"
-                                        style={{
-                                            borderColor: 'var(--color-primary)',
-                                            color: 'var(--color-primary)',
-                                        }}
-                                    >
-                                        View More
-                                    </button>
-                                </div>
-                            )}
+                            {/* Infinite Scroll Sentinel + Loading Indicator */}
+                            <div ref={sentinelRef} className="flex items-center justify-center py-12">
+                                {isFetchingNextPage && (
+                                    <div className="flex flex-col items-center gap-3">
+                                        <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--color-primary)' }} />
+                                        <p className="text-white/40 text-sm">Loading more blogs...</p>
+                                    </div>
+                                )}
+                                {!hasNextPage && blogs.length > ITEMS_PER_PAGE && (
+                                    <p className="text-white/30 text-sm">You've reached the end — all blogs loaded.</p>
+                                )}
+                            </div>
                         </>
                     )}
 
