@@ -100,12 +100,10 @@ function BlogWrapper() {
                     />
                 )}
 
-                {/* Gradient Overlays */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a1a] via-[#1a1a1a]/50 to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#1a1a1a]/50 to-transparent" />
+
 
                 {/* Back Button */}
-                <motion.div
+                {/* <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.3 }}
@@ -131,7 +129,7 @@ function BlogWrapper() {
                         <ArrowLeft className="w-4 h-4" />
                         All Blog Posts
                     </Link>
-                </motion.div>
+                </motion.div> */}
 
                 {/* Title & Meta on Image */}
                 <div className="absolute bottom-8 md:bottom-12 left-0 right-0 px-4 md:px-8 xl:px-10 xl:mx-10 2xl:mx-20 2xl:px-20">
@@ -391,12 +389,13 @@ function BlogWrapper() {
                             border: '1px solid rgba(255,255,255,0.06)',
                         }}
                     >
-                        <div className="grid md:grid-cols-2 gap-6">
+                        <div className="flex flex-col md:flex-row gap-6 justify-between">
                             {/* Previous Blog */}
-                            {prevBlog ? (
+                            {prevBlog && (
                                 <Link
                                     to={`/blog/${prevBlog.slug}`}
-                                    className="group flex items-center gap-4 p-4 rounded-xl transition-all duration-300"
+                                    className={`group flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${prevBlog && nextBlog ? 'md:w-[48%]' : 'md:w-full'
+                                        }`}
                                     style={{
                                         backgroundColor: 'rgba(255,255,255,0.02)',
                                         border: '1px solid rgba(255,255,255,0.05)',
@@ -425,15 +424,14 @@ function BlogWrapper() {
                                         </h4>
                                     </div>
                                 </Link>
-                            ) : (
-                                <div></div>
                             )}
 
                             {/* Next Blog */}
-                            {nextBlog ? (
+                            {nextBlog && (
                                 <Link
                                     to={`/blog/${nextBlog.slug}`}
-                                    className="group flex items-center gap-4 p-4 rounded-xl transition-all duration-300"
+                                    className={`group flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${prevBlog && nextBlog ? 'md:w-[48%]' : 'md:w-full'
+                                        }`}
                                     style={{
                                         backgroundColor: 'rgba(255,255,255,0.02)',
                                         border: '1px solid rgba(255,255,255,0.05)',
@@ -462,8 +460,6 @@ function BlogWrapper() {
                                         <ChevronRight className="w-6 h-6" style={{ color: 'var(--color-primary)' }} />
                                     </div>
                                 </Link>
-                            ) : (
-                                <div></div>
                             )}
                         </div>
                     </div>
