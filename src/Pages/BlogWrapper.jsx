@@ -369,18 +369,18 @@ function BlogWrapper() {
             {(prevBlog || nextBlog) && (
                 <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-16">
                     <div
-                        className="rounded-2xl p-6 md:p-8"
+                        className="rounded-2xl p-6 md:p-8  "
                         style={{
-                            backgroundColor: 'rgba(255,255,255,0.03)',
+                            backgroundColor: 'rgba(255,255,255,0.03) ',
                             border: '1px solid rgba(255,255,255,0.06)',
                         }}
                     >
-                        <div className="flex flex-col md:flex-row gap-6 justify-between">
+                        <div className={`flex flex-col md:flex-row gap-6 ${prevBlog && nextBlog ? 'justify-between' : 'justify-center '}`}>
                             {/* Previous Blog */}
                             {prevBlog && (
                                 <Link
                                     to={`/blog/${prevBlog.slug}`}
-                                    className={`group flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${prevBlog && nextBlog ? 'md:w-[48%]' : 'md:w-auto'
+                                    className={`group flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${prevBlog && nextBlog ? 'md:w-[48%]' : 'md:w-content'
                                         }`}
                                     style={{
                                         backgroundColor: 'rgba(255,255,255,0.02)',
