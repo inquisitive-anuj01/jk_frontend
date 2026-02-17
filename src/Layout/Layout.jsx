@@ -1,6 +1,7 @@
 import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
+import ScrollToTopButton from '../Components/extras/ScrollToTopButton';
 
 function Layout({ children, isHeroPage = false, headerTheme = 'dark' }) {
   return (
@@ -10,6 +11,7 @@ function Layout({ children, isHeroPage = false, headerTheme = 'dark' }) {
         {children}
       </div>
       <Footer />
+      <ScrollToTopButton />
     </div>
   );
 }
