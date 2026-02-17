@@ -306,6 +306,12 @@ export const fleetAPI = {
 
 // Event APIs
 export const eventAPI = {
+    // Get all events
+    getAll: async () => {
+        const response = await api.get("/api/events", { params: { limit: 100 } });
+        return response.data;
+    },
+
     // Get event by slug
     getBySlug: async (slug) => {
         const response = await api.get(`/api/events/${slug}`);

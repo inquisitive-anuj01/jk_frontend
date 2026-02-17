@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Phone, Menu, X, ChevronDown, ChevronRight } from 'lucide-react';
 import JkLogo from "../assets/JkLogo.png"
-import { serviceAPI } from '../Utils/api';
+import { serviceAPI, fleetAPI, eventAPI } from '../Utils/api';
 
 // Static nav items (non-service items)
 const STATIC_NAV_ITEMS = [
@@ -67,23 +67,60 @@ function Header({ isTransparent = false, theme = 'dark' }) {
   useEffect(() => {
     const buildNavItems = async () => {
       try {
-        const data = await serviceAPI.getNavMenu();
-        const menu = data?.menu || [];
+        const [servicesData, fleetData, eventsData] = await Promise.all([
+          serviceAPI.getNavMenu(),
+          fleetAPI.getAll(1, 100), // Get all fleets
+          eventAPI.getAll()        // Get all events
+        ]);
 
-        // Store the cascading service menu items separately
-        setServiceMenuItems(menu);
-
-        // Build the "Our Services" nav item 
+        // 1. Services (Cascading)
+        const serviceMenu = servicesData?.menu || [];
+        setServiceMenuItems(serviceMenu);
         const servicesItem = {
           label: 'Our Services',
           href: '/services',
           hasDropdown: true,
-          isCascading: true, 
+          isCascading: true,
           dropdownItems: [],
         };
 
-        setNavItems([servicesItem, ...STATIC_NAV_ITEMS]);
+        // 2. Fleet (Dynamic)
+        const fleetItems = (fleetData?.fleet || []).map(f => ({
+          label: f.title,
+          href: `/fleet/${f.slug}`
+        }));
+        const fleetNavItem = {
+          label: 'Our Fleet',
+          href: '/fleet',
+          hasDropdown: true,
+          dropdownItems: fleetItems.length > 0 ? fleetItems : STATIC_NAV_ITEMS[0].dropdownItems // Fallback
+        };
+
+        // 3. Events (Fixed 3 items as requested)
+        const eventsNavItem = {
+          label: 'Events',
+          href: '/events/event-chauffeur-service-in-london',
+          hasDropdown: true,
+          dropdownItems: [
+            { label: 'Event Chauffeur Service', href: '/events/event-chauffeur-service-in-london' },
+            { label: 'Chauffeur Service For Sports', href: '/events/chauffeur-service-for-sports-event' },
+            { label: 'Event Calendar', href: '/events/event-calendar' }
+          ]
+        };
+
+        // 4. Combine
+        setNavItems([
+          servicesItem,
+          fleetNavItem,
+          eventsNavItem,
+          { label: 'Blog', href: '/blog', hasDropdown: false },
+          { label: 'About Us', href: '/about', hasDropdown: false },
+          { label: 'Contact Us', href: '/contact', hasDropdown: false },
+        ]);
+
       } catch (err) {
+        console.error("Error building nav:", err);
+        // Fallback to static if API fails
         const fallbackServicesItem = {
           label: 'Our Services',
           href: '/services',
