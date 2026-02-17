@@ -14,10 +14,25 @@ function BlogWrapper() {
         enabled: !!slug,
     });
 
-    // Fetch all blogs to determine prev/next
+    // First, get the total count of blogs with a minimal request
+    const { data: countData } = useQuery({
+        queryKey: ['blogsCount'],
+        queryFn: () => blogAPI.getAll(1, 1), // Fetch just 1 blog to get total count
+        staleTime: 5 * 60 * 1000,
+        cacheTime: 10 * 60 * 1000,
+    });
+
+    const totalBlogs = countData?.totalBlogs || countData?.total || 1000; // Fallback to 1000 if structure is different
+
+    // Fetch all blogs dynamically based on total count (with caching to prevent multiple fetches)
     const { data: allBlogsData } = useQuery({
-        queryKey: ['allBlogs'],
-        queryFn: () => blogAPI.getAll(1, 100), // Fetch enough to cover all blogs
+        queryKey: ['allBlogs', totalBlogs],
+        queryFn: () => blogAPI.getAll(1, totalBlogs), // Fetch all blogs dynamically
+        enabled: !!totalBlogs, // Only run when we know the total count
+        staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
+        cacheTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        refetchOnMount: false, // Don't refetch on component mount if data exists
     });
 
     const blog = data?.blog;
@@ -101,35 +116,6 @@ function BlogWrapper() {
                 )}
 
 
-
-                {/* Back Button */}
-                {/* <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="absolute top-32 md:top-36 left-4 md:left-8"
-                >
-                    <Link
-                        to="/blog"
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 backdrop-blur-sm"
-                        style={{
-                            backgroundColor: 'rgba(255,255,255,0.1)',
-                            color: 'white',
-                            border: '1px solid rgba(255,255,255,0.15)',
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = 'rgba(215,183,94,0.2)';
-                            e.currentTarget.style.borderColor = 'var(--color-primary)';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)';
-                            e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
-                        }}
-                    >
-                        <ArrowLeft className="w-4 h-4" />
-                        All Blog Posts
-                    </Link>
-                </motion.div> */}
 
                 {/* Title & Meta on Image */}
                 <div className="absolute bottom-8 md:bottom-12 left-0 right-0 px-4 md:px-8 xl:px-10 xl:mx-10 2xl:mx-20 2xl:px-20">
@@ -394,7 +380,7 @@ function BlogWrapper() {
                             {prevBlog && (
                                 <Link
                                     to={`/blog/${prevBlog.slug}`}
-                                    className={`group flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${prevBlog && nextBlog ? 'md:w-[48%]' : 'md:w-full'
+                                    className={`group flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${prevBlog && nextBlog ? 'md:w-[48%]' : 'md:w-auto'
                                         }`}
                                     style={{
                                         backgroundColor: 'rgba(255,255,255,0.02)',
@@ -430,7 +416,7 @@ function BlogWrapper() {
                             {nextBlog && (
                                 <Link
                                     to={`/blog/${nextBlog.slug}`}
-                                    className={`group flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${prevBlog && nextBlog ? 'md:w-[48%]' : 'md:w-full'
+                                    className={`group flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${prevBlog && nextBlog ? 'md:w-[48%]' : 'md:w-auto'
                                         }`}
                                     style={{
                                         backgroundColor: 'rgba(255,255,255,0.02)',
