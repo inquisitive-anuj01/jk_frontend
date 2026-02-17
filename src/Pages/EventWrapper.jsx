@@ -57,7 +57,7 @@ function EventWrapper() {
     const heroSrc = getImageSrc(event.heroImage);
 
     return (
-        <main style={{ backgroundColor: 'var(--color-dark)', minHeight: '100vh' }}>
+        <main style={{ backgroundColor: 'var(--color-dark)', minHeight: '100vh' }} >
             {/* Hero Image Section */}
             <div className="relative h-[50vh] md:h-[60vh] overflow-hidden">
                 {heroSrc ? (
@@ -116,7 +116,7 @@ function EventWrapper() {
 
                 {/* Title Overlay on Image */}
                 <div className="absolute bottom-8 md:bottom-12 left-0 right-0 px-4 md:px-8">
-                    <div className="max-w-5xl mx-auto">
+                    <div className="max-w-7xl mx-auto">
                         {event.subtitle && (
                             <motion.p
                                 initial={{ opacity: 0, y: 20 }}
@@ -141,7 +141,7 @@ function EventWrapper() {
             </div>
 
             {/* Content Section */}
-            <div className="max-w-5xl mx-auto px-4 md:px-8 py-12 md:py-20">
+            <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20">
                 <div className="grid lg:grid-cols-3 gap-10 md:gap-16">
                     {/* Main Content — 2/3 */}
                     <div className="lg:col-span-2 space-y-8">
