@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, User, Loader2 } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { blogAPI } from '../Utils/api';
 
 function BlogWrapper() {
@@ -14,7 +14,14 @@ function BlogWrapper() {
         enabled: !!slug,
     });
 
+    // Fetch all blogs to determine prev/next
+    const { data: allBlogsData } = useQuery({
+        queryKey: ['allBlogs'],
+        queryFn: () => blogAPI.getAll(1, 100), // Fetch enough to cover all blogs
+    });
+
     const blog = data?.blog;
+    const allBlogs = allBlogsData?.blogs || [];
     const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
     const getImageSrc = (imgObj) => {
@@ -30,6 +37,12 @@ function BlogWrapper() {
             year: 'numeric',
         });
     };
+
+    // Determine prev/next blogs
+    const currentIndex = allBlogs.findIndex(b => b.slug === slug);
+    const prevBlog = currentIndex > 0 ? allBlogs[currentIndex - 1] : null;
+    const nextBlog = currentIndex >= 0 && currentIndex < allBlogs.length - 1 ? allBlogs[currentIndex + 1] : null;
+
 
     // Loading State
     if (isLoading) {
@@ -367,6 +380,95 @@ function BlogWrapper() {
                     </motion.div>
                 </div>
             </div>
+
+            {/* Prev/Next Blog Navigation */}
+            {(prevBlog || nextBlog) && (
+                <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-16">
+                    <div
+                        className="rounded-2xl p-6 md:p-8"
+                        style={{
+                            backgroundColor: 'rgba(255,255,255,0.03)',
+                            border: '1px solid rgba(255,255,255,0.06)',
+                        }}
+                    >
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {/* Previous Blog */}
+                            {prevBlog ? (
+                                <Link
+                                    to={`/blog/${prevBlog.slug}`}
+                                    className="group flex items-center gap-4 p-4 rounded-xl transition-all duration-300"
+                                    style={{
+                                        backgroundColor: 'rgba(255,255,255,0.02)',
+                                        border: '1px solid rgba(255,255,255,0.05)',
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.backgroundColor = 'rgba(215,183,94,0.05)';
+                                        e.currentTarget.style.borderColor = 'rgba(215,183,94,0.2)';
+                                        e.currentTarget.style.transform = 'translateX(-4px)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.02)';
+                                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
+                                        e.currentTarget.style.transform = 'translateX(0)';
+                                    }}
+                                >
+                                    <div
+                                        className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-300"
+                                        style={{ backgroundColor: 'rgba(215,183,94,0.1)' }}
+                                    >
+                                        <ChevronLeft className="w-6 h-6" style={{ color: 'var(--color-primary)' }} />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-xs text-white/40 mb-1 uppercase tracking-wider">Previous</p>
+                                        <h4 className="text-white font-semibold text-sm md:text-base line-clamp-2 group-hover:text-[var(--color-primary)] transition-colors">
+                                            {prevBlog.title}
+                                        </h4>
+                                    </div>
+                                </Link>
+                            ) : (
+                                <div></div>
+                            )}
+
+                            {/* Next Blog */}
+                            {nextBlog ? (
+                                <Link
+                                    to={`/blog/${nextBlog.slug}`}
+                                    className="group flex items-center gap-4 p-4 rounded-xl transition-all duration-300"
+                                    style={{
+                                        backgroundColor: 'rgba(255,255,255,0.02)',
+                                        border: '1px solid rgba(255,255,255,0.05)',
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.backgroundColor = 'rgba(215,183,94,0.05)';
+                                        e.currentTarget.style.borderColor = 'rgba(215,183,94,0.2)';
+                                        e.currentTarget.style.transform = 'translateX(4px)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.02)';
+                                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
+                                        e.currentTarget.style.transform = 'translateX(0)';
+                                    }}
+                                >
+                                    <div className="flex-1 min-w-0 text-right">
+                                        <p className="text-xs text-white/40 mb-1 uppercase tracking-wider">Next</p>
+                                        <h4 className="text-white font-semibold text-sm md:text-base line-clamp-2 group-hover:text-[var(--color-primary)] transition-colors">
+                                            {nextBlog.title}
+                                        </h4>
+                                    </div>
+                                    <div
+                                        className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-300"
+                                        style={{ backgroundColor: 'rgba(215,183,94,0.1)' }}
+                                    >
+                                        <ChevronRight className="w-6 h-6" style={{ color: 'var(--color-primary)' }} />
+                                    </div>
+                                </Link>
+                            ) : (
+                                <div></div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Bottom CTA */}
             <div
