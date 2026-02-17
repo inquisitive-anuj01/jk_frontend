@@ -96,15 +96,7 @@ function ServiceWrapper() {
                 {/* Title Overlay on Image */}
                 <div className="absolute bottom-8 md:bottom-12 left-0 right-0 px-4 md:px-8">
                     <div className="max-w-7xl mx-auto  xl:px-5">
-                        <motion.p
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3 }}
-                            className="text-xs md:text-sm font-semibold  uppercase tracking-[0.2em] mb-3 xl:ml-3 "
-                            style={{ color: 'var(--color-primary)' }}
-                        >
-                            {service.subtitle}
-                        </motion.p>
+
                         <motion.h1
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
