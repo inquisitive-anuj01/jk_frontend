@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 
 import Lenis from "lenis";
 import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
@@ -29,11 +29,23 @@ import AdminAllLocations from "./Components/Admin/AdminAllLocations";
 import AdminAddLocation from "./Components/Admin/AdminAddLocation";
 import AdminLocationPricing from "./Components/Admin/AdminLocationPricing";
 
+// Global Lenis instance (accessible to ScrollToTop and ScrollToTopButton)
+let lenisInstance = null;
+
+// Export getter for other components
+export const getLenisInstance = () => lenisInstance;
+
 // Scroll to top on every route change
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // Use Lenis scrollTo for instant, conflict-free scroll
+    if (lenisInstance) {
+      lenisInstance.scrollTo(0, { immediate: true });
+    } else {
+      // Fallback if Lenis not ready
+      window.scrollTo(0, 0);
+    }
   }, [pathname]);
   return null;
 }
@@ -41,12 +53,25 @@ function ScrollToTop() {
 function App() {
 
   useEffect(() => {
+    // CRITICAL: Disable browser scroll restoration to prevent scroll position being saved on reload
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+
     const lenis = new Lenis();
+    lenisInstance = lenis; // Store globally for ScrollToTop access
+
     function raf(time) {
       lenis.raf(time);
       requestAnimationFrame(raf);
     }
     requestAnimationFrame(raf);
+
+    // Cleanup on unmount
+    return () => {
+      lenis.destroy();
+      lenisInstance = null;
+    };
   }, []);
 
 
