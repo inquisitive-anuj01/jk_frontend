@@ -81,7 +81,7 @@ function App() {
       <Routes>
         {/* Public Routes with Layout */}
         <Route path="/" element={<Layout isHeroPage={true}><Home /></Layout>} />
-        <Route path="/booking" element={<Layout isHeroPage={false}><Booking /></Layout>} />
+        <Route path="/booking" element={<Layout isHeroPage={false} showContactForm={false}><Booking /></Layout>} />
         <Route path="/services" element={<Layout isHeroPage={false}><Services /></Layout>} />
         <Route path="/services/:slug" element={<Layout isHeroPage={false}><ServiceWrapper /></Layout>} />
         <Route path="/fleet" element={<Layout isHeroPage={false}><Fleet /></Layout>} />
