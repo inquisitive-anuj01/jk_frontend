@@ -91,13 +91,6 @@ export default function FAQSection() {
                 tabIndex={0}
                 onKeyDown={(e) => e.key === "Enter" && toggle(i)}
               >
-                {/* Background tint */}
-                <div
-                  className="absolute inset-0 bg-[var(--color-primary)]/5 z-0 transition-transform duration-500 ease-out"
-                  style={{
-                    transform: isOpen || undefined ? "translateX(0)" : "translateX(-100%)",
-                  }}
-                />
 
                 {/* Number */}
                 <div
