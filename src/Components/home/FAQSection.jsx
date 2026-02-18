@@ -46,7 +46,7 @@ export default function FAQSection() {
   const toggle = (i) => setOpenIndex(openIndex === i ? null : i);
 
   return (
-    <section className="bg-[var(--color-dark)] py-20 px-6 md:px-8 lg:py-24">
+    <section className="bg-[var(--color-dark)] py-20 px-6 md:px-8 lg:py-12">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         {/* Section Header */}
         <div className="mb-10">
@@ -137,8 +137,8 @@ export default function FAQSection() {
                   {/* Icon */}
                   <div
                     className={`absolute right-0 top-7 w-7 h-7 rounded-full border flex items-center justify-center transition-all duration-300 flex-shrink-0 ${isOpen || undefined
-                        ? "border-[var(--color-primary)] bg-[var(--color-primary)]"
-                        : "border-white/20 group-hover:border-[var(--color-primary)] group-hover:bg-[var(--color-primary)]"
+                      ? "border-[var(--color-primary)] bg-[var(--color-primary)]"
+                      : "border-white/20 group-hover:border-[var(--color-primary)] group-hover:bg-[var(--color-primary)]"
                       }`}
                   >
                     <div
