@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, ArrowRight, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { serviceAPI } from '../../Utils/api';
 import ServiceCardSkeleton from '../extras/ServiceCardSkeleton';
+import ServicesGhostCard from '../extras/ServicesGhostCard';
 
 function ServicesSection() {
     const scrollRef = useRef(null);
@@ -14,7 +15,7 @@ function ServicesSection() {
     // Fetch real services from the DB
     const { data, isLoading } = useQuery({
         queryKey: ['home-services'],
-        queryFn: () => serviceAPI.getAllServices(1, 20),
+        queryFn: () => serviceAPI.getAllServices(1, 5),
         staleTime: 10 * 60 * 1000,
     });
 
@@ -197,6 +198,7 @@ function ServicesSection() {
                                 </Link>
                             </motion.div>
                         ))}
+                        <ServicesGhostCard delay={services.length * 0.1} />
                     </div>
                 )}
 
