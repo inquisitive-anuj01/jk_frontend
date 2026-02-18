@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Plus, Minus } from "lucide-react";
 
 const faqs = [
   {
@@ -136,21 +137,16 @@ export default function FAQSection() {
 
                   {/* Icon */}
                   <div
-                    className={`absolute right-0 top-7 w-7 h-7 rounded-full border flex items-center justify-center transition-all duration-300 flex-shrink-0 ${isOpen || undefined
+                    className={`absolute right-0 top-7 w-7 h-7 rounded-full border flex items-center justify-center transition-all duration-300 flex-shrink-0 ${isOpen
                       ? "border-[var(--color-primary)] bg-[var(--color-primary)]"
                       : "border-white/20 group-hover:border-[var(--color-primary)] group-hover:bg-[var(--color-primary)]"
                       }`}
                   >
-                    <div
-                      className={`absolute bg-white/60 rounded transition-all duration-300 ${isOpen || undefined ? "bg-[var(--color-dark)]" : "group-hover:bg-[var(--color-dark)]"
-                        }`}
-                      style={{ width: "10px", height: "1px" }}
-                    />
-                    <div
-                      className={`absolute bg-white/60 rounded transition-all duration-300 ${isOpen ? "opacity-0 rotate-90" : ""
-                        } ${isOpen || undefined ? "bg-[var(--color-dark)]" : "group-hover:bg-[var(--color-dark)]"}`}
-                      style={{ width: "1px", height: "10px" }}
-                    />
+                    {isOpen ? (
+                      <Minus size={12} strokeWidth={2.5} className="text-black" />
+                    ) : (
+                      <Plus size={12} strokeWidth={2.5} className="text-white/50 group-hover:text-black transition-colors duration-300" />
+                    )}
                   </div>
                 </div>
               </div>
