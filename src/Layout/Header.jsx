@@ -58,9 +58,11 @@ function Header({ isTransparent = false, theme = 'dark' }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu on route change
+  // Close mobile menu and dropdowns on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
+    setActiveDropdown(null);
+    setActiveSubDropdown(null);
   }, [location]);
 
   // Fetch nav menu from backend
@@ -430,6 +432,7 @@ function Header({ isTransparent = false, theme = 'dark' }) {
                   key={item.label}
                   item={item}
                   serviceMenuItems={item.isCascading ? serviceMenuItems : null}
+                  location={location}
                 />
               ))}
 
@@ -462,9 +465,15 @@ function Header({ isTransparent = false, theme = 'dark' }) {
 }
 
 // Mobile Navigation Item Component (supports cascading sub-menus)
-function MobileNavItem({ item, serviceMenuItems }) {
+function MobileNavItem({ item, serviceMenuItems, location }) {
   const [isOpen, setIsOpen] = useState(false);
   const [openSubMenu, setOpenSubMenu] = useState(null);
+
+  // Close accordion when route changes
+  useEffect(() => {
+    setIsOpen(false);
+    setOpenSubMenu(null);
+  }, [location]);
 
   if (!item.hasDropdown) {
     return (
