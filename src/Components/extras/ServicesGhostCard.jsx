@@ -10,11 +10,11 @@ function ServicesGhostCard({ delay }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay }}
-            className="service-card flex-shrink-0 w-[85%] sm:w-[35%] lg:w-[calc(33.333%-16px)] snap-center"
+            className="service-card flex-shrink-0 w-[55%] sm:w-[35%] lg:w-[calc(33.333%-16px)] snap-center"
         >
             <Link to="/services" className="block h-full">
                 <motion.div
-                    className="h-full flex flex-col items-center justify-center rounded-xl border-2 border-dashed min-h-[280px] px-8 text-center"
+                    className="h-full flex flex-col items-center justify-center rounded-xl border-2 border-dashed min-h-[280px] px-0 text-center"
                     initial="rest"
                     whileHover="hover"
                     animate="rest"
