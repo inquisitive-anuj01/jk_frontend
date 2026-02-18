@@ -90,7 +90,7 @@ function App() {
         <Route path="/blog" element={<Layout isHeroPage={false}><Blog /></Layout>} />
         <Route path="/blog/:slug" element={<Layout isHeroPage={false}><BlogWrapper /></Layout>} />
         <Route path="/about" element={<Layout isHeroPage={false}><AboutUs /></Layout>} />
-        <Route path="/contact" element={<Layout isHeroPage={false}><ContactUs /></Layout>} />
+        <Route path="/contact" element={<Layout isHeroPage={false} showContactForm={false}><ContactUs /></Layout>} />
         <Route path="/terms-and-conditions" element={<Layout isHeroPage={false}><TermsAndConditions /></Layout>} />
         <Route path="/privacy-policy" element={<Layout isHeroPage={false}><PrivacyPolicy /></Layout>} />
         <Route path="/gdpr-policy" element={<Layout isHeroPage={false}><GDPRPolicy /></Layout>} />
