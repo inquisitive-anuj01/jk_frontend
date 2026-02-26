@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, ArrowRight, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { serviceAPI } from '../../Utils/api';
+import ServiceCardSkeleton from '../extras/ServiceCardSkeleton';
+import ServicesGhostCard from '../extras/ServicesGhostCard';
 
 function ServicesSection() {
     const scrollRef = useRef(null);
@@ -13,7 +15,7 @@ function ServicesSection() {
     // Fetch real services from the DB
     const { data, isLoading } = useQuery({
         queryKey: ['home-services'],
-        queryFn: () => serviceAPI.getAllServices(1, 20),
+        queryFn: () => serviceAPI.getAllServices(1, 5),
         staleTime: 10 * 60 * 1000,
     });
 
@@ -119,11 +121,12 @@ function ServicesSection() {
                     </div>
                 </div>
 
-                {/* Loading State */}
+                {/* Skeleton Loading State - 3 Cards */}
                 {isLoading && (
-                    <div className="flex items-center justify-center py-16">
-                        <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--color-primary)' }} />
-                        <span className="ml-3 text-white/60">Loading services...</span>
+                    <div className="flex gap-6 overflow-x-hidden pb-4 -mx-4 px-4 md:mx-0 md:px-0">
+                        {[0, 1, 2].map((i) => (
+                            <ServiceCardSkeleton key={i} />
+                        ))}
                     </div>
                 )}
 
@@ -195,6 +198,7 @@ function ServicesSection() {
                                 </Link>
                             </motion.div>
                         ))}
+                        <ServicesGhostCard delay={services.length * 0.1} />
                     </div>
                 )}
 
