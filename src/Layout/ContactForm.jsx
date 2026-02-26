@@ -1,18 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { contactAPI } from "../Utils/api";
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({ name: "", email: "", enquiry: "" });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [apiError, setApiError] = useState("");
+
+  // Auto-reset to initial state after 4 seconds on success
+  useEffect(() => {
+    if (!submitted) return;
+    const timer = setTimeout(() => {
+      setSubmitted(false);
+      setApiError("");
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, [submitted]);
 
   const validate = () => {
     const newErrors = {};
     if (!formData.name.trim()) newErrors.name = "Name is required.";
     if (!formData.email.trim()) {
       newErrors.email = "Email is required.";
-    } else if (!/^[^\s @]+@[^\s @]+\.[^\s @]+$/.test(formData.email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Please enter a valid email address.";
     }
     if (!formData.enquiry.trim()) newErrors.enquiry = "Enquiry cannot be empty.";
@@ -23,21 +35,25 @@ export default function ContactForm() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
+    if (apiError) setApiError("");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setApiError("");
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setSubmitted(true);
-      setFormData({ name: "", email: "", enquiry: "" });
-    }, 1800);
+    // Show success instantly — fire email in background
+    const payload = { ...formData };
+    setSubmitted(true);
+    setFormData({ name: "", email: "", enquiry: "" });
+    setErrors({});
+    contactAPI.submitBulkQuote(payload).catch((err) => {
+      console.error("Bulk quote email failed:", err?.response?.data?.message || err.message);
+    });
   };
 
   return (
@@ -67,21 +83,44 @@ export default function ContactForm() {
             }}
           >
             {submitted ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <svg
-                  className="w-14 h-14 mb-4"
-                  style={{ color: 'var(--color-primary)' }}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex flex-col items-center justify-center py-12 text-center"
+              >
+                <div
+                  className="w-20 h-20 rounded-full flex items-center justify-center mb-5"
+                  style={{ backgroundColor: 'rgba(215,183,94,0.1)', border: '2px solid rgba(215,183,94,0.3)' }}
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <h3 className="text-xl font-semibold text-white mb-2">Enquiry Sent!</h3>
-                <p className="text-white/50 text-sm">Thank you for reaching out. We'll get back to you within 24 hours.</p>
-              </div>
+                  <svg
+                    className="w-10 h-10"
+                    style={{ color: 'var(--color-primary)' }}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">Quote Request Sent!</h3>
+                <p className="text-white/50 text-sm max-w-xs">
+                  Thank you for reaching out. Our team will review your bulk booking requirements and get back to you within 24 hours.
+                </p>
+              </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
+                {/* API-level error */}
+                {apiError && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-2 px-4 py-3 rounded-lg text-sm"
+                    style={{ backgroundColor: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171' }}
+                  >
+                    {apiError}
+                  </motion.div>
+                )}
+
                 <div className="grid md:grid-cols-2 gap-5">
                   <div>
                     <label className="block text-xs font-medium text-white/50 mb-2 uppercase tracking-wider">
@@ -96,10 +135,10 @@ export default function ContactForm() {
                       className={`w-full px-4 py-3 rounded-lg text-sm text-white placeholder-white/30 outline-none transition-all duration-300 ${errors.name ? 'ring-2 ring-red-500' : ''}`}
                       style={{
                         backgroundColor: 'rgba(255,255,255,0.05)',
-                        border: '1px solid rgba(255,255,255,0.1)',
+                        border: errors.name ? '1px solid rgba(239,68,68,0.4)' : '1px solid rgba(255,255,255,0.1)',
                       }}
                       onFocus={(e) => e.target.style.borderColor = 'var(--color-primary)'}
-                      onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                      onBlur={(e) => e.target.style.borderColor = errors.name ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.1)'}
                     />
                     {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                   </div>
@@ -116,10 +155,10 @@ export default function ContactForm() {
                       className={`w-full px-4 py-3 rounded-lg text-sm text-white placeholder-white/30 outline-none transition-all duration-300 ${errors.email ? 'ring-2 ring-red-500' : ''}`}
                       style={{
                         backgroundColor: 'rgba(255,255,255,0.05)',
-                        border: '1px solid rgba(255,255,255,0.1)',
+                        border: errors.email ? '1px solid rgba(239,68,68,0.4)' : '1px solid rgba(255,255,255,0.1)',
                       }}
                       onFocus={(e) => e.target.style.borderColor = 'var(--color-primary)'}
-                      onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                      onBlur={(e) => e.target.style.borderColor = errors.email ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.1)'}
                     />
                     {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                   </div>
@@ -138,10 +177,10 @@ export default function ContactForm() {
                     className={`w-full px-4 py-3 rounded-lg text-sm text-white placeholder-white/30 outline-none transition-all duration-300 resize-none ${errors.enquiry ? 'ring-2 ring-red-500' : ''}`}
                     style={{
                       backgroundColor: 'rgba(255,255,255,0.05)',
-                      border: '1px solid rgba(255,255,255,0.1)',
+                      border: errors.enquiry ? '1px solid rgba(239,68,68,0.4)' : '1px solid rgba(255,255,255,0.1)',
                     }}
                     onFocus={(e) => e.target.style.borderColor = 'var(--color-primary)'}
-                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                    onBlur={(e) => e.target.style.borderColor = errors.enquiry ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.1)'}
                   />
                   {errors.enquiry && <p className="text-red-500 text-xs mt-1">{errors.enquiry}</p>}
                 </div>
@@ -154,6 +193,7 @@ export default function ContactForm() {
                     backgroundColor: 'var(--color-primary)',
                     color: 'var(--color-dark)',
                     opacity: loading ? 0.7 : 1,
+                    cursor: loading ? 'not-allowed' : 'pointer',
                   }}
                   onMouseEnter={(e) => {
                     if (!loading) {
@@ -167,7 +207,13 @@ export default function ContactForm() {
                   }}
                 >
                   {loading ? (
-                    <>Sending...</>
+                    <>
+                      <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                      </svg>
+                      Sending...
+                    </>
                   ) : (
                     <>
                       Get a Custom Quote

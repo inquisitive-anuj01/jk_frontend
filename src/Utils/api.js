@@ -334,4 +334,20 @@ export const blogAPI = {
     },
 };
 
+// Contact / Inquiry API
+export const contactAPI = {
+    // Submit contact form inquiry — sends email to admin
+    submitInquiry: async (data) => {
+        const response = await api.post("/api/contact", data);
+        return response.data;
+    },
+
+    // Submit bulk / corporate quote request — sends email to admin
+    submitBulkQuote: async (data) => {
+        const response = await api.post("/api/contact/quote", data);
+        return response.data;
+    },
+};
+
 export default api;
+

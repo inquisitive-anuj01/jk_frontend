@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Plus, Minus } from "lucide-react";
 
 const faqs = [
+  
   {
     question: "What makes your service different from competitors?",
     answer:
