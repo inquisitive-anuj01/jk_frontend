@@ -38,12 +38,12 @@ const FilterBar = ({
             <Filter size={18} style={{ color: "var(--color-primary)" }} />
           </div>
           <div>
-            <h3 className="text-xs font-black text-white uppercase tracking-[0.15em]">
+            <h3 className="text-xs font-bold text-white uppercase tracking-[0.15em]">
               Vehicle Filters
             </h3>
             <div className="flex items-center gap-2 mt-1">
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-              <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">
+              <p className="text-[10px] font-medium uppercase tracking-wider text-white/40">
                 {availableCount} <span className="lowercase">of</span> {totalCount} Available
               </p>
             </div>
@@ -55,7 +55,7 @@ const FilterBar = ({
 
           {/* Passenger Input Group */}
           <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-white/30 ml-1">
+            <label className="text-[10px] font-semibold uppercase tracking-widest text-white/30 ml-1">
               Max Passengers
             </label>
             <div className="relative group">
@@ -65,7 +65,7 @@ const FilterBar = ({
               <select
                 value={passengerFilter}
                 onChange={(e) => setPassengerFilter(Number(e.target.value))}
-                className="w-full appearance-none rounded-lg pl-10 pr-10 py-3 text-sm font-bold cursor-pointer outline-none transition-all"
+                className="w-full appearance-none rounded-lg pl-10 pr-10 py-3 text-sm font-medium cursor-pointer outline-none transition-all"
                 style={{
                   backgroundColor: "rgba(255, 255, 255, 0.05)",
                   border: "1px solid rgba(255, 255, 255, 0.1)",
@@ -87,7 +87,7 @@ const FilterBar = ({
 
           {/* Luggage Input Group */}
           <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-white/30 ml-1">
+            <label className="text-[10px] font-semibold uppercase tracking-widest text-white/30 ml-1">
               Min Luggage
             </label>
             <div className="relative group">
@@ -97,7 +97,7 @@ const FilterBar = ({
               <select
                 value={luggageFilter}
                 onChange={(e) => setLuggageFilter(Number(e.target.value))}
-                className="w-full appearance-none rounded-lg pl-10 pr-10 py-3 text-sm font-bold cursor-pointer outline-none transition-all"
+                className="w-full appearance-none rounded-lg pl-10 pr-10 py-3 text-sm font-medium cursor-pointer outline-none transition-all"
                 style={{
                   backgroundColor: "rgba(255, 255, 255, 0.05)",
                   border: "1px solid rgba(255, 255, 255, 0.1)",

@@ -268,11 +268,7 @@ function CarsSelection({ data, updateData, onNext, onBack }) {
       {/* Section Heading */}
       <div className="mb-6">
         <h2
-          className="text-xl md:text-2xl font-bold mb-2"
-          style={{
-            color: "#fff",
-            fontFamily: "'Playfair Display', serif",
-          }}
+          className="text-xl md:text-2xl font-bold mb-2 text-white"
         >
           Select Your Vehicle
         </h2>

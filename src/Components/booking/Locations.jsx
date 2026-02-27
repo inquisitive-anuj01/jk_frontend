@@ -37,10 +37,10 @@ const customStyles = `
     color: #fff !important;
   }
   .pac-item-selected .pac-item-query {
-    color: #D7B75E !important;
+    color: var(--color-primary) !important;
   }
   .pac-item-query { color: #fff !important; }
-  .pac-matched { color: #D7B75E !important; }
+  .pac-matched { color: var(--color-primary) !important; }
   .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 `;
@@ -455,16 +455,16 @@ function Locations({ data, updateData, onNext }) {
 
       <div className="relative rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl shadow-2xl">
         {/* Top Accent Line */}
-        <div className="h-1 w-full bg-gradient-to-r from-transparent via-[#D7B75E] to-transparent opacity-50" />
+        <div className="h-1 w-full bg-gradient-to-r from-transparent via-[var(--color-primary)] to-transparent opacity-50" />
 
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 border-b border-white/5 gap-4">
           <div className="flex items-center gap-3">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#D7B75E]/10 text-lg shadow-inner border border-[#D7B75E]/20">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-primary)]/10 text-lg shadow-inner border border-[var(--color-primary)]/20">
               🇬🇧
             </span>
             <h2 className="text-lg font-bold tracking-widest uppercase text-white">
-              Reservation <span className="text-[#D7B75E]">Details</span>
+              Reservation <span className="text-[var(--color-primary)]">Details</span>
             </h2>
           </div>
 
@@ -475,7 +475,7 @@ function Locations({ data, updateData, onNext }) {
                 key={t}
                 onClick={() => handleServiceTypeChange(t)}
                 className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 sm:py-1.5 rounded text-xs font-bold uppercase transition-all duration-300 ${serviceType === t
-                  ? "bg-[#D7B75E] text-black shadow-lg"
+                  ? "bg-[var(--color-primary)] text-black shadow-lg"
                   : "text-slate-400 hover:text-white"
                   }`}
               >
@@ -490,7 +490,7 @@ function Locations({ data, updateData, onNext }) {
           <div className="grid grid-cols-1 gap-4">
             {/* Pickup */}
             <div className="space-y-1.5">
-              <label className="text-[10px] uppercase tracking-widest font-bold text-[#D7B75E] ml-1">Pickup Location</label>
+              <label className="text-[10px] uppercase tracking-widest font-bold text-[var(--color-primary)] ml-1">Pickup Location</label>
               <div className="relative group">
                 <Autocomplete
                   onLoad={(a) => (pickupAutocompleteRef.current = a)}
@@ -503,10 +503,10 @@ function Locations({ data, updateData, onNext }) {
                   <input
                     ref={pickupInputRef}
                     placeholder="Airport, Hotel, or Address..."
-                    className={`w-full bg-white/5 border ${errors.pickup ? 'border-red-500' : 'border-white/10'} hover:border-[#D7B75E]/50 focus:border-[#D7B75E] rounded-lg py-3 pl-10 pr-4 outline-none transition-all text-sm text-white placeholder-slate-500`}
+                    className={`w-full bg-white/5 border ${errors.pickup ? 'border-red-500' : 'border-white/10'} hover:border-[var(--color-primary)]/50 focus:border-[var(--color-primary)] rounded-lg py-3 pl-10 pr-4 outline-none transition-all text-sm text-white placeholder-slate-500`}
                   />
                 </Autocomplete>
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-[#D7B75E]/60 group-focus-within:text-[#D7B75E]" size={16} />
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-primary)]/60 group-focus-within:text-[var(--color-primary)]" size={16} />
               </div>
               {errors.pickup && (
                 <p className="text-xs text-red-400 ml-1">{errors.pickup}</p>
@@ -515,7 +515,7 @@ function Locations({ data, updateData, onNext }) {
 
             {/* Dropoff or Duration */}
             <div className="space-y-1.5">
-              <label className="text-[10px] uppercase tracking-widest font-bold text-[#D7B75E] ml-1">
+              <label className="text-[10px] uppercase tracking-widest font-bold text-[var(--color-primary)] ml-1">
                 {serviceType === "oneway" ? "Destination" : "Duration"}
               </label>
               {serviceType === "oneway" ? (
@@ -531,18 +531,18 @@ function Locations({ data, updateData, onNext }) {
                     <input
                       ref={dropoffInputRef}
                       placeholder="Enter drop-off point..."
-                      className={`w-full bg-white/5 border ${errors.dropoff ? 'border-red-500' : 'border-white/10'} hover:border-[#D7B75E]/50 focus:border-[#D7B75E] rounded-lg py-3 pl-10 pr-4 outline-none transition-all text-sm text-white placeholder-slate-500`}
+                      className={`w-full bg-white/5 border ${errors.dropoff ? 'border-red-500' : 'border-white/10'} hover:border-[var(--color-primary)]/50 focus:border-[var(--color-primary)] rounded-lg py-3 pl-10 pr-4 outline-none transition-all text-sm text-white placeholder-slate-500`}
                     />
                   </Autocomplete>
-                  <Flag className="absolute left-3 top-1/2 -translate-y-1/2 text-[#D7B75E]/60 group-focus-within:text-[#D7B75E]" size={16} />
+                  <Flag className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-primary)]/60 group-focus-within:text-[var(--color-primary)]" size={16} />
                 </div>
               ) : (
                 <div
                   onClick={() => setActivePicker(activePicker === 'duration' ? null : 'duration')}
-                  className="flex items-center justify-between w-full bg-white/5 border border-white/10 hover:border-[#D7B75E]/50 rounded-lg py-3 px-4 cursor-pointer transition-colors"
+                  className="flex items-center justify-between w-full bg-white/5 border border-white/10 hover:border-[var(--color-primary)]/50 rounded-lg py-3 px-4 cursor-pointer transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <Timer size={16} className="text-[#D7B75E]" />
+                    <Timer size={16} className="text-[var(--color-primary)]" />
                     <span className="text-sm text-white">{data.hours || 2} Hours</span>
                   </div>
                   <ChevronDown size={14} className="opacity-40 text-white" />
@@ -564,14 +564,14 @@ function Locations({ data, updateData, onNext }) {
           {/* Date & Time Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-visible">
             <div className="space-y-1.5">
-              <label className="text-[10px] uppercase tracking-widest font-bold text-[#D7B75E] ml-1">Date</label>
+              <label className="text-[10px] uppercase tracking-widest font-bold text-[var(--color-primary)] ml-1">Date</label>
               <div className="relative">
                 <div
                   onClick={() => setActivePicker(activePicker === 'date' ? null : 'date')}
-                  className="flex items-center justify-between bg-white/5 border border-white/10 hover:border-[#D7B75E]/50 rounded-lg py-3 px-3 cursor-pointer transition-colors"
+                  className="flex items-center justify-between bg-white/5 border border-white/10 hover:border-[var(--color-primary)]/50 rounded-lg py-3 px-3 cursor-pointer transition-colors"
                 >
                   <div className="flex items-center gap-2 overflow-hidden">
-                    <Calendar size={14} className="text-[#D7B75E] shrink-0" />
+                    <Calendar size={14} className="text-[var(--color-primary)] shrink-0" />
                     <span className="text-xs truncate text-white">
                       {data.pickupDate?.toLocaleDateString("en-GB", {
                         weekday: "short",
@@ -594,14 +594,14 @@ function Locations({ data, updateData, onNext }) {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[10px] uppercase tracking-widest font-bold text-[#D7B75E] ml-1">Time</label>
+              <label className="text-[10px] uppercase tracking-widest font-bold text-[var(--color-primary)] ml-1">Time</label>
               <div className="relative">
                 <div
                   onClick={() => setActivePicker(activePicker === 'time' ? null : 'time')}
-                  className="flex items-center justify-between bg-white/5 border border-white/10 hover:border-[#D7B75E]/50 rounded-lg py-3 px-3 cursor-pointer transition-colors"
+                  className="flex items-center justify-between bg-white/5 border border-white/10 hover:border-[var(--color-primary)]/50 rounded-lg py-3 px-3 cursor-pointer transition-colors"
                 >
                   <div className="flex items-center gap-2">
-                    <Clock size={14} className="text-[#D7B75E]" />
+                    <Clock size={14} className="text-[var(--color-primary)]" />
                     <span className="text-xs text-white">{data.pickupTime}</span>
                   </div>
                   <ChevronDown size={12} className="opacity-40 text-white" />
@@ -621,16 +621,17 @@ function Locations({ data, updateData, onNext }) {
           <div className="pt-1">
             <button
               onClick={validateAndProceed}
-              className="w-full bg-[#D7B75E] hover:bg-[#c4a54e] text-black font-black py-3.5 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 shadow-xl"
+              className="w-full font-medium py-3.5 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 shadow-xl"
+              style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-dark)' }}
             >
-              BOOK NOW <ArrowRight size={18} />
+              GET MY PRICES <ArrowRight size={18} />
             </button>
           </div>
 
           {/* Footer Assistance */}
           <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-white/5 text-[11px] text-slate-500 uppercase tracking-tighter">
             <span>{serviceType === "hourly" ? "Chauffeur at disposal" : "15 Mins free waiting"}</span>
-            <div className="flex items-center gap-2 text-[#D7B75E] font-bold mt-2 sm:mt-0">
+            <div className="flex items-center gap-2 text-[var(--color-primary)] font-bold mt-2 sm:mt-0">
               <Phone size={12} /> +44 (0) 203 475 9906
             </div>
           </div>

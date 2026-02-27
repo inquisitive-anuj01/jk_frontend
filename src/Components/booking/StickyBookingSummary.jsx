@@ -27,8 +27,6 @@ function StickyBookingSummary({
   currentStep,
   onGoBack,
 }) {
-  const goldColor = "#c9a84c";
-
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
     const dateObj = new Date(dateStr);
@@ -47,23 +45,22 @@ function StickyBookingSummary({
       className="rounded-2xl overflow-hidden shadow-2xl"
       style={{
         backgroundColor: "#141414",
-        border: "1px solid rgba(255, 255, 255, 0.05)",
-        fontFamily: 'Inter, system-ui, sans-serif'
+        border: "1px solid rgba(255, 255, 255, 0.05)"
       }}
     >
       {/* Header - Minimalist Route Path */}
       <div
         className="p-5"
         style={{
-          background: `linear-gradient(180deg, ${goldColor}12 0%, transparent 100%)`,
+          background: `linear-gradient(180deg, rgba(215, 183, 94, 0.12) 0%, transparent 100%)`,
           borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
         }}
       >
         <div className="relative flex flex-col gap-4">
           <div className="flex gap-4 items-start relative">
             <div className="flex flex-col items-center pt-1.5">
-              <div className="w-2.5 h-2.5 rounded-full border border-white/20" style={{ backgroundColor: goldColor }} />
-              <div className="w-[1px] h-8 bg-gradient-to-b from-[#c9a84c] to-white/10 my-1" />
+              <div className="w-2.5 h-2.5 rounded-full border border-white/20" style={{ backgroundColor: 'var(--color-primary)' }} />
+              <div className="w-[1px] h-8 bg-gradient-to-b from-[var(--color-primary)] to-white/10 my-1" />
               <div className="w-2.5 h-2.5 rounded-full border border-white/20 bg-white/10" />
             </div>
 
@@ -88,14 +85,14 @@ function StickyBookingSummary({
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2 text-white/40">
-              <Calendar size={14} style={{ color: goldColor }} />
+              <Calendar size={14} style={{ color: 'var(--color-primary)' }} />
               <span className="text-[10px] uppercase tracking-wider">Date</span>
             </div>
             <p className="text-sm text-white font-medium pl-5">{formatDate(date) || "—"}</p>
           </div>
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2 text-white/40">
-              <Clock size={14} style={{ color: goldColor }} />
+              <Clock size={14} style={{ color: 'var(--color-primary)' }} />
               <span className="text-[10px] uppercase tracking-wider">Time</span>
             </div>
             <p className="text-sm text-white font-medium pl-5">{time || "—"}</p>
@@ -106,7 +103,7 @@ function StickyBookingSummary({
         <div className="bg-white/[0.03] rounded-xl p-3 border border-white/[0.05]">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <Car size={16} style={{ color: goldColor }} />
+              <Car size={16} style={{ color: 'var(--color-primary)' }} />
               <span className="text-xs font-semibold text-white/80 uppercase tracking-wide">Vehicle Details</span>
             </div>
             {vehicle?.class && (
@@ -164,10 +161,9 @@ function StickyBookingSummary({
               <span
                 className="text-3xl font-bold tracking-tighter"
                 style={{
-                  color: goldColor,
-                  fontFamily: 'Inter, system-ui, sans-serif', // Modern, clean sans
-                  fontVariantNumeric: 'tabular-nums',        // Fixes digit alignment
-                  textShadow: `0 0 20px ${goldColor}30`,      // Soft premium glow
+                  color: 'var(--color-primary)',
+                  fontVariantNumeric: 'tabular-nums',
+                  textShadow: '0 0 20px rgba(215, 183, 94, 0.3)',
                 }}
               >
                 £{vehicle?.price ? vehicle.price.toFixed(2) : "0.00"}
