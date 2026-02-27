@@ -1,3 +1,4 @@
+import React from "react";
 import {
   MapPin,
   Calendar,
@@ -6,9 +7,9 @@ import {
   Users,
   Briefcase,
   ChevronLeft,
+  Info
 } from "lucide-react";
 
-// Maps "current step" → what clicking the back button does & what to label it
 const STEP_BACK_LABELS = {
   2: "Edit Location",
   3: "Edit Vehicle",
@@ -32,7 +33,6 @@ function StickyBookingSummary({
     if (!dateStr) return "";
     const dateObj = new Date(dateStr);
     return dateObj.toLocaleDateString("en-GB", {
-      weekday: "short",
       day: "numeric",
       month: "short",
       year: "numeric",
@@ -44,267 +44,153 @@ function StickyBookingSummary({
 
   return (
     <div
-      className="rounded-2xl overflow-hidden"
+      className="rounded-2xl overflow-hidden shadow-2xl"
       style={{
-        backgroundColor: "#1a1a1a",
-        border: "1px solid rgba(255, 255, 255, 0.08)",
+        backgroundColor: "#141414",
+        border: "1px solid rgba(255, 255, 255, 0.05)",
+        fontFamily: 'Inter, system-ui, sans-serif'
       }}
     >
-      {/* Header - Route */}
+      {/* Header - Minimalist Route Path */}
       <div
-        className="p-4"
+        className="p-5"
         style={{
-          background: `linear-gradient(135deg, ${goldColor}15, ${goldColor}08)`,
-          borderBottom: `1px solid ${goldColor}30`,
+          background: `linear-gradient(180deg, ${goldColor}12 0%, transparent 100%)`,
+          borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
         }}
       >
-        <div className="flex items-center gap-3">
-          <div
-            className="flex flex-col items-center"
-            style={{ color: goldColor }}
-          >
-            <div
-              className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: goldColor }}
-            />
-            <div
-              className="w-0.5 h-10 my-1"
-              style={{
-                background: `linear-gradient(to bottom, ${goldColor}, rgba(255,255,255,0.3))`,
-              }}
-            />
-            <div
-              className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: "rgba(255,255,255,0.5)" }}
-            />
-          </div>
-          <div className="flex-1">
-            <div className="mb-2">
-              <p
-                className="text-[10px] uppercase tracking-wider"
-                style={{ color: goldColor }}
-              >
-                From
-              </p>
-              <p className="font-semibold text-white text-sm break-words">
-                {from || "—"}
-              </p>
+        <div className="relative flex flex-col gap-4">
+          <div className="flex gap-4 items-start relative">
+            <div className="flex flex-col items-center pt-1.5">
+              <div className="w-2.5 h-2.5 rounded-full border border-white/20" style={{ backgroundColor: goldColor }} />
+              <div className="w-[1px] h-8 bg-gradient-to-b from-[#c9a84c] to-white/10 my-1" />
+              <div className="w-2.5 h-2.5 rounded-full border border-white/20 bg-white/10" />
             </div>
-            <div>
-              <p
-                className="text-[10px] uppercase tracking-wider"
-                style={{ color: "rgba(255,255,255,0.5)" }}
-              >
-                To
-              </p>
-              <p className="font-semibold text-white text-sm break-words">
-                {to || "—"}
-              </p>
+
+            <div className="flex flex-col gap-5 flex-1">
+              <div>
+                <span className="block text-[10px] uppercase tracking-[0.15em] mb-0.5 text-white/40 font-medium">Pick-up</span>
+                <p className="text-sm text-white/90 font-medium leading-snug">{from || "Not specified"}</p>
+              </div>
+              <div>
+                <span className="block text-[10px] uppercase tracking-[0.15em] mb-0.5 text-white/40 font-medium">Drop-off</span>
+                <p className="text-sm text-white/90 font-medium leading-snug">{to || "Not specified"}</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Summary Rows */}
-      <div className="p-4 space-y-3">
-        {/* Date */}
-        <div className="flex items-center gap-3">
-          <div
-            className="p-2 rounded-lg"
-            style={{ backgroundColor: `${goldColor}10` }}
-          >
-            <Calendar size={16} style={{ color: goldColor }} />
+      {/* Main Content Area */}
+      <div className="p-5 space-y-6">
+
+        {/* DateTime Group - Side by Side */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2 text-white/40">
+              <Calendar size={14} style={{ color: goldColor }} />
+              <span className="text-[10px] uppercase tracking-wider">Date</span>
+            </div>
+            <p className="text-sm text-white font-medium pl-5">{formatDate(date) || "—"}</p>
           </div>
-          <div className="flex-1">
-            <p
-              className="text-xs"
-              style={{ color: "rgba(255,255,255,0.5)" }}
-            >
-              Date
-            </p>
-            <p className="font-medium text-white text-sm">
-              {formatDate(date) || "—"}
-            </p>
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2 text-white/40">
+              <Clock size={14} style={{ color: goldColor }} />
+              <span className="text-[10px] uppercase tracking-wider">Time</span>
+            </div>
+            <p className="text-sm text-white font-medium pl-5">{time || "—"}</p>
           </div>
         </div>
 
-        {/* Time */}
-        <div className="flex items-center gap-3">
-          <div
-            className="p-2 rounded-lg"
-            style={{ backgroundColor: `${goldColor}10` }}
-          >
-            <Clock size={16} style={{ color: goldColor }} />
+        {/* Vehicle Selection */}
+        <div className="bg-white/[0.03] rounded-xl p-3 border border-white/[0.05]">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Car size={16} style={{ color: goldColor }} />
+              <span className="text-xs font-semibold text-white/80 uppercase tracking-wide">Vehicle Details</span>
+            </div>
+            {vehicle?.class && (
+              <span className="text-[9px] bg-white/10 px-2 py-0.5 rounded text-white/60 uppercase">{vehicle.class}</span>
+            )}
           </div>
-          <div className="flex-1">
-            <p
-              className="text-xs"
-              style={{ color: "rgba(255,255,255,0.5)" }}
-            >
-              Time
-            </p>
-            <p className="font-medium text-white text-sm">{time || "—"}</p>
+          <p className="text-sm text-white font-medium mb-2">{vehicle?.name || "No vehicle selected"}</p>
+
+          <div className="flex gap-4">
+            <div className="flex items-center gap-1.5 text-white/50">
+              <Users size={13} />
+              <span className="text-xs">{vehicle?.pax || 0} Pax</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-white/50">
+              <Briefcase size={13} />
+              <span className="text-xs">{vehicle?.luggage || 0} Bags</span>
+            </div>
           </div>
         </div>
 
-        {/* Vehicle */}
-        <div className="flex items-center gap-3">
-          <div
-            className="p-2 rounded-lg"
-            style={{ backgroundColor: `${goldColor}10` }}
-          >
-            <Car size={16} style={{ color: goldColor }} />
+        {/* Passenger & Extras */}
+        {(passengerName || (extras && extras.length > 0)) && (
+          <div className="space-y-4 pt-2">
+            {passengerName && (
+              <div>
+                <span className="block text-[10px] uppercase tracking-wider text-white/40 mb-1">Lead Passenger</span>
+                <p className="text-sm text-white/90">{passengerName}</p>
+              </div>
+            )}
+
+            {extras && extras.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {extras.map((extra, i) => (
+                  <span key={i} className="text-[10px] px-2 py-1 bg-white/5 border border-white/10 rounded text-white/70">
+                    {extra}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
-          <div className="flex-1">
-            <p
-              className="text-xs"
-              style={{ color: "rgba(255,255,255,0.5)" }}
-            >
-              Vehicle
-            </p>
-            <p className="font-medium text-white text-sm">
-              {vehicle?.name || "—"}
-            </p>
-            <p
-              className="text-xs"
-              style={{ color: "rgba(255,255,255,0.4)" }}
-            >
-              {vehicle?.class ? `${vehicle.class} Class` : ""}
-            </p>
-          </div>
-          {vehicle?.price && (
+        )}
+
+        {/* Pricing Section */}
+        <div className="pt-4 border-t border-white/10">
+          <div className="flex justify-between items-end">
+            <div className="space-y-1">
+              <span className="block text-[10px] uppercase tracking-[0.2em] text-white/30">Total Estimate</span>
+              <div className="flex items-center gap-1 text-[10px] text-green-500/80">
+                <Info size={10} />
+                <span>All-inclusive price</span>
+              </div>
+            </div>
             <div className="text-right">
-              <p
-                className="text-lg font-bold"
-                style={{ color: goldColor }}
+
+              <span
+                className="text-3xl font-bold tracking-tighter"
+                style={{
+                  color: goldColor,
+                  fontFamily: 'Inter, system-ui, sans-serif', // Modern, clean sans
+                  fontVariantNumeric: 'tabular-nums',        // Fixes digit alignment
+                  textShadow: `0 0 20px ${goldColor}30`,      // Soft premium glow
+                }}
               >
-                £{vehicle.price.toFixed(2)}
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Capacity */}
-        {(vehicle?.pax || vehicle?.luggage) && (
-          <div className="flex items-center gap-3 pt-2 border-t" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
-            <div
-              className="flex items-center gap-3"
-              style={{ color: "rgba(255,255,255,0.6)" }}
-            >
-              {vehicle?.pax && (
-                <span className="flex items-center gap-1.5 text-sm">
-                  <Users size={14} style={{ color: goldColor }} />
-                  <span style={{ color: "rgba(255,255,255,0.5)" }}>Pax:</span>
-                  <span className="font-medium text-white">{vehicle.pax}</span>
-                </span>
-              )}
-              {vehicle?.luggage && (
-                <span className="flex items-center gap-1.5 text-sm">
-                  <Briefcase size={14} style={{ color: goldColor }} />
-                  <span style={{ color: "rgba(255,255,255,0.5)" }}>Luggage:</span>
-                  <span className="font-medium text-white">{vehicle.luggage}</span>
-                </span>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Passenger */}
-        <div className="flex items-center gap-3 pt-2 border-t" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
-          <div
-            className="p-2 rounded-lg"
-            style={{ backgroundColor: `${goldColor}10` }}
-          >
-            <Users size={16} style={{ color: goldColor }} />
-          </div>
-          <div className="flex-1">
-            <p
-              className="text-xs"
-              style={{ color: "rgba(255,255,255,0.5)" }}
-            >
-              Passenger
-            </p>
-            <p className="font-medium text-white text-sm">
-              {passengerName || "—"}
-            </p>
-          </div>
-        </div>
-
-        {/* Extras */}
-        {extras && extras.length > 0 && (
-          <div className="pt-2 border-t" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
-            <p
-              className="text-xs mb-2"
-              style={{ color: "rgba(255,255,255,0.5)" }}
-            >
-              Extras
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {extras.map((extra, index) => (
-                <span
-                  key={index}
-                  className="px-2.5 py-1 rounded-full text-xs font-medium"
-                  style={{
-                    backgroundColor: `${goldColor}15`,
-                    color: goldColor,
-                    border: `1px solid ${goldColor}30`,
-                  }}
-                >
-                  {extra}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Total Price */}
-        <div
-          className="mt-4 py-2 rounded-xl px-3"
-          style={{
-            background: `linear-gradient(135deg, rgba(201, 168, 76, 0.12), rgba(201, 168, 76, 0.04))`,
-            border: `1px solid ${goldColor}40`,
-          }}
-        >
-          <div className="flex justify-between items-center">
-            <div>
-              <span className="text-xs uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.5)" }}>
-                Total Price
+                £{vehicle?.price ? vehicle.price.toFixed(2) : "0.00"}
               </span>
-              <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>Including all taxes &amp; fees</p>
             </div>
-            <span
-              className="text-3xl font-bold"
-              style={{ color: goldColor, textShadow: `0 0 20px ${goldColor}40` }}
-            >
-              £{vehicle?.price ? Math.round(vehicle.price).toFixed(0) : "0"}
-            </span>
           </div>
         </div>
 
-        {/* ── Edit Previous Step Button (desktop only) ── */}
+        {/* Navigation */}
         {showBackButton && (
           <button
             onClick={onGoBack}
-            className="w-full mt-2 py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200"
+            className="group w-full flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-semibold uppercase tracking-widest transition-all"
             style={{
-              backgroundColor: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              color: "rgba(255,255,255,0.7)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.09)";
-              e.currentTarget.style.color = "#fff";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.05)";
-              e.currentTarget.style.color = "rgba(255,255,255,0.7)";
+              backgroundColor: "rgba(255,255,255,0.03)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              color: "white",
             }}
           >
-            <ChevronLeft size={16} />
+            <ChevronLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
             {backLabel}
           </button>
         )}
-
       </div>
     </div>
   );

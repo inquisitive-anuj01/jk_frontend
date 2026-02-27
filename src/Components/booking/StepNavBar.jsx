@@ -30,10 +30,9 @@ function StepNavBar({
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-stretch gap-3 pt-6 sticky bottom-0 pb-6 z-10 w-full"
+            className="flex items-stretch gap-3 pt-6 sticky bottom-0 pb-6 z-10 w-full px-4 lg:px-8"
             style={{
-                background:
-                    "linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.85) 65%, transparent 100%)",
+                background: "transparent",
             }}
         >
             {/* ── Back / Edit Button ── */}

@@ -354,7 +354,7 @@ function Booking() {
       </div>
 
       {/* --- TWO-COLUMN LAYOUT (desktop) / SINGLE-COLUMN (mobile) --- */}
-      <div className="max-w-7xl mx-auto mt-0 px-4 lg:px-8">
+      <div className="max-w-7xl mx-auto mt-0 px-0 lg:px-8">
         <div className="flex flex-col lg:flex-row lg:gap-8">
 
           {/* LEFT: Main content — full width on mobile, 60% on desktop (full width on review/payment) */}
