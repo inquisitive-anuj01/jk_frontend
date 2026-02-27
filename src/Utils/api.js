@@ -349,5 +349,13 @@ export const contactAPI = {
     },
 };
 
-export default api;
+// FAQ APIs
+export const faqAPI = {
+    // Get all active FAQs
+    getFAQs: async () => {
+        const response = await api.get("/api/faqs");
+        return response.data;
+    },
+};
 
+export default api;
