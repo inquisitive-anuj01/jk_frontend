@@ -22,6 +22,7 @@ import {
   TestTube2,
 } from "lucide-react";
 
+
 // Test mode origins - must match server configuration
 const TEST_MODE_ORIGINS = [
   "http://localhost",
