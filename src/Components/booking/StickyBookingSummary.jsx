@@ -48,31 +48,72 @@ function StickyBookingSummary({
         border: "1px solid rgba(255, 255, 255, 0.05)"
       }}
     >
-      {/* Header - Minimalist Route Path */}
+      {/* Header - Timeline Route Path */}
       <div
         className="p-5"
         style={{
-          background: `linear-gradient(180deg, rgba(215, 183, 94, 0.12) 0%, transparent 100%)`,
-          borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
+          background: `linear-gradient(180deg, rgba(215, 183, 94, 0.15) 0%, rgba(215, 183, 94, 0.05) 60%, transparent 100%)`,
+          borderBottom: "1px solid rgba(255, 255, 255, 0.06)",
         }}
       >
-        <div className="relative flex flex-col gap-4">
-          <div className="flex gap-4 items-start relative">
-            <div className="flex flex-col items-center pt-1.5">
-              <div className="w-2.5 h-2.5 rounded-full border border-white/20" style={{ backgroundColor: 'var(--color-primary)' }} />
-              <div className="w-[1px] h-8 bg-gradient-to-b from-[var(--color-primary)] to-white/10 my-1" />
-              <div className="w-2.5 h-2.5 rounded-full border border-white/20 bg-white/10" />
-            </div>
+        <div className="flex gap-4">
+          {/* Timeline Track */}
+          <div className="relative flex flex-col items-center w-3 shrink-0 pt-1">
+            {/* Top Dot - Active */}
+            <div 
+              className="w-3 h-3 rounded-full z-10 shadow-lg" 
+              style={{ 
+                backgroundColor: 'var(--color-primary)', 
+                border: '2px solid rgba(255,255,255,0.15)',
+                boxShadow: '0 0 12px rgba(215, 183, 94, 0.5)'
+              }} 
+            />
+            
+            {/* Connecting Line */}
+            <div 
+              className="absolute top-3.5 bottom-3 w-[2px] rounded-full" 
+              style={{ 
+                background: `linear-gradient(to bottom, var(--color-primary) 0%, rgba(215, 183, 94, 0.4) 50%, rgba(255,255,255,0.08) 100%)` 
+              }} 
+            />
+            
+            {/* Bottom Dot - Inactive */}
+            <div 
+              className="mt-auto w-3 h-3 rounded-full z-10" 
+              style={{ 
+                backgroundColor: '#1a1a1a', 
+                border: '2px solid rgba(255,255,255,0.12)' 
+              }} 
+            />
+          </div>
 
-            <div className="flex flex-col gap-5 flex-1">
-              <div>
-                <span className="block text-[10px] uppercase tracking-[0.15em] mb-0.5 text-white/40 font-medium">Pick-up</span>
-                <p className="text-sm text-white/90 font-medium leading-snug">{from || "Not specified"}</p>
+          {/* Text Content */}
+          <div className="flex flex-col gap-5 flex-1 min-w-0">
+            {/* Pick-up */}
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <div 
+                  className="w-1.5 h-1.5 rounded-full" 
+                  style={{ backgroundColor: 'var(--color-primary)' }} 
+                />
+                <span className="text-[9px] uppercase tracking-[0.2em] text-white/35 font-semibold">Pick-up</span>
               </div>
-              <div>
-                <span className="block text-[10px] uppercase tracking-[0.15em] mb-0.5 text-white/40 font-medium">Drop-off</span>
-                <p className="text-sm text-white/90 font-medium leading-snug">{to || "Not specified"}</p>
+              <p className="text-sm text-white/95 font-medium leading-snug break-words">
+                {from || <span className="text-white/30">Not specified</span>}
+              </p>
+            </div>
+            
+            {/* Drop-off */}
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <div 
+                  className="w-1.5 h-1.5 rounded-full bg-white/20" 
+                />
+                <span className="text-[9px] uppercase tracking-[0.2em] text-white/35 font-semibold">Drop-off</span>
               </div>
+              <p className="text-sm text-white/95 font-medium leading-snug break-words">
+                {to || <span className="text-white/30">Not specified</span>}
+              </p>
             </div>
           </div>
         </div>
@@ -112,14 +153,14 @@ function StickyBookingSummary({
           </div>
           <p className="text-sm text-white font-medium mb-2">{vehicle?.name || "No vehicle selected"}</p>
 
-          <div className="flex gap-4">
-            <div className="flex items-center gap-1.5 text-white/50">
-              <Users size={13} />
-              <span className="text-xs">{vehicle?.pax || 0} Pax</span>
+          <div className="flex gap-5">
+            <div className="flex items-center gap-2 text-white/60">
+              <Users size={18} strokeWidth={2} />
+              <span className="text-sm font-medium">{vehicle?.pax || 0} Pax</span>
             </div>
-            <div className="flex items-center gap-1.5 text-white/50">
-              <Briefcase size={13} />
-              <span className="text-xs">{vehicle?.luggage || 0} Bags</span>
+            <div className="flex items-center gap-2 text-white/60">
+              <Briefcase size={18} strokeWidth={2} />
+              <span className="text-sm font-medium">{vehicle?.luggage || 0} Bags</span>
             </div>
           </div>
         </div>
