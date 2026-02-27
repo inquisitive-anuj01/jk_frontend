@@ -562,7 +562,7 @@ function Locations({ data, updateData, onNext }) {
           </div>
 
           {/* Date & Time Row */}
-          <div className="grid grid-cols-2 gap-4 overflow-visible">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-visible">
             <div className="space-y-1.5">
               <label className="text-[10px] uppercase tracking-widest font-bold text-[#D7B75E] ml-1">Date</label>
               <div className="relative">
