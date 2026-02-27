@@ -1,48 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Plus, Minus } from "lucide-react";
-
-const faqs = [
-  {
-    question: "What makes your service different from competitors?",
-    answer:
-      "We obsess over performance and simplicity. Where others stack features, we refine existing ones until they become invisible. Every interaction is benchmarked, every pixel intentional. The result is a product that feels effortless — because we did the hard work so you don't have to.",
-    tag: "Philosophy",
-  },
-  {
-    question: "How do you handle data privacy and GDPR compliance?",
-    answer:
-      "Data privacy is built into our architecture from day one — not bolted on as an afterthought. We are fully GDPR and CCPA compliant. Data processing agreements are available on request, and you can export or permanently delete your data at any time via the account dashboard.",
-    tag: "Privacy",
-  },
-  {
-    question: "What integrations do you offer out of the box?",
-    answer:
-      "We connect natively with Slack, Notion, Linear, GitHub, Figma, Jira, Salesforce, and 60+ other tools. Our Zapier and Make integrations extend this to thousands more. Custom webhooks and a REST API are available on all paid plans.",
-    tag: "Integrations",
-  },
-  {
-    question: "Is onboarding support included in all plans?",
-    answer:
-      "Starter plans include self-serve resources and community forum access. Pro includes two dedicated onboarding sessions with a product specialist. Enterprise clients receive a named Customer Success Manager and a bespoke 30-60-90 day success plan.",
-    tag: "Support",
-  },
-  {
-    question: "Can I change or cancel my plan at any time?",
-    answer:
-      "Yes — always. Upgrade, downgrade, or cancel from your account settings in seconds. No phone calls, no penalty fees, no dark patterns. If you cancel, your data stays accessible for 30 days and you receive a prorated refund for unused time.",
-    tag: "Billing",
-  },
-  {
-    question: "Do you offer a free trial or sandbox environment?",
-    answer:
-      "Every account starts with a 14-day free trial of our Pro plan — no credit card required. We also provide a persistent sandbox environment with synthetic data so your team can test integrations and workflows without touching production.",
-    tag: "Trial",
-  },
-];
+import { Plus, Minus, Loader2 } from "lucide-react";
+import { faqAPI } from "../../Utils/api";
 
 export default function FAQSection() {
+  const [faqs, setFaqs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [openIndex, setOpenIndex] = useState(null);
+
+  useEffect(() => {
+    const fetchFAQs = async () => {
+      try {
+        setLoading(true);
+        const data = await faqAPI.getFAQs();
+        if (data.success) {
+          setFaqs(data.faqs);
+        } else {
+          setError("Failed to load FAQs");
+        }
+      } catch (err) {
+        console.error("Error fetching FAQs:", err);
+        setError("Something went wrong while fetching FAQs");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFAQs();
+  }, []);
 
   const toggle = (i) => setOpenIndex(openIndex === i ? null : i);
 
@@ -76,75 +62,96 @@ export default function FAQSection() {
         </div>
 
         {/* FAQ List */}
-        <div className="space-y-0">
-          {faqs.map((faq, i) => {
-            const isOpen = openIndex === i;
-            return (
-              <div
-                key={i}
-                className={`group grid grid-cols-[72px_1fr] gap-0 md:gap-8 border-t border-b border-white/10 cursor-pointer relative overflow-hidden transition-all duration-300 hover:border-[var(--color-primary)]/30 ${isOpen ? "open" : ""
-                  }`}
-                style={{ animationDelay: `${i * 0.08}s` }}
-                onClick={() => toggle(i)}
-                role="button"
-                aria-expanded={isOpen}
-                tabIndex={0}
-                onKeyDown={(e) => e.key === "Enter" && toggle(i)}
+        <div className="space-y-0 min-h-[200px] relative">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20 text-white/40">
+              <Loader2 className="w-8 h-8 animate-spin mb-4 text-[var(--color-primary)]" />
+              <p className="text-sm tracking-widest uppercase">Loading FAQs...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-20">
+              <p className="text-red-400 text-lg mb-4">{error}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="text-[var(--color-primary)] border border-[var(--color-primary)]/30 px-6 py-2 rounded-full hover:bg-[var(--color-primary)]/10 transition-colors"
               >
-
-                {/* Number */}
+                Try Again
+              </button>
+            </div>
+          ) : faqs.length === 0 ? (
+            <div className="text-center py-20 text-white/40">
+              <p>No questions found at the moment.</p>
+            </div>
+          ) : (
+            faqs.map((faq, i) => {
+              const isOpen = openIndex === i;
+              return (
                 <div
-                  className={`text-5xl font-bold leading-none relative z-10 pt-7 transition-colors duration-300 select-none ${isOpen ? "text-[var(--color-primary)]" : "text-white/15 group-hover:text-[var(--color-primary)]"
+                  key={faq._id || i}
+                  className={`group grid grid-cols-[72px_1fr] gap-0 md:gap-8 border-t border-b border-white/10 cursor-pointer relative overflow-hidden transition-all duration-300 hover:border-[var(--color-primary)]/30 ${isOpen ? "open" : ""
                     }`}
+                  style={{ animationDelay: `${i * 0.08}s` }}
+                  onClick={() => toggle(i)}
+                  role="button"
+                  aria-expanded={isOpen}
+                  tabIndex={0}
+                  onKeyDown={(e) => e.key === "Enter" && toggle(i)}
                 >
-                  {String(i + 1).padStart(2, "0")}
-                </div>
 
-                {/* Content */}
-                <div className="relative z-10 py-7 pr-8 md:pr-0">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-[0.6rem] font-medium tracking-[0.2em] uppercase text-[var(--color-primary)]">
-                      {faq.tag}
-                    </span>
-                    <div className="w-6 h-px bg-[var(--color-primary)]/40" />
-                  </div>
-                  <h3
-                    className={`text-lg md:text-xl font-semibold text-white leading-snug transition-colors duration-300 pr-10 group-hover:text-[var(--color-primary)]`}
-                  >
-                    {faq.question}
-                  </h3>
-
-                  {/* Animated answer */}
+                  {/* Number */}
                   <div
-                    className="grid transition-[grid-template-rows] duration-500 ease-out"
-                    style={{
-                      gridTemplateRows: isOpen ? "1fr" : "0fr",
-                    }}
-                  >
-                    <div className="overflow-hidden">
-                      <p className="text-lg text-white/60 leading-relaxed pb-7 pt-3 pr-10 border-t border-white/10 mt-1">
-                        {faq.answer}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Icon */}
-                  <div
-                    className={`absolute right-0 top-7 w-7 h-7 rounded-full border flex items-center justify-center transition-all duration-300 flex-shrink-0 ${isOpen
-                      ? "border-[var(--color-primary)] bg-[var(--color-primary)]"
-                      : "border-white/20 group-hover:border-[var(--color-primary)] group-hover:bg-[var(--color-primary)]"
+                    className={`text-5xl font-bold leading-none relative z-10 pt-7 transition-colors duration-300 select-none ${isOpen ? "text-[var(--color-primary)]" : "text-white/15 group-hover:text-[var(--color-primary)]"
                       }`}
                   >
-                    {isOpen ? (
-                      <Minus size={12} strokeWidth={2.5} className="text-black" />
-                    ) : (
-                      <Plus size={12} strokeWidth={2.5} className="text-white/50 group-hover:text-black transition-colors duration-300" />
-                    )}
+                    {String(i + 1).padStart(2, "0")}
+                  </div>
+
+                  {/* Content */}
+                  <div className="relative z-10 py-7 pr-8 md:pr-0">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-[0.6rem] font-medium tracking-[0.2em] uppercase text-[var(--color-primary)]">
+                        {faq.tag}
+                      </span>
+                      <div className="w-6 h-px bg-[var(--color-primary)]/40" />
+                    </div>
+                    <h3
+                      className={`text-lg md:text-xl font-semibold text-white leading-snug transition-colors duration-300 pr-10 group-hover:text-[var(--color-primary)]`}
+                    >
+                      {faq.question}
+                    </h3>
+
+                    {/* Animated answer */}
+                    <div
+                      className="grid transition-[grid-template-rows] duration-500 ease-out"
+                      style={{
+                        gridTemplateRows: isOpen ? "1fr" : "0fr",
+                      }}
+                    >
+                      <div className="overflow-hidden">
+                        <p className="text-lg text-white/60 leading-relaxed pb-7 pt-3 pr-10 border-t border-white/10 mt-1">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Icon */}
+                    <div
+                      className={`absolute right-0 top-7 w-7 h-7 rounded-full border flex items-center justify-center transition-all duration-300 flex-shrink-0 ${isOpen
+                        ? "border-[var(--color-primary)] bg-[var(--color-primary)]"
+                        : "border-white/20 group-hover:border-[var(--color-primary)] group-hover:bg-[var(--color-primary)]"
+                        }`}
+                    >
+                      {isOpen ? (
+                        <Minus size={12} strokeWidth={2.5} className="text-black" />
+                      ) : (
+                        <Plus size={12} strokeWidth={2.5} className="text-white/50 group-hover:text-black transition-colors duration-300" />
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
 
         {/* Footer CTA */}
