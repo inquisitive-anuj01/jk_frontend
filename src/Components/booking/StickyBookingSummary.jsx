@@ -141,7 +141,7 @@ function StickyBookingSummary({
         </div>
 
         {/* Vehicle Selection */}
-        <div className="bg-white/[0.03] rounded-xl p-3 border border-white/[0.05]">
+        <div className="bg-white/3 rounded-xl p-3 border border-white/5">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Car size={16} style={{ color: 'var(--color-primary)' }} />
@@ -217,11 +217,12 @@ function StickyBookingSummary({
         {showBackButton && (
           <button
             onClick={onGoBack}
-            className="group w-full flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-semibold uppercase tracking-widest transition-all"
+            className="group w-full flex cursor-pointer items-center justify-center gap-2 py-3 rounded-xl text-xs font-semibold uppercase tracking-widest transition-all"
             style={{
               backgroundColor: "rgba(255,255,255,0.03)",
               border: "1px solid rgba(255,255,255,0.08)",
               color: "white",
+              cursor: "pointer",
             }}
           >
             <ChevronLeft size={14} className="group-hover:-translate-x-1 transition-transform" />

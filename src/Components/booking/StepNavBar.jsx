@@ -79,6 +79,7 @@ function StepNavBar({
                                 backgroundColor: "var(--color-primary)",
                                 color: "var(--color-dark)",
                                 boxShadow: "0 8px 24px rgba(215,183,94,0.28)",
+                                cursor:"pointer"
                             }
                     }
                     onMouseEnter={(e) => {

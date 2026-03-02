@@ -19,9 +19,8 @@ const VehicleCard = ({ vehicle, isSelected, onSelect, isDisabled }) => {
     <motion.div
       layout
       onClick={() => !isDisabled && onSelect(vehicle)}
-      className={`relative mb-3 w-full transition-all duration-300 overflow-hidden border ${
-        isDisabled ? "opacity-30 grayscale pointer-events-none" : "cursor-pointer"
-      }`}
+      className={`relative mb-3 w-full transition-all duration-300 overflow-hidden border ${isDisabled ? "opacity-30 grayscale pointer-events-none" : "cursor-pointer"
+        }`}
       style={{
         backgroundColor: "#111",
         borderRadius: "12px",
@@ -70,10 +69,13 @@ const VehicleCard = ({ vehicle, isSelected, onSelect, isDisabled }) => {
             if (!isSelected) onSelect(vehicle);
             setShowBreakdown(!showBreakdown);
           }}
-          className="p-2 rounded-full border border-[var(--color-primary)]/30 hover:bg-[var(--color-primary)] group transition-colors"
+          className="p-2 rounded-full border cursor-pointer border-[var(--color-primary)]/30 hover:bg-[var(--color-primary)] group transition-colors"
         >
           <motion.div animate={{ rotate: showBreakdown ? 180 : 0 }}>
-            <ChevronDown size={16} className="group-hover:text-[var(--color-dark)]" style={{ color: 'var(--color-primary)' }} />
+            <ChevronDown
+              size={16}
+              className="text-[var(--color-primary)] group-hover:text-black transition-colors"
+            />
           </motion.div>
         </button>
       </div>
