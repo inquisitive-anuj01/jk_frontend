@@ -1,20 +1,5 @@
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-
-/**
- * StepNavBar — shared sticky bottom navigation bar used on every booking step.
- *
- * Props:
- *  onBack          – handler for the back / edit button
- *  onContinue      – handler for the continue / primary action button
- *  backLabel       – text shown on the back button        (default "BACK")
- *  continueLabel   – text shown on the continue button   (default "CONTINUE")
- *  continueIcon    – optional Lucide icon component to show beside continue label
- *  disabled        – disables the continue button when true
- *  isLoading       – shows a spinner inside the continue button
- *  hideBack        – hides the back button entirely
- *  hideContinue    – hides the continue button entirely
- */
 function StepNavBar({
     onBack,
     onContinue,
