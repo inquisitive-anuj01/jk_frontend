@@ -107,7 +107,7 @@ const CustomDropdown = ({
                     key={option.value}
                     type="button"
                     onClick={() => handleSelect(option.value)}
-                    className={`w-full flex items-center justify-between px-4 py-3 text-left transition-all shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] duration-150 ${isSelected
+                    className={`w-full flex items-center justify-between px-4 py-3 text-left transition-all  duration-150 ${isSelected
                         ? "bg-amber-50 text-amber-700 font-semibold"
                         : "text-gray-700 hover:bg-gray-50"
                       }`}
