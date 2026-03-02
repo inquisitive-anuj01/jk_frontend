@@ -1,6 +1,7 @@
 import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
+import WhatsAppButton from './WhatsAppButton';
 import ContactForm from './ContactForm';
 import ScrollToTopButton from '../Components/extras/ScrollToTopButton';
 
@@ -13,6 +14,7 @@ function Layout({ children, isHeroPage = false, headerTheme = 'dark', showContac
       </div>
       {showContactForm && <ContactForm />}
       <Footer />
+      <WhatsAppButton />
       <ScrollToTopButton />
     </div>
   );
