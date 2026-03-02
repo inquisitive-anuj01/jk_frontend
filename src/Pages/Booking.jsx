@@ -296,11 +296,8 @@ function Booking() {
       {/* --- STEPS INDICATOR --- */}
       <div className="pt-32 md:pt-36 pb-6" style={{ backgroundColor: 'var(--color-dark)' }}>
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
-          {/* Stepper — centred on mobile, left-aligned on desktop (centred when sidebar hidden) */}
-          <div className={`flex items-center space-x-1 lg:space-x-4 text-sm ${showSummary || currentStep === 4
-              ? "justify-center"
-              : "justify-center lg:justify-start"
-            }`}>
+          {/* Stepper — always centered */}
+          <div className="flex items-center space-x-1 lg:space-x-4 text-sm justify-center">
             {STEPS.map((step, index) => (
               <React.Fragment key={step.id}>
                 {index > 0 && (
@@ -357,8 +354,8 @@ function Booking() {
       <div className="max-w-7xl mx-auto mt-0 px-4 lg:px-8">
         <div className="flex flex-col lg:flex-row lg:gap-8">
 
-          {/* LEFT: Main content — full width on mobile, 60% on desktop (full width on review/payment) */}
-          <div className={`w-full min-w-0 ${showSummary || currentStep === 4 ? "" : "lg:w-[60%]"
+          {/* LEFT: Main content — full width on mobile, 60% on desktop (full width on Step 1, review, and payment) */}
+          <div className={`w-full min-w-0 ${showSummary || currentStep === 4 || currentStep === 1 ? "" : "lg:w-[60%]"
             }`}>
             <AnimatePresence mode="wait">
               {currentStep === 1 && (
@@ -473,8 +470,8 @@ function Booking() {
             </AnimatePresence>
           </div>
 
-          {/* RIGHT: Sticky summary — hidden on mobile/tablet, review step, and payment step */}
-          {!showSummary && currentStep !== 4 && (
+          {/* RIGHT: Sticky summary — hidden on mobile/tablet, Step 1, review step, and payment step */}
+          {!showSummary && currentStep !== 1 && currentStep !== 4 && (
             <div className="hidden lg:block lg:w-[40%]">
               <div className="sticky top-32">
                 <StickyBookingSummary

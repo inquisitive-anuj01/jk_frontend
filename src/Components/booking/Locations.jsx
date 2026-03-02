@@ -41,8 +41,26 @@ const customStyles = `
   }
   .pac-item-query { color: #fff !important; }
   .pac-matched { color: var(--color-primary) !important; }
-  .scrollbar-hide::-webkit-scrollbar { display: none; }
-  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  
+  /* Custom Scrollbar Styles for Pickers */
+  .picker-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .picker-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+  }
+  .picker-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(215, 183, 94, 0.5);
+    border-radius: 3px;
+  }
+  .picker-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(215, 183, 94, 0.8);
+  }
+  .picker-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(215, 183, 94, 0.5) rgba(255, 255, 255, 0.05);
+  }
 `;
 
 // --- HELPER: CLICK OUTSIDE HOOK ---
@@ -60,6 +78,8 @@ function useClickOutside(ref, handler) {
 // --- CUSTOM TIME PICKER COMPONENT ---
 const CustomTimePicker = ({ value, onChange, onClose }) => {
   const wrapperRef = useRef(null);
+  const hoursScrollRef = useRef(null);
+  const minutesScrollRef = useRef(null);
   useClickOutside(wrapperRef, onClose);
 
   const [hours, setHours] = useState("12");
@@ -76,9 +96,29 @@ const CustomTimePicker = ({ value, onChange, onClose }) => {
     }
   }, [value]);
 
+  // Scroll selected item into view when value changes
+  useEffect(() => {
+    if (hoursScrollRef.current) {
+      const selectedEl = hoursScrollRef.current.querySelector(`[data-hour="${hours}"]`);
+      if (selectedEl) {
+        selectedEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
+    }
+    if (minutesScrollRef.current) {
+      const selectedEl = minutesScrollRef.current.querySelector(`[data-minute="${minutes}"]`);
+      if (selectedEl) {
+        selectedEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
+    }
+  }, [hours, minutes]);
+
   const handleConfirm = () => {
     onChange(`${hours}:${minutes} ${ampm}`);
     onClose();
+  };
+
+  const handleWheel = (e) => {
+    e.stopPropagation(); // Prevent background from scrolling
   };
 
   const hoursArr = Array.from({ length: 12 }, (_, i) =>
@@ -102,14 +142,19 @@ const CustomTimePicker = ({ value, onChange, onClose }) => {
         <span className="w-1/3">Session</span>
       </div>
 
-      <div className="flex justify-between h-40 overflow-hidden relative py-2" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+      <div className="flex justify-between h-40 relative py-2 overflow-hidden" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
         {/* Hours */}
-        <div className="w-1/3 overflow-y-auto scrollbar-hide text-center snap-y">
+        <div 
+          ref={hoursScrollRef}
+          className="w-1/3 overflow-y-auto scrollbar-hide text-center snap-y snap-mandatory scroll-smooth"
+          onWheel={handleWheel}
+        >
           {hoursArr.map((h) => (
             <div
               key={h}
+              data-hour={h}
               onClick={() => setHours(h)}
-              className={`py-2 cursor-pointer transition-colors snap-center ${hours === h
+              className={`py-3 cursor-pointer transition-colors snap-center ${hours === h
                 ? "font-bold text-2xl"
                 : "text-lg"
                 }`}
@@ -121,12 +166,18 @@ const CustomTimePicker = ({ value, onChange, onClose }) => {
         </div>
 
         {/* Minutes */}
-        <div className="w-1/3 overflow-y-auto scrollbar-hide text-center snap-y" style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)' }}>
+        <div 
+          ref={minutesScrollRef}
+          className="w-1/3 overflow-y-auto scrollbar-hide text-center snap-y snap-mandatory scroll-smooth" 
+          style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', borderRight: '1px solid rgba(255,255,255,0.1)' }}
+          onWheel={handleWheel}
+        >
           {minutesArr.map((m) => (
             <div
               key={m}
+              data-minute={m}
               onClick={() => setMinutes(m)}
-              className={`py-2 cursor-pointer transition-colors snap-center ${minutes === m
+              className={`py-3 cursor-pointer transition-colors snap-center ${minutes === m
                 ? "font-bold text-2xl"
                 : "text-lg"
                 }`}
@@ -450,7 +501,7 @@ function Locations({ data, updateData, onNext }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto font-sans text-slate-200">
+    <div className="max-w-3xl mx-auto font-sans text-slate-200">
       <style>{customStyles}</style>
 
       <div className="relative rounded-2xl border border-white/10 bg-black/40 backdrop-blur-xl shadow-2xl">
