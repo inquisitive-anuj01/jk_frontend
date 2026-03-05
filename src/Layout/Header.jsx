@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Phone, Menu, X, ChevronDown, ChevronRight } from 'lucide-react';
 import JkLogo from "../assets/JkLogo.png"
 import { serviceAPI, fleetAPI, eventAPI } from '../Utils/api';
+import Analytics from '../Utils/analytics';
 
 // Static nav items (non-service items)
 const STATIC_NAV_ITEMS = [
@@ -46,8 +47,9 @@ function Header({ isTransparent = false, theme = 'dark' }) {
   const [serviceMenuItems, setServiceMenuItems] = useState([]);
   const location = useLocation();
 
-  // Check if we're on the home page
+  // Check if we're on the home page or booking page
   const isHomePage = location.pathname === '/';
+  const isBookingPage = location.pathname === '/booking';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -191,6 +193,7 @@ function Header({ isTransparent = false, theme = 'dark' }) {
             {/* Phone Number - Left on desktop, hidden on mobile */}
             <a
               href="tel:+442012345678"
+              onClick={() => Analytics.trackCallClick('header_desktop_phone')}
               className={`hidden md:flex items-center gap-2 transition-colors group ${textColor}`}
             >
               <span className={`flex items-center justify-center w-6 h-6 rounded-full transition-colors ${phoneIconBg}`}>
@@ -225,9 +228,9 @@ function Header({ isTransparent = false, theme = 'dark' }) {
 
             {/* Right side container */}
             <div className="flex items-center gap-3">
-              {/* Mobile Book Now Button */}
+              {/* Mobile Book Now Button - Hidden on booking page */}
               <AnimatePresence>
-                {isScrolled && (
+                {isScrolled && !isBookingPage && (
                   <motion.div
                     initial={{ opacity: 0, x: 20, scale: 0.9 }}
                     animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -237,6 +240,7 @@ function Header({ isTransparent = false, theme = 'dark' }) {
                   >
                     <Link
                       to="/booking"
+                      onClick={() => Analytics.trackBookingClick('header_mobile_scrolled_book_now')}
                       className="px-4 py-2 text-black font-semibold text-xs uppercase tracking-wider rounded transition-all duration-300 whitespace-nowrap"
                       style={{ backgroundColor: 'var(--color-primary)' }}
                     >
@@ -246,25 +250,27 @@ function Header({ isTransparent = false, theme = 'dark' }) {
                 )}
               </AnimatePresence>
 
-              {/* Book Now Button (Desktop only) */}
-              <Link
-                to="/booking"
-                className="hidden md:block px-4 py-2.5 md:px-6 text-black font-semibold text-sm uppercase tracking-wider rounded transition-all duration-300"
-                style={{
-                  backgroundColor: 'var(--color-primary)',
-                  boxShadow: 'none'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--color-primary-hover)';
-                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(var(--color-primary-rgb), 0.4)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--color-primary)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-              >
-                Book Now
-              </Link>
+              {/* Book Now Button (Desktop only) - Hidden on booking page */}
+              {!isBookingPage && (
+                <Link
+                  to="/booking"
+                  className="hidden md:block px-4 py-2.5 md:px-6 text-black font-semibold text-sm uppercase tracking-wider rounded transition-all duration-300"
+                  style={{
+                    backgroundColor: 'var(--color-primary)',
+                    boxShadow: 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--color-primary-hover)';
+                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(var(--color-primary-rgb), 0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  Book Now
+                </Link>
+              )}
 
               {/* Mobile Menu Button */}
               <button
@@ -443,7 +449,10 @@ function Header({ isTransparent = false, theme = 'dark' }) {
                 style={{ backgroundColor: 'var(--color-primary)' }}
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary-hover)'}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={() => {
+                  Analytics.trackBookingClick('header_mobile_menu_book_now');
+                  setIsMobileMenuOpen(false);
+                }}
               >
                 Book Now
               </Link>
@@ -451,6 +460,7 @@ function Header({ isTransparent = false, theme = 'dark' }) {
               {/* Mobile Phone */}
               <a
                 href="tel:+442012345678"
+                onClick={() => Analytics.trackCallClick('header_mobile_menu_phone')}
                 className="flex items-center justify-center gap-2 mt-6 text-white/70 hover:text-white transition-colors"
               >
                 <Phone className="w-4 h-4" />
