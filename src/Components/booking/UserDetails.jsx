@@ -635,7 +635,7 @@ function UserDetails({ data, updateData, onNext, onBack, isLoading = false }) {
           onBack={onBack}
           onContinue={handleSubmit}
           backLabel="BACK"
-          continueLabel="PROCEED"
+          continueLabel="PROCEED TO PAYMENT"
           isLoading={isLoading}
         />
       </div>
