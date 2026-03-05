@@ -538,6 +538,23 @@ function Locations({ data, updateData, onNext }) {
   const pickupInputRef = useRef(null);
   const dropoffInputRef = useRef(null);
 
+  // Sync serviceType with data when navigating back
+  useEffect(() => {
+    if (data.serviceType && data.serviceType !== serviceType) {
+      setServiceType(data.serviceType);
+    }
+  }, [data.serviceType]);
+
+  // Populate input fields when component mounts or data changes (e.g., when navigating back)
+  useEffect(() => {
+    if (data.pickup && pickupInputRef.current) {
+      pickupInputRef.current.value = data.pickup;
+    }
+    if (data.dropoff && dropoffInputRef.current) {
+      dropoffInputRef.current.value = data.dropoff;
+    }
+  }, [data.pickup, data.dropoff]);
+
   // Handle pickup place selection
   const handlePickupPlaceChanged = () => {
     if (pickupAutocompleteRef.current) {
@@ -562,6 +579,17 @@ function Locations({ data, updateData, onNext }) {
         setErrors((prev) => ({ ...prev, pickup: null }));
         if (pickupInputRef.current) {
           pickupInputRef.current.value = fullAddress;
+        }
+        // Clear vehicle selection and dependent data when pickup changes
+        if (data.selectedVehicle) {
+          updateData("selectedVehicle", null);
+          updateData("journeyInfo", null);
+        }
+        // Clear passenger details and dependent data if moving forward
+        if (data.passengerDetails) {
+          updateData("passengerDetails", null);
+          updateData("flightDetails", null);
+          updateData("specialInstructions", "");
         }
       }
     }
@@ -591,6 +619,17 @@ function Locations({ data, updateData, onNext }) {
         setErrors((prev) => ({ ...prev, dropoff: null }));
         if (dropoffInputRef.current) {
           dropoffInputRef.current.value = fullAddress;
+        }
+        // Clear vehicle selection and dependent data when dropoff changes
+        if (data.selectedVehicle) {
+          updateData("selectedVehicle", null);
+          updateData("journeyInfo", null);
+        }
+        // Clear passenger details and dependent data if moving forward
+        if (data.passengerDetails) {
+          updateData("passengerDetails", null);
+          updateData("flightDetails", null);
+          updateData("specialInstructions", "");
         }
       }
     }

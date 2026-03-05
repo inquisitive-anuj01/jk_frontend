@@ -361,6 +361,30 @@ function UserDetails({ data, updateData, onNext, onBack, isLoading = false }) {
 
   const [errors, setErrors] = useState({});
 
+  // Sync formData with data when navigating back
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      firstName: data?.passengerDetails?.firstName || prev.firstName,
+      lastName: data?.passengerDetails?.lastName || prev.lastName,
+      email: data?.passengerDetails?.email || prev.email,
+      countryCode: data?.passengerDetails?.countryCode || prev.countryCode,
+      phone: data?.passengerDetails?.phone || prev.phone,
+      numberOfPassengers: data?.passengerDetails?.numberOfPassengers || prev.numberOfPassengers,
+      numberOfSuitcases: data?.passengerDetails?.numberOfSuitcases || prev.numberOfSuitcases,
+      isBookingForSomeoneElse: data?.passengerDetails?.isBookingForSomeoneElse || prev.isBookingForSomeoneElse,
+      guestFirstName: data?.passengerDetails?.guestFirstName || prev.guestFirstName,
+      guestLastName: data?.passengerDetails?.guestLastName || prev.guestLastName,
+      guestCountryCode: data?.passengerDetails?.guestCountryCode || prev.guestCountryCode,
+      guestPhone: data?.passengerDetails?.guestPhone || prev.guestPhone,
+      guestEmail: data?.passengerDetails?.guestEmail || prev.guestEmail,
+      isAirportPickup: data?.flightDetails?.isAirportPickup || prev.isAirportPickup,
+      flightNumber: data?.flightDetails?.flightNumber || prev.flightNumber,
+      nameBoard: data?.flightDetails?.nameBoard || prev.nameBoard,
+      additionalRequirements: data?.specialInstructions ?? prev.additionalRequirements,
+    }));
+  }, [data]);
+
   const updateField = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
