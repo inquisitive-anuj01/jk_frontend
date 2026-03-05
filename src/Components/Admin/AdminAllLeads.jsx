@@ -324,7 +324,7 @@ const EditLeadModal = ({ booking, isOpen, onClose, onSave }) => {
                     initial={{ scale: 0.95, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.95, opacity: 0 }}
-                    className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden"
+                    className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl max-h-[95vh] overflow-hidden flex flex-col"
                     onClick={(e) => e.stopPropagation()}
                 >
                     {/* Modal Header */}
@@ -351,7 +351,7 @@ const EditLeadModal = ({ booking, isOpen, onClose, onSave }) => {
                     </div>
 
                     {/* Modal Body */}
-                    <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
+                    <div className="p-6 overflow-y-auto flex-1">
                         {/* Status Change Section */}
                         <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-5 mb-6 border border-amber-200">
                             <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
@@ -362,23 +362,27 @@ const EditLeadModal = ({ booking, isOpen, onClose, onSave }) => {
                                 When you confirm a booking, it will move to the "All Bookings"
                                 page.
                             </p>
-                            <div className="grid grid-cols-3 gap-2">
-                                {["pending", "confirmed", "cancelled"].map((s) => (
-                                    <button
-                                        key={s}
-                                        onClick={() => handleStatusChange(s)}
-                                        className={`px-4 py-3 rounded-xl text-sm font-semibold capitalize transition-all ${status === s
-                                            ? s === "confirmed"
-                                                ? "bg-green-600 text-white shadow-lg"
-                                                : s === "cancelled"
-                                                    ? "bg-red-600 text-white shadow-lg"
-                                                    : "bg-amber-500 text-white shadow-lg"
-                                            : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
-                                            }`}
-                                    >
-                                        {s}
-                                    </button>
-                                ))}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                {["pending", "confirmed", "cancelled"].map((s) => {
+                                    const isActive = status === s;
+                                    return (
+                                        <button
+                                            key={s}
+                                            onClick={() => handleStatusChange(s)}
+                                            className={`relative overflow-hidden px-4 py-3.5 rounded-2xl text-sm font-bold capitalize transition-all duration-300 border-2 flex flex-col items-center gap-1
+                                                ${isActive
+                                                    ? s === "confirmed" ? "bg-green-600 border-green-600 text-white shadow-lg shadow-green-200"
+                                                        : s === "cancelled" ? "bg-red-600 border-red-600 text-white shadow-lg shadow-red-200"
+                                                            : "bg-amber-500 border-amber-500 text-white shadow-lg shadow-amber-200"
+                                                    : "bg-white border-amber-100 text-gray-500 hover:border-amber-300 hover:bg-amber-50/50"
+                                                }`}
+                                        >
+                                            {/* Visual indicator for active state */}
+
+                                            {s}
+                                        </button>
+                                    );
+                                })}
                             </div>
                             {/* Auto-paid indicator */}
                             {status === "confirmed" && (
