@@ -923,9 +923,12 @@ function Locations({ data, updateData, onNext }) {
           {/* Footer Assistance */}
           <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-white/5 text-[11px] text-slate-500 uppercase tracking-tighter">
             <span>{serviceType === "hourly" ? "Chauffeur at disposal" : "15 Mins free waiting"}</span>
-            <div className="flex items-center gap-2 text-[var(--color-primary)] font-bold mt-2 sm:mt-0">
+            <a
+              href="tel:+442034759906"
+              className="flex items-center gap-2 text-[var(--color-primary)] font-bold mt-2 sm:mt-0 hover:opacity-80 transition-opacity"
+            >
               <Phone size={12} /> +44 (0) 203 475 9906
-            </div>
+            </a>
           </div>
         </div>
       </div>
