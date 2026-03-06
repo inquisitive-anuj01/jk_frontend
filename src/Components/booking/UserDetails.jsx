@@ -17,8 +17,8 @@ import { useState, useEffect, useRef } from "react";
 import StepNavBar from "./StepNavBar";
 
 /**
- * UK Landline Number Validation (London 020 numbers)
- * Accepts formats: 020 XXXX XXXX, 020XXXXXXXX, +44 20 XXXX XXXX
+ * UK Phone Number Validation (All UK numbers: mobile, landline, etc.)
+ * Accepts formats: 07XXX XXXXXX, 020 XXXX XXXX, 01XXXXXXXXX, +44 XXXXXXXXXX
  * Returns { isValid: boolean, errorMessage: string }
  */
 const validateUkLandline = (phoneNumber, countryCode) => {
@@ -31,7 +31,7 @@ const validateUkLandline = (phoneNumber, countryCode) => {
 
   // Only validate when UK country code is selected
   if (countryCode === "+44") {
-    // Check for double prefix like +44020
+    // Check for double prefix like +440
     if (cleaned.startsWith("+440")) {
       return { isValid: false, errorMessage: "Invalid format: do not include both +44 and leading 0" };
     }
@@ -40,20 +40,14 @@ const validateUkLandline = (phoneNumber, countryCode) => {
     if (cleaned.startsWith("+44")) {
       const digitsOnly = cleaned.slice(3); // Remove +44
 
-      // Must start with 20 (London area code)
-      if (!digitsOnly.startsWith("20")) {
-        return { isValid: false, errorMessage: "Only London landline numbers (020) are accepted" };
+      // Must start with valid UK prefix (1, 2, 3, or 7)
+      if (!/^[1237]/.test(digitsOnly)) {
+        return { isValid: false, errorMessage: "Invalid UK number: must start with valid prefix" };
       }
 
-      // Check digit after 20 is 3, 7, or 8
-      const thirdDigit = digitsOnly.charAt(2);
-      if (!["3", "7", "8"].includes(thirdDigit)) {
-        return { isValid: false, errorMessage: "Invalid London number: digit after 020 must be 3, 7, or 8" };
-      }
-
-      // Total should be 10 digits after +44 (20 + 8 digits)
+      // Total should be 10 digits after +44
       if (digitsOnly.length !== 10) {
-        return { isValid: false, errorMessage: "Invalid number length: London landline must have exactly 10 digits after area code" };
+        return { isValid: false, errorMessage: "Invalid number length: UK numbers must have exactly 10 digits after +44" };
       }
 
       return { isValid: true, errorMessage: "" };
@@ -61,37 +55,26 @@ const validateUkLandline = (phoneNumber, countryCode) => {
 
     // Handle local format (starting with 0)
     if (cleaned.startsWith("0")) {
-      // Reject mobile numbers starting with 07
-      if (cleaned.startsWith("07")) {
-        return { isValid: false, errorMessage: "Mobile numbers (07) are not accepted" };
-      }
-
       // Reject special/premium numbers
       if (cleaned.startsWith("0800") || cleaned.startsWith("0845") || cleaned.startsWith("0870") || cleaned.startsWith("09")) {
         return { isValid: false, errorMessage: "Special/premium rate numbers are not accepted" };
       }
 
-      // Must start with 020 (London area code)
-      if (!cleaned.startsWith("020")) {
-        return { isValid: false, errorMessage: "Only London landline numbers (020) are accepted" };
+      // Must start with valid UK prefix (01, 02, 03, or 07)
+      if (!/^(01|02|03|07)/.test(cleaned)) {
+        return { isValid: false, errorMessage: "Invalid UK number: must start with valid prefix (01, 02, 03, or 07)" };
       }
 
-      // Check digit after 020 is 3, 7, or 8
-      const thirdDigit = cleaned.charAt(3);
-      if (!["3", "7", "8"].includes(thirdDigit)) {
-        return { isValid: false, errorMessage: "Invalid London number: digit after 020 must be 3, 7, or 8" };
-      }
-
-      // Total should be 11 digits (0 + 10 digits for 020 number)
-      if (cleaned.length !== 11) {
-        return { isValid: false, errorMessage: "Invalid number length: London landline must have exactly 11 digits" };
+      // Total should be 10-11 digits for UK numbers
+      if (cleaned.length < 10 || cleaned.length > 11) {
+        return { isValid: false, errorMessage: "Invalid number length: UK numbers must have 10-11 digits" };
       }
 
       return { isValid: true, errorMessage: "" };
     }
 
     // Doesn't start with valid prefix
-    return { isValid: false, errorMessage: "Number must start with 020" };
+    return { isValid: false, errorMessage: "Number must start with 0 (UK local format) or +44 (international)" };
   }
 
   // For non-UK numbers, just basic validation
