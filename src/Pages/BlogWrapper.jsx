@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, User, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
-import { blogAPI } from '../Utils/api';
+import { blogAPI, getImageUrl } from '../Utils/api';
 import Analytics from '../Utils/analytics';
 
 function BlogWrapper() {
@@ -38,13 +38,6 @@ function BlogWrapper() {
 
     const blog = data?.blog;
     const allBlogs = allBlogsData?.blogs || [];
-    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
-    const getImageSrc = (imgObj) => {
-        if (!imgObj?.url) return null;
-        if (imgObj.url.startsWith('http')) return imgObj.url;
-        return `${API_BASE}${imgObj.url}`;
-    };
 
     const formatDate = (dateStr) => {
         return new Date(dateStr).toLocaleDateString('en-GB', {
@@ -91,9 +84,7 @@ function BlogWrapper() {
         );
     }
 
-    const heroSrc = blog.heroImageUrl?.startsWith('http')
-        ? blog.heroImageUrl
-        : getImageSrc(blog.heroImage);
+    const heroSrc = getImageUrl(blog.heroImageUrl || blog.heroImage?.url);
 
     return (
         <main style={{ backgroundColor: 'var(--color-dark)', minHeight: '100vh' }} >
@@ -234,7 +225,7 @@ function BlogWrapper() {
                                 {/* Section Inline Image */}
                                 {section.image?.url && (
                                     <img
-                                        src={section.image.url.startsWith('http') ? section.image.url : `${API_BASE}${section.image.url}`}
+                                        src={getImageUrl(section.image.url)}
                                         alt={section.image.alt || section.heading || 'Blog image'}
                                         className="w-full rounded-xl my-4"
                                     />

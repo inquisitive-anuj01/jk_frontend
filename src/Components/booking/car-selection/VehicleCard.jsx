@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Users, Briefcase, ChevronDown, ChevronUp, Check } from "lucide-react";
+import { getImageUrl } from "../../../Utils/api";
 
 const VehicleCard = ({ vehicle, isSelected, onSelect, isDisabled }) => {
   const [showBreakdown, setShowBreakdown] = useState(false);
@@ -10,10 +11,7 @@ const VehicleCard = ({ vehicle, isSelected, onSelect, isDisabled }) => {
     setShowBreakdown(isSelected);
   }, [isSelected]);
 
-  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
-  const imageUrl = vehicle.image?.url
-    ? `${API_BASE}/${vehicle.image.url.replace(/\\/g, "/")}`
-    : "/placeholder-car.png";
+  const imageUrl = getImageUrl(vehicle.image?.url, "/placeholder-car.png");
 
   return (
     <motion.div

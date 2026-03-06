@@ -3,6 +3,22 @@ import { toast } from "react-toastify";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
+/**
+ * Build a full image URL from whatever is stored in the DB.
+ *  - Relative path  → prepend API_BASE_URL  e.g. uploads/oldImages/x.jpg → http://localhost:5000/uploads/oldImages/x.jpg
+ *  - Full URL       → return as-is           e.g. https://some-cdn.com/x.jpg
+ *  - Empty/null     → return fallback (or empty string)
+ */
+export function getImageUrl(path, fallback = "") {
+    if (!path) return fallback;
+    if (path.startsWith("http://") || path.startsWith("https://")) return path;
+
+    // Ensure no double-slash between base and path
+    const base = API_BASE_URL.replace(/\/$/, "");
+    const rel = path.startsWith("/") ? path : `/${path}`;
+    return `${base}${rel}`;
+}
+
 const api = axios.create({
     baseURL: API_BASE_URL,
     headers: {

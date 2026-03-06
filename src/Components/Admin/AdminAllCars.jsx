@@ -23,7 +23,7 @@ import {
     Save,
     Star,
 } from "lucide-react";
-import { vehicleAPI } from "../../Utils/api";
+import { vehicleAPI, getImageUrl } from "../../Utils/api";
 
 // Vehicle Types from schema
 const VEHICLE_TYPES = [
@@ -40,8 +40,8 @@ const VEHICLE_TYPES = [
 const StatusBadge = ({ isActive }) => (
     <span
         className={`px-2 py-1 rounded-full text-xs font-semibold ${isActive
-                ? "bg-green-100 text-green-700 border border-green-200"
-                : "bg-gray-100 text-gray-500 border border-gray-200"
+            ? "bg-green-100 text-green-700 border border-green-200"
+            : "bg-gray-100 text-gray-500 border border-gray-200"
             }`}
     >
         {isActive ? "Active" : "Inactive"}
@@ -50,10 +50,7 @@ const StatusBadge = ({ isActive }) => (
 
 // Vehicle Card Component - With Edit button
 const VehicleCard = ({ vehicle, onEdit, onToggleStatus, onDelete }) => {
-    const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
-    const imageUrl = vehicle.image?.url
-        ? `${API_BASE}/${vehicle.image.url.replace(/\\/g, "/")}`
-        : null;
+    const imageUrl = getImageUrl(vehicle.image?.url);
 
     return (
         <motion.div
@@ -119,8 +116,8 @@ const VehicleCard = ({ vehicle, onEdit, onToggleStatus, onDelete }) => {
                 <button
                     onClick={() => onToggleStatus(vehicle)}
                     className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 transition-colors text-sm font-medium ${vehicle.isActive
-                            ? "text-amber-600 hover:bg-amber-50"
-                            : "text-green-600 hover:bg-green-50"
+                        ? "text-amber-600 hover:bg-amber-50"
+                        : "text-green-600 hover:bg-green-50"
                         }`}
                 >
                     {vehicle.isActive ? (
@@ -177,12 +174,10 @@ const EditVehicleModal = ({ vehicle, isOpen, onClose, onSave }) => {
                 preventBookingWithinNoticePeriod: vehicle.preventBookingWithinNoticePeriod || false,
                 companyFeatures: vehicle.companyFeatures || [],
             });
-            setImagePreview(
-                vehicle.image?.url ? `${API_BASE}/${vehicle.image.url.replace(/\\/g, "/")}` : null
-            );
+            setImagePreview(getImageUrl(vehicle.image?.url));
             setNewImageFile(null);
         }
-    }, [vehicle, API_BASE]);
+    }, [vehicle]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -776,8 +771,8 @@ function AdminAllCars() {
                                     key={status}
                                     onClick={() => setStatusFilter(status)}
                                     className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all capitalize ${statusFilter === status
-                                            ? "bg-blue-600 text-white"
-                                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                        ? "bg-blue-600 text-white"
+                                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                                         }`}
                                 >
                                     {status}

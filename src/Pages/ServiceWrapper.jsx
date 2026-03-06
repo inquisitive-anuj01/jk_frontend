@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Check, Loader2 } from 'lucide-react';
-import { serviceAPI } from '../Utils/api';
+import { serviceAPI, getImageUrl } from '../Utils/api';
 import Analytics from '../Utils/analytics';
 
 function ServiceWrapper() {
@@ -56,7 +56,7 @@ function ServiceWrapper() {
                     initial={{ scale: 1.1 }}
                     animate={{ scale: 1 }}
                     transition={{ duration: 1.2 }}
-                    src={service.image?.url}
+                    src={getImageUrl(service.image?.url)}
                     alt={service.title}
                     className="w-full h-full object-cover"
                 />

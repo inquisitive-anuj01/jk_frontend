@@ -18,22 +18,19 @@ import {
     Settings,
     Plane,
 } from "lucide-react";
-import { vehicleAPI, locationAPI, locationPricingAPI } from "../../Utils/api";
+import { vehicleAPI, locationAPI, locationPricingAPI, getImageUrl } from "../../Utils/api";
 
 // Vehicle List Item
 const VehicleListItem = ({ vehicle, isSelected, onClick, hasPricing }) => {
-    const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
-    const imageUrl = vehicle.image?.url
-        ? `${API_BASE}/${vehicle.image.url.replace(/\\/g, "/")}`
-        : null;
+    const imageUrl = getImageUrl(vehicle.image?.url);
 
     return (
         <motion.button
             whileHover={{ x: 4 }}
             onClick={onClick}
             className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left ${isSelected
-                    ? "bg-green-600 text-white shadow-lg"
-                    : "bg-white hover:bg-gray-50 border border-gray-100"
+                ? "bg-green-600 text-white shadow-lg"
+                : "bg-white hover:bg-gray-50 border border-gray-100"
                 }`}
         >
             <div className={`w-12 h-10 rounded-lg overflow-hidden flex-shrink-0 ${isSelected ? "bg-green-500" : "bg-gray-100"
@@ -404,7 +401,7 @@ function AdminLocationPricing() {
                                         <div className="w-16 h-14 bg-white/20 rounded-xl overflow-hidden">
                                             {selectedVehicle.image?.url ? (
                                                 <img
-                                                    src={`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/${selectedVehicle.image.url.replace(/\\/g, "/")}`}
+                                                    src={getImageUrl(selectedVehicle.image.url)}
                                                     alt={selectedVehicle.categoryName}
                                                     className="w-full h-full object-contain"
                                                 />

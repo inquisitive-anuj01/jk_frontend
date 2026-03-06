@@ -3,7 +3,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Loader2 } from 'lucide-react';
-import { serviceAPI } from '../Utils/api';
+import { serviceAPI, getImageUrl } from '../Utils/api';
 
 const PER_PAGE = 9;
 
@@ -167,7 +167,7 @@ function Services() {
                                                 {/* Image - fixed aspect ratio */}
                                                 <div className="relative aspect-[16/10] rounded-t-xl overflow-hidden flex-shrink-0">
                                                     <img
-                                                        src={service.image?.url}
+                                                        src={getImageUrl(service.image?.url)}
                                                         alt={service.title}
                                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                                         loading="lazy"

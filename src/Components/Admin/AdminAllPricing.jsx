@@ -19,14 +19,14 @@ import {
     Plus,
     Filter,
 } from "lucide-react";
-import { pricingAPI, vehicleAPI } from "../../Utils/api";
+import { pricingAPI, vehicleAPI, getImageUrl } from "../../Utils/api";
 
 // Status Badge
 const StatusBadge = ({ status }) => (
     <span
         className={`px-2 py-1 rounded-full text-xs font-semibold ${status === "active"
-                ? "bg-green-100 text-green-700"
-                : "bg-gray-100 text-gray-500"
+            ? "bg-green-100 text-green-700"
+            : "bg-gray-100 text-gray-500"
             }`}
     >
         {status === "active" ? "Active" : "Inactive"}
@@ -38,8 +38,8 @@ const TabButton = ({ active, label, onClick }) => (
     <button
         onClick={onClick}
         className={`px-5 py-2.5 font-semibold text-sm rounded-lg transition-all ${active
-                ? "bg-gray-900 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            ? "bg-gray-900 text-white"
+            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
     >
         {label}
@@ -97,10 +97,7 @@ const DeleteModal = ({ isOpen, onClose, onConfirm, vehicleName, isDeleting }) =>
 // Pricing Card (for each vehicle's pricing)
 const PricingCard = ({ pricing, pricingType, onEdit, onDelete }) => {
     const vehicleName = pricing.vehicle?.categoryName || "Unknown Vehicle";
-    const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
-    const imageUrl = pricing.vehicle?.image?.url
-        ? `${API_BASE}/${pricing.vehicle.image.url.replace(/\\/g, "/")}`
-        : null;
+    const imageUrl = getImageUrl(pricing.vehicle?.image?.url);
 
     const tiers = pricingType === "p2p" ? pricing.pointToPoint?.distanceTiers : [];
     const afterThreshold = pricing.pointToPoint?.afterDistanceThreshold;

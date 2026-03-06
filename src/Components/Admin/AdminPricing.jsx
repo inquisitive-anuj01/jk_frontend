@@ -19,15 +19,15 @@ import {
     Zap,
     RefreshCw,
 } from "lucide-react";
-import { vehicleAPI, pricingAPI } from "../../Utils/api";
+import { vehicleAPI, pricingAPI, getImageUrl } from "../../Utils/api";
 
 // Tab Button Component
 const TabButton = ({ active, icon: Icon, label, onClick }) => (
     <button
         onClick={onClick}
         className={`flex items-center gap-2 px-4 py-3 rounded-xl font-medium transition-all ${active
-                ? "bg-blue-600 text-white shadow-lg shadow-blue-500/25"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            ? "bg-blue-600 text-white shadow-lg shadow-blue-500/25"
+            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
     >
         <Icon size={18} />
@@ -37,18 +37,15 @@ const TabButton = ({ active, icon: Icon, label, onClick }) => (
 
 // Vehicle List Item
 const VehicleListItem = ({ vehicle, isSelected, onClick, hasPricing }) => {
-    const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
-    const imageUrl = vehicle.image?.url
-        ? `${API_BASE}/${vehicle.image.url.replace(/\\/g, "/")}`
-        : null;
+    const imageUrl = getImageUrl(vehicle.image?.url);
 
     return (
         <motion.button
             whileHover={{ x: 4 }}
             onClick={onClick}
             className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left ${isSelected
-                    ? "bg-blue-600 text-white shadow-lg"
-                    : "bg-white hover:bg-gray-50 border border-gray-100"
+                ? "bg-blue-600 text-white shadow-lg"
+                : "bg-white hover:bg-gray-50 border border-gray-100"
                 }`}
         >
             <div className={`w-12 h-10 rounded-lg overflow-hidden flex-shrink-0 ${isSelected ? "bg-blue-500" : "bg-gray-100"
@@ -442,7 +439,7 @@ function AdminPricing() {
                                         <div className="w-16 h-14 bg-white/20 rounded-xl overflow-hidden">
                                             {selectedVehicle.image?.url ? (
                                                 <img
-                                                    src={`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/${selectedVehicle.image.url.replace(/\\/g, "/")}`}
+                                                    src={getImageUrl(selectedVehicle.image.url)}
                                                     alt={selectedVehicle.categoryName}
                                                     className="w-full h-full object-contain"
                                                 />

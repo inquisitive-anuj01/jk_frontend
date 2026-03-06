@@ -17,6 +17,7 @@ import {
     Edit3,
     Loader2,
 } from "lucide-react";
+import { getImageUrl } from "../../Utils/api";
 
 // Info Row Component
 const InfoRow = ({ icon: Icon, label, value, highlight = false }) => (
@@ -67,7 +68,6 @@ function BookingSummary({ data, onEdit, onProceed, isLoading = false }) {
     const isHourly = serviceType === "hourly";
 
     const pricing = selectedVehicle?.pricing;
-    const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
     // Format date
     const formatDate = (dateStr) => {
@@ -82,9 +82,7 @@ function BookingSummary({ data, onEdit, onProceed, isLoading = false }) {
     };
 
     // Vehicle image URL
-    const vehicleImageUrl = selectedVehicle?.image?.url
-        ? `${API_BASE}/${selectedVehicle.image.url.replace(/\\/g, "/")}`
-        : "/placeholder-car.png";
+    const vehicleImageUrl = getImageUrl(selectedVehicle?.image?.url, "/placeholder-car.png");
 
     return (
         <div className="py-2 px-4">
@@ -328,7 +326,7 @@ function BookingSummary({ data, onEdit, onProceed, isLoading = false }) {
                     <button
                         onClick={onProceed}
                         disabled={isLoading}
-                        className={`flex-1 flex ${!isLoading?"cursor-pointer":""}  items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-semibold shadow-lg transition-all duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowe`}
+                        className={`flex-1 flex ${!isLoading ? "cursor-pointer" : ""}  items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-semibold shadow-lg transition-all duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowe`}
                         style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-dark)' }}
                     >
                         {isLoading ? (
