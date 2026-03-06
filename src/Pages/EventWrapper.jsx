@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Check, Loader2, ArrowRight } from 'lucide-react';
-import { eventAPI } from '../Utils/api';
+import { eventAPI, getImageUrl } from '../Utils/api';
 import Analytics from '../Utils/analytics';
 
 function EventWrapper() {
@@ -27,13 +27,6 @@ function EventWrapper() {
     }, [isSportsCollection]);
 
     const event = data?.event;
-    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
-    const getImageSrc = (imgObj) => {
-        if (!imgObj?.url) return null;
-        if (imgObj.url.startsWith('http')) return imgObj.url;
-        return `${API_BASE}${imgObj.url}`;
-    };
 
     // Filter sports events for the collection
     const sportsEvents = allEvents.filter(e =>
@@ -84,7 +77,7 @@ function EventWrapper() {
         );
     }
 
-    const heroSrc = getImageSrc(event.heroImage);
+    const heroSrc = getImageUrl(event.heroImage?.url);
 
     return (
         <main style={{ backgroundColor: 'var(--color-dark)', minHeight: '100vh' }} >
@@ -193,7 +186,7 @@ function EventWrapper() {
                                 {/* Card Image */}
                                 <div className="relative h-48 overflow-hidden">
                                     <img
-                                        src={getImageSrc(sportEvent.heroImage) || 'https://via.placeholder.com/800x600?text=Event'}
+                                        src={getImageUrl(sportEvent.heroImage?.url, 'https://via.placeholder.com/800x600?text=Event')}
                                         alt={sportEvent.title}
                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                     />

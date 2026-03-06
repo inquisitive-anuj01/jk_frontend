@@ -10,7 +10,7 @@ import {
   Users,
   Briefcase,
 } from "lucide-react";
-import { fleetAPI } from "../../Utils/api";
+import { fleetAPI, getImageUrl } from "../../Utils/api";
 import Analytics from "../../Utils/analytics";
 
 function FleetSection() {
@@ -168,7 +168,7 @@ function FleetSection() {
             }}
           >
             {fleetItems.map((vehicle, index) => {
-              const imageUrl = vehicle.heroImage?.url || "";
+              const imageUrl = getImageUrl(vehicle.heroImage?.url);
 
               return (
                 <motion.div

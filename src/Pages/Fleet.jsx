@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ChevronLeft, ChevronRight, Loader2, Users, Briefcase } from 'lucide-react';
-import { fleetAPI } from '../Utils/api';
+import { fleetAPI, getImageUrl } from '../Utils/api';
 
 const DESKTOP_PER_PAGE = 9;
 const MOBILE_INITIAL = 5;
@@ -27,13 +27,6 @@ function Fleet() {
     });
 
     const allFleet = data?.fleet || [];
-    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
-    const getImageSrc = (imgObj) => {
-        if (!imgObj?.url) return 'https://via.placeholder.com/600x400?text=Vehicle';
-        if (imgObj.url.startsWith('http')) return imgObj.url;
-        return `${API_BASE}${imgObj.url}`;
-    };
 
     // Desktop pagination
     const totalPages = Math.ceil(allFleet.length / DESKTOP_PER_PAGE);
@@ -151,7 +144,7 @@ function Fleet() {
                                             {/* Image */}
                                             <div className="relative aspect-[16/10] rounded-t-xl overflow-hidden">
                                                 <img
-                                                    src={getImageSrc(item.heroImage)}
+                                                    src={getImageUrl(item.heroImage?.url, 'https://via.placeholder.com/600x400?text=Vehicle')}
                                                     alt={item.title}
                                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                                     onError={(e) => {

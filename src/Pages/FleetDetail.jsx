@@ -6,7 +6,7 @@ import {
     ArrowLeft, Users, Briefcase, CheckCircle2, ChevronLeft, ChevronRight,
     Loader2, Shield, Star, ArrowRight,
 } from 'lucide-react';
-import { fleetAPI } from '../Utils/api';
+import { fleetAPI, getImageUrl } from '../Utils/api';
 import Analytics from '../Utils/analytics';
 
 function FleetDetail() {
@@ -21,13 +21,6 @@ function FleetDetail() {
     });
 
     const fleet = data?.fleet;
-    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
-    const getImageSrc = (imgObj) => {
-        if (!imgObj?.url) return 'https://via.placeholder.com/800x500?text=Vehicle';
-        if (imgObj.url.startsWith('http')) return imgObj.url;
-        return `${API_BASE}${imgObj.url}`;
-    };
 
     // Build gallery from hero + gallery images
     const allImages = fleet
@@ -157,7 +150,7 @@ function FleetDetail() {
                                 <AnimatePresence mode="wait">
                                     <motion.img
                                         key={activeImage}
-                                        src={getImageSrc(allImages[activeImage])}
+                                        src={getImageUrl(allImages[activeImage]?.url, 'https://via.placeholder.com/800x500?text=Vehicle')}
                                         alt={fleet.title}
                                         className="w-full h-full object-cover"
                                         initial={{ opacity: 0 }}
@@ -210,7 +203,7 @@ function FleetDetail() {
                                             }}
                                         >
                                             <img
-                                                src={getImageSrc(img)}
+                                                src={getImageUrl(img?.url)}
                                                 alt={`${fleet.title} - ${i + 1}`}
                                                 className="w-full h-full object-cover"
                                             />

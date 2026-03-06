@@ -3,14 +3,12 @@ import { Link } from 'react-router-dom';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Loader2, Calendar, User, ArrowRight } from 'lucide-react';
-import { blogAPI } from '../Utils/api';
+import { blogAPI, getImageUrl } from '../Utils/api';
 import BlogCardSkeleton from '../Components/extras/BlogCardSkeleton';
 
 const ITEMS_PER_PAGE = 12;
 
 function Blog() {
-    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
     const {
         data,
         isLoading,
@@ -56,13 +54,6 @@ function Blog() {
         observer.observe(el);
         return () => observer.disconnect();
     }, [handleObserver]);
-
-    const getImageSrc = (blog) => {
-        const url = blog.heroImage?.url || blog.heroImageUrl;
-        if (!url) return null;
-        if (url.startsWith('http')) return url;
-        return `${API_BASE}${url}`;
-    };
 
     const formatDate = (dateStr) => {
         return new Date(dateStr).toLocaleDateString('en-GB', {
@@ -162,9 +153,9 @@ function Blog() {
                                             >
                                                 {/* Image */}
                                                 <div className="relative aspect-[16/10] overflow-hidden">
-                                                    {getImageSrc(blog) ? (
+                                                    {getImageUrl(blog.heroImage?.url || blog.heroImageUrl) ? (
                                                         <img
-                                                            src={getImageSrc(blog)}
+                                                            src={getImageUrl(blog.heroImage?.url || blog.heroImageUrl)}
                                                             alt={blog.heroImage?.alt || blog.title}
                                                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                                             loading="lazy"

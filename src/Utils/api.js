@@ -1,10 +1,40 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const Environment = {
+    LOCAL_URL: "http://localhost:5000",
+    STAGING_URL: "https://jk-frontend-nine.vercel.app",
+    PRODUCTION_URL: "https://lavender-salmon-796541.hostingersite.com",
+};
+
+const hostname = window.location.hostname;
+
+export let BASE_URL = Environment.LOCAL_URL;
+
+if (hostname.includes("vercel.app")) {
+    BASE_URL = Environment.STAGING_URL;
+} else if (
+    hostname.includes("hostingersite.com") ||
+    hostname === "jkexecutivechauffeurs.com" ||
+    hostname === "www.jkexecutivechauffeurs.com"
+) {
+    BASE_URL = Environment.PRODUCTION_URL;
+}
+
+export const BASE_URL_IMAGE = BASE_URL; 
+
+export function getImageUrl(path, fallback = "") {
+    if (!path) return fallback;
+    if (path.startsWith("http://") || path.startsWith("https://")) return path;
+
+    // Ensure no double-slash between base and path
+    const base = BASE_URL.replace(/\/$/, "");
+    const rel = path.startsWith("/") ? path : `/${path}`;
+    return `${base}${rel}`;
+}
 
 const api = axios.create({
-    baseURL: API_BASE_URL,
+    baseURL: BASE_URL,
     headers: {
         "Content-Type": "application/json",
     },
