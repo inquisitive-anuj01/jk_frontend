@@ -268,6 +268,18 @@ const EditLeadModal = ({ booking, isOpen, onClose, onSave }) => {
     const [paymentStatus, setPaymentStatus] = useState(booking?.paymentStatus || "pending");
     const [isSaving, setIsSaving] = useState(false);
 
+    // Lock body scroll when modal is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [isOpen]);
+
     useEffect(() => {
         if (booking) {
             setStatus(booking.status);
@@ -321,6 +333,8 @@ const EditLeadModal = ({ booking, isOpen, onClose, onSave }) => {
                 exit={{ opacity: 0 }}
                 className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
                 onClick={onClose}
+                onWheel={(e) => e.stopPropagation()}
+                onTouchMove={(e) => e.stopPropagation()}
             >
                 <motion.div
                     initial={{ scale: 0.95, opacity: 0 }}
@@ -637,6 +651,18 @@ const EditLeadModal = ({ booking, isOpen, onClose, onSave }) => {
 const DeleteConfirmModal = ({ booking, isOpen, onClose, onConfirm }) => {
     const [isDeleting, setIsDeleting] = useState(false);
 
+    // Lock body scroll when modal is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [isOpen]);
+
     const handleConfirm = async () => {
         setIsDeleting(true);
         try {
@@ -659,6 +685,8 @@ const DeleteConfirmModal = ({ booking, isOpen, onClose, onConfirm }) => {
                 exit={{ opacity: 0 }}
                 className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
                 onClick={onClose}
+                onWheel={(e) => e.stopPropagation()}
+                onTouchMove={(e) => e.stopPropagation()}
             >
                 <motion.div
                     initial={{ scale: 0.95, opacity: 0 }}

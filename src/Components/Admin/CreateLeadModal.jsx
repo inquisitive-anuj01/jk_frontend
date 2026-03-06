@@ -513,6 +513,18 @@ const CreateLeadModal = ({ isOpen, onClose, onCreate }) => {
     const [activePicker, setActivePicker] = useState(null); // 'date' | 'time' | 'duration' | null
     const [prevLocations, setPrevLocations] = useState({ pickup: "", dropoff: "", serviceType: "oneway" });
 
+    // Lock body scroll when modal is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [isOpen]);
+
     // Google Maps
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -862,7 +874,11 @@ const CreateLeadModal = ({ isOpen, onClose, onCreate }) => {
             {/* White-themed pac-container injection — must be here so it activates with modal */}
             <style>{pacStyles}</style>
 
-            <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[99998] flex items-center justify-center p-4">
+            <div
+                className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[99998] flex items-center justify-center p-4"
+                onWheel={(e) => e.stopPropagation()}
+                onTouchMove={(e) => e.stopPropagation()}
+            >
                 <motion.div
                     initial={{ opacity: 0, y: 20, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}

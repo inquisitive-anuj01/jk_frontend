@@ -227,6 +227,18 @@ const EditBookingModal = ({ booking, isOpen, onClose, onSave }) => {
     const [status, setStatus] = useState(booking?.status || "pending");
     const [isSaving, setIsSaving] = useState(false);
 
+    // Lock body scroll when modal is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [isOpen]);
+
     useEffect(() => {
         if (booking) {
             setStatus(booking.status);
@@ -264,12 +276,14 @@ const EditBookingModal = ({ booking, isOpen, onClose, onSave }) => {
                 exit={{ opacity: 0 }}
                 className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
                 onClick={onClose}
+                onWheel={(e) => e.stopPropagation()}
+                onTouchMove={(e) => e.stopPropagation()}
             >
                 <motion.div
                     initial={{ scale: 0.95, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.95, opacity: 0 }}
-                    className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden"
+                    className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col"
                     onClick={(e) => e.stopPropagation()}
                 >
                     {/* Modal Header */}
@@ -291,7 +305,7 @@ const EditBookingModal = ({ booking, isOpen, onClose, onSave }) => {
                     </div>
 
                     {/* Modal Body */}
-                    <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
+                    <div className="p-6 overflow-y-auto flex-1">
                         {/* Booking Status Info */}
                         <div className="bg-green-50 rounded-2xl p-4 mb-6 border border-green-200 flex items-center gap-3">
                             <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
@@ -504,6 +518,18 @@ const EditBookingModal = ({ booking, isOpen, onClose, onSave }) => {
 const DeleteConfirmModal = ({ booking, isOpen, onClose, onConfirm }) => {
     const [isDeleting, setIsDeleting] = useState(false);
 
+    // Lock body scroll when modal is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [isOpen]);
+
     const handleConfirm = async () => {
         setIsDeleting(true);
         try {
@@ -526,6 +552,8 @@ const DeleteConfirmModal = ({ booking, isOpen, onClose, onConfirm }) => {
                 exit={{ opacity: 0 }}
                 className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
                 onClick={onClose}
+                onWheel={(e) => e.stopPropagation()}
+                onTouchMove={(e) => e.stopPropagation()}
             >
                 <motion.div
                     initial={{ scale: 0.95, opacity: 0 }}
