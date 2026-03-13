@@ -77,7 +77,53 @@ const validateUkLandline = (phoneNumber, countryCode) => {
     return { isValid: false, errorMessage: "Number must start with 0 (UK local format) or +44 (international)" };
   }
 
-  // For non-UK numbers, just basic validation
+  // India phone number validation (+91)
+  if (countryCode === "+91") {
+    // Handle international format (+91)
+    if (cleaned.startsWith("+91")) {
+      const digitsOnly = cleaned.slice(3); // Remove +91
+
+      // Indian numbers must have exactly 10 digits after +91
+      if (digitsOnly.length !== 10) {
+        return { isValid: false, errorMessage: "Invalid number length: Indian numbers must have exactly 10 digits after +91" };
+      }
+
+      // Must start with 6, 7, 8, or 9 (valid Indian mobile prefixes)
+      if (!/^[6789]/.test(digitsOnly)) {
+        return { isValid: false, errorMessage: "Invalid Indian number: must start with 6, 7, 8, or 9" };
+      }
+
+      return { isValid: true, errorMessage: "" };
+    }
+
+    // Handle local format (starting with 0)
+    if (cleaned.startsWith("0")) {
+      if (cleaned.length !== 11) {
+        return { isValid: false, errorMessage: "Invalid number length: Indian numbers must have 11 digits (including leading 0)" };
+      }
+
+      // Must start with valid prefix (06, 07, 08, or 09)
+      if (!/^(06|07|08|09)/.test(cleaned)) {
+        return { isValid: false, errorMessage: "Invalid Indian number: must start with 6, 7, 8, or 9" };
+      }
+
+      return { isValid: true, errorMessage: "" };
+    }
+
+    // Local format without leading 0 (10 digits)
+    if (cleaned.length === 10) {
+      // Must start with valid prefix (6, 7, 8, or 9)
+      if (!/^[6789]/.test(cleaned)) {
+        return { isValid: false, errorMessage: "Invalid Indian number: must start with 6, 7, 8, or 9" };
+      }
+
+      return { isValid: true, errorMessage: "" };
+    }
+
+    return { isValid: false, errorMessage: "Invalid number length: Indian numbers must have exactly 10 digits" };
+  }
+
+  // For other non-UK numbers, just basic validation
   if (!/^\d+$/.test(cleaned)) {
     return { isValid: false, errorMessage: "Phone number can only contain digits" };
   }
@@ -153,7 +199,8 @@ const CountryCodeDropdown = ({ value, onChange, id }) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             className="absolute top-full left-0 mt-1 rounded-xl shadow-xl z-50 w-48 max-h-60 overflow-y-auto"
-            style={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)' }}
+            style={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', overscrollBehavior: 'contain' }}
+            onWheel={(e) => e.stopPropagation()}
           >
             {countryCodes.map((country) => (
               <button
@@ -287,7 +334,13 @@ const SelectField = ({ label, icon: Icon, required, options, error, ...props }) 
 const PhoneInput = ({ countryCode, onCountryCodeChange, phone, onPhoneChange, label, required, error }) => {
   const handlePhoneChange = (e) => {
     const value = e.target.value;
-    const digitsOnly = value.replace(/\D/g, '');
+    let digitsOnly = value.replace(/\D/g, '');
+    
+    // Limit to 10 digits for Indian numbers
+    if (countryCode === "+91") {
+      digitsOnly = digitsOnly.slice(0, 10);
+    }
+    
     onPhoneChange(digitsOnly);
   };
 
@@ -307,6 +360,7 @@ const PhoneInput = ({ countryCode, onCountryCodeChange, phone, onPhoneChange, la
           placeholder="Enter phone number"
           inputMode="numeric"
           pattern="[0-9]*"
+          maxLength={countryCode === "+91" ? 10 : undefined}
           className="flex-1 px-4 py-3.5 border rounded-r-xl outline-none transition-all duration-200 placeholder:opacity-30 placeholder:text-white"
           style={{
             backgroundColor: 'rgba(255,255,255,0.05)',
