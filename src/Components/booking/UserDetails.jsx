@@ -21,16 +21,21 @@ import StepNavBar from "./StepNavBar";
  * Accepts formats: 07XXX XXXXXX, 020 XXXX XXXX, 01XXXXXXXXX, +44 XXXXXXXXXX
  * Returns { isValid: boolean, errorMessage: string }
  */
-const validateUkLandline = (phoneNumber, countryCode) => {
+const validateUkPhone = (phoneNumber, countryCode) => {
   if (!phoneNumber || phoneNumber.trim() === "") {
     return { isValid: false, errorMessage: "Phone number is required" };
   }
 
   // Strip all spaces, dashes, brackets, and parentheses
-  const cleaned = phoneNumber.replace(/[\s\-\(\)\[\]]/g, "");
+  let cleaned = phoneNumber.replace(/[\s\-\(\)\[\]]/g, "");
 
   // Only validate when UK country code is selected
   if (countryCode === "+44") {
+    // Prepend country code if the number doesn't start with + or 0
+    if (!cleaned.startsWith("+") && !cleaned.startsWith("0")) {
+      cleaned = "+44" + cleaned;
+    }
+
     // Check for double prefix like +440
     if (cleaned.startsWith("+440")) {
       return { isValid: false, errorMessage: "Invalid format: do not include both +44 and leading 0" };
@@ -55,11 +60,6 @@ const validateUkLandline = (phoneNumber, countryCode) => {
 
     // Handle local format (starting with 0)
     if (cleaned.startsWith("0")) {
-      // Reject special/premium numbers
-      if (cleaned.startsWith("0800") || cleaned.startsWith("0845") || cleaned.startsWith("0870") || cleaned.startsWith("09")) {
-        return { isValid: false, errorMessage: "Special/premium rate numbers are not accepted" };
-      }
-
       // Must start with valid UK prefix (01, 02, 03, or 07)
       if (!/^(01|02|03|07)/.test(cleaned)) {
         return { isValid: false, errorMessage: "Invalid UK number: must start with valid prefix (01, 02, 03, or 07)" };
@@ -458,7 +458,7 @@ function UserDetails({ data, updateData, onNext, onBack, isLoading = false }) {
     if (!formData.phone.trim()) {
       newErrors.phone = "Phone number is required";
     } else {
-      const phoneValidation = validateUkLandline(formData.phone, formData.countryCode);
+      const phoneValidation = validateUkPhone(formData.phone, formData.countryCode);
       if (!phoneValidation.isValid) {
         newErrors.phone = phoneValidation.errorMessage;
       }
@@ -499,7 +499,7 @@ function UserDetails({ data, updateData, onNext, onBack, isLoading = false }) {
       }
 
       if (formData.guestPhone.trim()) {
-        const guestPhoneValidation = validateUkLandline(formData.guestPhone, formData.guestCountryCode);
+        const guestPhoneValidation = validateUkPhone(formData.guestPhone, formData.guestCountryCode);
         if (!guestPhoneValidation.isValid) {
           newErrors.guestPhone = guestPhoneValidation.errorMessage;
         }
