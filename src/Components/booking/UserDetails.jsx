@@ -384,6 +384,7 @@ function UserDetails({ data, updateData, onNext, onBack, isLoading = false }) {
     phone: data?.passengerDetails?.phone || "",
     numberOfPassengers: data?.passengerDetails?.numberOfPassengers || 1,
     numberOfSuitcases: data?.passengerDetails?.numberOfSuitcases || 0,
+    numberOfChildren: data?.passengerDetails?.numberOfChildren || 0,
     isBookingForSomeoneElse: data?.passengerDetails?.isBookingForSomeoneElse || false,
     guestFirstName: data?.passengerDetails?.guestFirstName || "",
     guestLastName: data?.passengerDetails?.guestLastName || "",
@@ -525,6 +526,7 @@ function UserDetails({ data, updateData, onNext, onBack, isLoading = false }) {
       phone: formData.phone,
       numberOfPassengers: formData.numberOfPassengers,
       numberOfSuitcases: formData.numberOfSuitcases,
+      numberOfChildren: formData.numberOfChildren,
       isBookingForSomeoneElse: formData.isBookingForSomeoneElse,
       guestFirstName: formData.guestFirstName,
       guestLastName: formData.guestLastName,
@@ -560,6 +562,11 @@ function UserDetails({ data, updateData, onNext, onBack, isLoading = false }) {
   const suitcaseOptions = Array.from({ length: 11 }, (_, i) => ({
     value: i,
     label: `${i} ${i === 1 ? "Suitcase" : "Suitcases"}`,
+  }));
+
+  const childrenOptions = Array.from({ length: 11 }, (_, i) => ({
+    value: i,
+    label: `${i} ${i === 1 ? "Child" : "Children"}`,
   }));
 
   return (
@@ -636,7 +643,7 @@ function UserDetails({ data, updateData, onNext, onBack, isLoading = false }) {
               error={errors.email}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <SelectField
                 label="Number of Passengers"
                 icon={Users}
@@ -645,6 +652,14 @@ function UserDetails({ data, updateData, onNext, onBack, isLoading = false }) {
                 onChange={(e) => updateField("numberOfPassengers", parseInt(e.target.value))}
                 options={passengerOptions}
                 error={errors.numberOfPassengers}
+              />
+              <SelectField
+                label="Number of Children"
+                icon={Users}
+                value={formData.numberOfChildren}
+                onChange={(e) => updateField("numberOfChildren", parseInt(e.target.value))}
+                options={childrenOptions}
+                error={errors.numberOfChildren}
               />
               <SelectField
                 label="Number of Suitcases"
