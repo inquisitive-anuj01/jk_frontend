@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Phone, Menu, X, ChevronDown, ChevronRight } from 'lucide-react';
+import { Phone, Menu, X, ChevronDown, ChevronRight, LogIn } from 'lucide-react';
 import JkLogo from "../assets/JkLogo.png"
 import { serviceAPI, fleetAPI, eventAPI } from '../Utils/api';
 import Analytics from '../Utils/analytics';
@@ -276,6 +276,27 @@ function Header({ isTransparent = false, theme = 'dark' }) {
                 </Link>
               )}
 
+              {/* Login Button (Desktop) */}
+              <a
+                href="https://jkexecutivechauffeurs.dashboardloginapp.com/login"
+                className="hidden md:flex items-center gap-2 px-4 py-2.5 text-sm font-semibold uppercase tracking-wider rounded transition-all duration-300 border-2"
+                style={{
+                  borderColor: 'var(--color-primary)',
+                  color: shouldBeTransparent || !isLightTheme ? 'white' : 'var(--color-primary)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                  e.currentTarget.style.color = 'black';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = shouldBeTransparent || !isLightTheme ? 'white' : 'var(--color-primary)';
+                }}
+              >
+                <LogIn className="w-4 h-4" />
+                Login
+              </a>
+
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -461,6 +482,24 @@ function Header({ isTransparent = false, theme = 'dark' }) {
               >
                 Book Now
               </Link>
+
+              {/* Mobile Login Button */}
+              <a
+                href="https://jkexecutivechauffeurs.dashboardloginapp.com/login"
+                className="block mt-4 px-6 py-3 text-white font-semibold text-center uppercase tracking-wider rounded transition-colors border-2"
+                style={{ borderColor: 'var(--color-primary)' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                  e.currentTarget.style.color = 'black';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = 'white';
+                }}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Login
+              </a>
 
               {/* Mobile Phone */}
               <a
