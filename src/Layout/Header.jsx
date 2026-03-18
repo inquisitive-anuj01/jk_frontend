@@ -196,7 +196,7 @@ function Header({ isTransparent = false, theme = 'dark' }) {
           <div className="flex items-center justify-between py-4">
             {/* Phone Number - Left on desktop, hidden on mobile */}
             <a
-              href="tel:+442012345678"
+              href="tel:+442034759906"
               onClick={() => Analytics.trackCallClick('header_desktop_phone')}
               className={`hidden md:flex items-center gap-2 transition-colors group ${textColor}`}
             >
@@ -204,7 +204,7 @@ function Header({ isTransparent = false, theme = 'dark' }) {
                 <Phone className="w-3.5 h-3.5" />
               </span>
               <span className="text-sm font-medium">
-                +44 (0)20 1234 5678
+                +44 (0) 203 475 9906
               </span>
             </a>
 
@@ -224,8 +224,9 @@ function Header({ isTransparent = false, theme = 'dark' }) {
                 }}
                 transition={{ duration: 0.4, ease: 'easeInOut' }}
               >
-                <span className={`text-2xl md:text-3xl font-light tracking-wider whitespace-nowrap block ${logoTextColor}`}>
-                  JK Executive Chauffeurs
+                <span className={`text-2xl md:text-3xl tracking-wider whitespace-nowrap block ${logoTextColor}`}>
+                  <span className="font-semibold">JK Executive</span>{' '}
+                  <span className="font-extralight">Chauffeurs</span>
                 </span>
               </motion.div>
             </Link>
@@ -503,12 +504,12 @@ function Header({ isTransparent = false, theme = 'dark' }) {
 
               {/* Mobile Phone */}
               <a
-                href="tel:+442012345678"
+                href="tel:+442034759906"
                 onClick={() => Analytics.trackCallClick('header_mobile_menu_phone')}
                 className="flex items-center justify-center gap-2 mt-6 text-white/70 hover:text-white transition-colors"
               >
                 <Phone className="w-4 h-4" />
-                <span>+44 (0)20 1234 5678</span>
+                <span>+44 (0) 203 475 9906</span>
               </a>
             </div>
           </motion.div>
