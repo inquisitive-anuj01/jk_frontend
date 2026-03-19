@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useJsApiLoader } from "@react-google-maps/api";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocation } from "react-router-dom";
+import { useBooking } from "../Context/BookingContext";
 import Locations from "../Components/booking/Locations";
 import CarsSelection from "../Components/booking/CarsSelection";
 import UserDetails from "../Components/booking/UserDetails";
@@ -53,29 +55,20 @@ function Booking() {
     libraries: LIBRARIES,
   });
 
-  const [currentStep, setCurrentStep] = useState(1);
+  const location = useLocation();
+  const { bookingData, updateBooking, resetBooking, isFromHero, hasValidLocations } = useBooking();
+  
+  // Use context data as source of truth, initialize from context
+  const [currentStep, setCurrentStep] = useState(() => {
+    // If coming from hero with valid locations, start at step 2
+    if (location.state?.startStep === 2 && hasValidLocations()) {
+      return 2;
+    }
+    return 1;
+  });
   const [clientSecret, setClientSecret] = useState(null);
   const [isLoadingPayment, setIsLoadingPayment] = useState(false);
   const [isTestMode, setIsTestMode] = useState(false);
-  const [bookingData, setBookingData] = useState({
-    pickup: null,
-    dropoff: null,
-    pickupDate: new Date(),
-    pickupTime: getDefaultPickupTime(),
-    serviceType: "oneway",
-    hours: 2,
-    selectedVehicle: null,
-    journeyInfo: null,
-    passengerDetails: null,
-    flightDetails: null,
-    specialInstructions: "",
-    savedBookingId: null,
-    originalEmail: null,
-  });
-
-  const updateBooking = (field, value) => {
-    setBookingData((prev) => ({ ...prev, [field]: value }));
-  };
 
   const goToStep = (step) => {
     setCurrentStep(step);
@@ -429,21 +422,7 @@ function Booking() {
                       })
                     }
                     onComplete={() => {
-                      setBookingData({
-                        pickup: null,
-                        dropoff: null,
-                        pickupDate: new Date(),
-                        pickupTime: getDefaultPickupTime(),
-                        serviceType: "oneway",
-                        hours: 2,
-                        selectedVehicle: null,
-                        journeyInfo: null,
-                        passengerDetails: null,
-                        flightDetails: null,
-                        specialInstructions: "",
-                        savedBookingId: null,
-                        originalEmail: null,
-                      });
+                      resetBooking();
                       setClientSecret(null);
                       setCurrentStep(1);
                     }}
