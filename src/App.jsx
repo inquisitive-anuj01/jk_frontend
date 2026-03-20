@@ -55,24 +55,54 @@ function ScrollToTop() {
 function TawkIntegration() {
   const location = useLocation();
 
+  // Load the Tawk script once on mount (only if not on a hidden route initially)
   useEffect(() => {
-    // List of admin routes where Tawk.to should be hidden
+    const propertyId = import.meta.env.VITE_TAWK_PROPERTY_ID;
+    const widgetId = import.meta.env.VITE_TAWK_WIDGET_ID;
+
+    if (!propertyId || !widgetId) return;
+
+    // Inject the script only once
+    if (!document.querySelector(`script[src*="tawk.to"]`)) {
+      window.Tawk_API = window.Tawk_API || {};
+      window.Tawk_LoadStart = new Date();
+      const s1 = document.createElement("script");
+      const s0 = document.getElementsByTagName("script")[0];
+      s1.async = true;
+      s1.src = `https://embed.tawk.to/${propertyId}/${widgetId}`;
+      s1.charset = 'UTF-8';
+      s1.setAttribute('crossorigin', '*');
+      s0.parentNode.insertBefore(s1, s0);
+    }
+  }, []); // run once on mount
+
+  // Show / hide the widget based on the current route
+  useEffect(() => {
     const isAdminRoute = location.pathname.startsWith('/admin') || location.pathname.startsWith('/login-admin');
+    const isBookingRoute = location.pathname === '/booking';
+    const shouldHide = isAdminRoute || isBookingRoute;
 
-    // TAWK.TO INTEGRATION - Only load on non-admin routes
-    if (!isAdminRoute) {
-      const propertyId = import.meta.env.VITE_TAWK_PROPERTY_ID;
-      const widgetId = import.meta.env.VITE_TAWK_WIDGET_ID;
+    const applyVisibility = () => {
+      if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') {
+        if (shouldHide) {
+          window.Tawk_API.hideWidget();
+        } else {
+          window.Tawk_API.showWidget();
+        }
+      }
+    };
 
-      var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
-      (function(){
-        var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
-        s1.async = true;
-        s1.src = `https://embed.tawk.to/${propertyId}/${widgetId}`;
-        s1.charset = 'UTF-8';
-        s1.setAttribute('crossorigin', '*');
-        s0.parentNode.insertBefore(s1, s0);
-      })();
+    // Tawk_API may not be ready yet — use onLoad callback if needed
+    if (window.Tawk_API && typeof window.Tawk_API.hideWidget === 'function') {
+      applyVisibility();
+    } else {
+      // Queue the call for when Tawk finishes loading
+      window.Tawk_API = window.Tawk_API || {};
+      const existingOnLoad = window.Tawk_API.onLoad;
+      window.Tawk_API.onLoad = function () {
+        if (existingOnLoad) existingOnLoad();
+        applyVisibility();
+      };
     }
   }, [location.pathname]);
 
@@ -118,7 +148,7 @@ function App() {
       <Routes>
         {/* Public Routes with Layout */}
         <Route path="/" element={<Layout isHeroPage={true}><Home /></Layout>} />
-        <Route path="/booking" element={<Layout isHeroPage={false} showContactForm={false}><Booking /></Layout>} />
+        <Route path="/booking" element={<Layout isHeroPage={false} showContactForm={false} showWhatsApp={false} showScrollToTop={false}><Booking /></Layout>} />
         <Route path="/services" element={<Layout isHeroPage={false}><Services /></Layout>} />
         <Route path="/services/:slug" element={<Layout isHeroPage={false}><ServiceWrapper /></Layout>} />
         <Route path="/fleet" element={<Layout isHeroPage={false}><Fleet /></Layout>} />
