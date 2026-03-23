@@ -211,10 +211,9 @@ function EventCard({ monthData, itemVars }) {
                         <motion.div
                             key={eventIndex}
                             variants={itemVars}
-                            className="group/item cursor-default"
                         >
                             <div className="text-center">
-                                <h3 className="text-zinc-100 text-[11px] md:text-xs font-medium group-hover/item:text-amber-400 transition-colors duration-300 leading-snug">
+                                <h3 className="text-zinc-100 text-[11px] md:text-xs font-medium leading-snug">
                                     {event.name}
                                 </h3>
                                 <p className="text-amber-500/70 text-[9px] md:text-[10px] mt-0.5 font-light tracking-wide">
