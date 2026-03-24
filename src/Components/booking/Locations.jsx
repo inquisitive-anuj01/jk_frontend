@@ -970,11 +970,11 @@ function Locations({ data, updateData, onNext, isOnHome = false }) {
           </div>
 
           {/* Footer Assistance */}
-          <div className="flex flex-col sm:flex-row items-center justify-between sm:justify-between pt-2 border-t border-white/5 text-[11px] text-[#9CA3AF] uppercase ">
-            <span className="text-center sm:text-left">Airport pickup includes 60 minutes free waiting, non-airport pickups include 15 minutes</span>
+          <div className={`flex ${isOnHome ? 'flex-col' : 'flex-col sm:flex-row'} items-center ${isOnHome ? 'text-center' : 'justify-between'} ${isOnHome ? 'pt-0' : 'pt-0'}  border-t border-white/5 text-[11px] text-[#9CA3AF] uppercase `}>
+            <span className={`${isOnHome ? 'text-center' : 'text-center sm:text-left'}`}>Airport pickup includes 60 minutes free waiting, non-airport pickups include 15 minutes</span>
             <a
               href="tel:+442034759906"
-              className="flex items-center gap-2 text-[var(--color-primary)] font-bold mt-2 sm:mt-0 hover:opacity-80 transition-opacity"
+              className={`flex items-center gap-2 text-[var(--color-primary)] font-bold hover:opacity-80 transition-opacity ${isOnHome ? 'mt-2' : 'mt-2 sm:mt-0'}`}
             >
               <Phone size={12} /> +44 (0) 203 475 9906
             </a>
