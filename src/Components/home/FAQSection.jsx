@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Plus, Minus, Loader2 } from "lucide-react";
 import { faqAPI } from "../../Utils/api";
@@ -32,8 +33,35 @@ export default function FAQSection() {
 
   const toggle = (i) => setOpenIndex(openIndex === i ? null : i);
 
+  // Generate FAQPage schema dynamically from fetched FAQs
+  const faqSchema = useMemo(() => {
+    if (!faqs || faqs.length === 0) return null;
+
+    return {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqs.map((faq) => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer
+        }
+      }))
+    };
+  }, [faqs]);
+
   return (
-    <section className="bg-[var(--color-dark)] py-20 px-6 md:px-8 lg:py-12">
+    <>
+      {faqSchema && (
+        <Helmet>
+          <script type="application/ld+json">
+            {JSON.stringify(faqSchema)}
+          </script>
+        </Helmet>
+      )}
+
+      <section className="bg-[var(--color-dark)] py-20 px-6 md:px-8 lg:py-12">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         {/* Section Header */}
         <div className="mb-10">
@@ -172,5 +200,6 @@ export default function FAQSection() {
         <div className="w-[80%] h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
       </div>
     </section>
+    </>
   );
 }
