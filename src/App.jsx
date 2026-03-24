@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { HelmetProvider, Helmet } from "react-helmet-async";
 import Analytics from "./Utils/analytics";
 import Lenis from "lenis";
 import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
@@ -110,6 +111,18 @@ function TawkIntegration() {
   return null;
 }
 
+// Component to add canonical URL on every page
+function CanonicalUpdater() {
+  const location = useLocation();
+  const baseUrl = 'https://jkexecutivechauffeurs.com';
+
+  return (
+    <Helmet>
+      <link rel="canonical" href={`${baseUrl}${location.pathname}`} />
+    </Helmet>
+  );
+}
+
 function App() {
   useEffect(() => {
     // Initialize Google Analytics / GTM (only fires in production)
@@ -138,15 +151,14 @@ function App() {
     };
   }, []);
 
-
-
-
   return (
-    <Router>
-      <BookingProvider>
-      <ScrollToTop />
-      <TawkIntegration />
-      <Routes>
+    <HelmetProvider>
+      <Router>
+        <BookingProvider>
+          <ScrollToTop />
+          <TawkIntegration />
+          <CanonicalUpdater />
+          <Routes>
         {/* Public Routes with Layout */}
         <Route path="/" element={<Layout isHeroPage={true}><Home /></Layout>} />
         <Route path="/booking" element={<Layout isHeroPage={false} showContactForm={false} showWhatsApp={false} showScrollToTop={false}><Booking /></Layout>} />
@@ -188,6 +200,7 @@ function App() {
       </Routes>
       </BookingProvider>
     </Router>
+    </HelmetProvider>
   );
 }
 
