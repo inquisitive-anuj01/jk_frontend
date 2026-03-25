@@ -68,7 +68,7 @@ class AnalyticsWrapper {
 
     // ── Script loading ─────────────────────────────────────────
     /**
-     * Dynamically injects Google Analytics (gtag) into <head>.
+     * Dynamically injects GTM, Google Analytics (gtag), and Meta Pixel into <head>.
      * Safe to call multiple times — only loads once.
      */
     loadTrackingScripts() {
@@ -80,17 +80,45 @@ class AnalyticsWrapper {
         if (this.#scriptsLoaded) return Promise.resolve();
 
         return new Promise((resolve) => {
-            // ── Google Analytics gtag.js ──
+            // ── Google Tag Manager (GTM) ──
+            const gtmId = import.meta.env.VITE_GTM_ID || "GTM-K6TCGLZS";
+            
+            // Set up dataLayer first
+            window.dataLayer = window.dataLayer || [];
+            
+            // GTM Script
+            const gtmScript = document.createElement("script");
+            gtmScript.innerHTML = `
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','${gtmId}');
+      `;
+            document.head.appendChild(gtmScript);
+
+            // GTM <noscript> fallback
+            const gtmNoscript = document.createElement("noscript");
+            gtmNoscript.innerHTML = `
+        <iframe src="https://www.googletagmanager.com/ns.html?id=${gtmId}"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe>
+      `;
+            if (document.body.firstChild) {
+                document.body.insertBefore(gtmNoscript, document.body.firstChild);
+            } else {
+                document.body.appendChild(gtmNoscript);
+            }
+
+            // ── Google Analytics 4 (gtag.js) ──
             const gaId = import.meta.env.VITE_GA_ID || "G-ECP57JQYZD";
             
-            // Set up dataLayer and gtag function
-            window.dataLayer = window.dataLayer || [];
+            // GA4 gtag.js Script
             const gtagScript = document.createElement("script");
             gtagScript.async = true;
             gtagScript.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
             document.head.appendChild(gtagScript);
 
-            // Inline config script
+            // GA4 config script
             const configScript = document.createElement("script");
             configScript.innerHTML = `
         window.dataLayer = window.dataLayer || [];
