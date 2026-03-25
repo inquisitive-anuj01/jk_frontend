@@ -116,7 +116,6 @@ const TermsAndConditions = lazy(() => import("./Pages/TermsAndConditions"));
 const PrivacyPolicy = lazy(() => import("./Pages/PrivacyPolicy"));
 const GDPRPolicy = lazy(() => import("./Pages/GDPRPolicy"));
 const EventCalendar = lazy(() => import("./Pages/EventCalendar"));
-const NotFound = lazy(() => import("./Pages/NotFound"));
 
 // Admin Pages
 const AdminLogin = lazy(() => import("./Components/Admin/AdminLogin"));
@@ -203,8 +202,8 @@ function App() {
               <Route path="/admin/location-pricing/:locationId" element={<AdminLocationPricing />} />
 
 
-              {/* 404 - Catch undefined routes */}
-              <Route path="*" element={<NotFound />} />
+              {/* Catch undefined routes and fallback to home */}
+              <Route path="*" element={<Layout isHeroPage={false}><Home /></Layout>} />
 
             </Routes>
           </Suspense>
