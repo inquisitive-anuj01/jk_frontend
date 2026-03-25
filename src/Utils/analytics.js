@@ -68,7 +68,7 @@ class AnalyticsWrapper {
 
     // ── Script loading ─────────────────────────────────────────
     /**
-     * Dynamically injects GTM into <head> / <body>.
+     * Dynamically injects Google Analytics (gtag) into <head>.
      * Safe to call multiple times — only loads once.
      */
     loadTrackingScripts() {
@@ -80,28 +80,25 @@ class AnalyticsWrapper {
         if (this.#scriptsLoaded) return Promise.resolve();
 
         return new Promise((resolve) => {
-            // ── GTM <script> ──
-            const gtmScript = document.createElement("script");
-            gtmScript.innerHTML = `
-        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-        })(window,document,'script','dataLayer','${import.meta.env.VITE_GTM_ID || "GTM-K6TCGLZS"}');
-      `;
-            document.head.appendChild(gtmScript);
+            // ── Google Analytics gtag.js ──
+            const gaId = import.meta.env.VITE_GA_ID || "G-ECP57JQYZD";
+            
+            // Set up dataLayer and gtag function
+            window.dataLayer = window.dataLayer || [];
+            const gtagScript = document.createElement("script");
+            gtagScript.async = true;
+            gtagScript.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
+            document.head.appendChild(gtagScript);
 
-            // ── GTM <noscript> fallback ──
-            const gtmNoscript = document.createElement("noscript");
-            gtmNoscript.innerHTML = `
-        <iframe src="https://www.googletagmanager.com/ns.html?id=${import.meta.env.VITE_GTM_ID || "GTM-K6TCGLZS"}"
-        height="0" width="0" style="display:none;visibility:hidden"></iframe>
+            // Inline config script
+            const configScript = document.createElement("script");
+            configScript.innerHTML = `
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '${gaId}');
       `;
-            if (document.body.firstChild) {
-                document.body.insertBefore(gtmNoscript, document.body.firstChild);
-            } else {
-                document.body.appendChild(gtmNoscript);
-            }
+            document.head.appendChild(configScript);
 
             // ── Meta Pixel <script> ──
             const pixelId = import.meta.env.VITE_PIXEL_ID || "4021930454788333";
