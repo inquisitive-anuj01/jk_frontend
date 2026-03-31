@@ -132,10 +132,8 @@ const AdminLocationPricing = lazy(() => import("./Components/Admin/AdminLocation
 
 function App() {
   useEffect(() => {
-    // Initialize Google Analytics / GTM (only fires in production)
-    Analytics.loadTrackingScripts().then(() => {
-      Analytics.initialize();
-    });
+    // Initialize Analytics — loads GTM + Meta Pixel scripts (production only)
+    Analytics.initialize();
 
     // CRITICAL: Disable browser scroll restoration to prevent scroll position being saved on reload
     if ('scrollRestoration' in window.history) {

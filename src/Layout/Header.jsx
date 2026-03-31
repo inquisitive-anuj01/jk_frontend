@@ -248,6 +248,7 @@ function Header({ isTransparent = false, theme = 'dark' }) {
               {!isBookingPage && (
                 <Link
                   to="/booking"
+                  onClick={() => Analytics.trackBookingClick('header_desktop_book_now')}
                   className="hidden md:block px-4 py-2.5 md:px-6 text-black font-semibold text-sm uppercase tracking-wider rounded transition-all duration-300"
                   style={{
                     backgroundColor: 'var(--color-primary)',
@@ -269,6 +270,7 @@ function Header({ isTransparent = false, theme = 'dark' }) {
               {/* Login Button (Desktop) */}
               <a
                 href="https://jkexecutivechauffeurs.dashboardloginapp.com/login"
+                onClick={() => Analytics.trackLoginClick({ source: 'header_desktop' })}
                 className="hidden md:flex items-center gap-2 px-4 py-2.5 text-sm font-semibold uppercase tracking-wider rounded transition-all duration-300 border-2"
                 style={{
                   borderColor: 'var(--color-primary)',
@@ -493,7 +495,10 @@ function Header({ isTransparent = false, theme = 'dark' }) {
                   e.currentTarget.style.backgroundColor = 'transparent';
                   e.currentTarget.style.color = 'white';
                 }}
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={() => {
+                  Analytics.trackLoginClick({ source: 'header_mobile' });
+                  setIsMobileMenuOpen(false);
+                }}
               >
                 Login
               </a>

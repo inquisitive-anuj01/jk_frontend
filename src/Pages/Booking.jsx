@@ -71,6 +71,30 @@ function Booking() {
   const [isTestMode, setIsTestMode] = useState(false);
   const userDetailsRef = useRef(null);
 
+  // Track step-4 abandonment via browser Back button (popstate)
+  // If the user navigates away from URL while on step 4, fire payment_failure
+  const paymentCompletedRef = useRef(false);
+
+  useEffect(() => {
+    if (currentStep !== 4 || !clientSecret) return;
+
+    // Reset the completion guard whenever we (re-)enter step 4
+    paymentCompletedRef.current = false;
+
+    const handlePopState = () => {
+      if (!paymentCompletedRef.current) {
+        Analytics.trackPaymentFailure("user_navigated_back_from_payment", {
+          amount:  bookingData.selectedVehicle?.pricing?.totalPrice,
+          vehicle: bookingData.selectedVehicle?.categoryName,
+          reason:  "browser_back_button",
+        });
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [currentStep, clientSecret, bookingData]);
+
   const goToStep = (step) => {
     setCurrentStep(step);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -129,6 +153,9 @@ function Booking() {
 
   // Handle UserDetails form submission - CREATE LEAD + CREATE PAYMENT INTENT + GO TO PAYMENT
   const handleUserDetailsSubmit = async (formData = null) => {
+    //  TRACK: Inquiry Generated — user clicked "Proceed to Payment"
+    Analytics.trackInquiryGenerated(bookingData);
+
     const existingBookingId = bookingData.savedBookingId;
     const currentPassengerDetails = formData?.passengerDetails || bookingData.passengerDetails;
 
@@ -414,8 +441,21 @@ function Booking() {
                   <Payment
                     data={bookingData}
                     clientSecret={clientSecret}
-                    onBack={() => goToStep(3)}
-                    onPaymentSuccess={handlePaymentSuccess}
+                    onBack={() => {
+                      // TRACK: user clicked "Edit Details" — going back from payment step
+                      if (!paymentCompletedRef.current) {
+                        Analytics.trackPaymentFailure("user_went_back_from_payment", {
+                          amount:  bookingData.selectedVehicle?.pricing?.totalPrice,
+                          vehicle: bookingData.selectedVehicle?.categoryName,
+                          reason:  "user_clicked_back_button",
+                        });
+                      }
+                      goToStep(3);
+                    }}
+                    onPaymentSuccess={(paymentIntent) => {
+                      paymentCompletedRef.current = true; // prevent false failure events
+                      handlePaymentSuccess(paymentIntent);
+                    }}
                     onPaymentFailure={(reason, extra) =>
                       Analytics.trackPaymentFailure(reason, {
                         amount: bookingData.selectedVehicle?.pricing?.totalPrice,

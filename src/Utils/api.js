@@ -2,7 +2,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const Environment = {
-    LOCAL_URL: "http://localhost:5000",
+    LOCAL_URL: "http://localhost:5005",
     STAGING_URL: "https://jk-frontend-nine.vercel.app",
     PRODUCTION_URL: "https://www.jkexecutivechauffeurs.com",
 };

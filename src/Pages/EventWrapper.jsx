@@ -254,6 +254,7 @@ function EventWrapper() {
 
                                     <Link
                                         to={`/events/${sportEvent.slug}`}
+                                        onClick={() => Analytics.trackBookingClick('event_sports_card_book_now', { event_title: sportEvent.title })}
                                         className="w-full py-3 rounded-lg font-semibold text-sm text-center transition-all duration-300 flex items-center justify-center gap-2"
                                         style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-dark)' }}
                                     >

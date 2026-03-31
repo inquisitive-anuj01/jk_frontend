@@ -127,7 +127,7 @@ function HeroSection() {
                         >
                             <Link
                                 to="/booking"
-                                onClick={() => Analytics.trackBookingClick('hero_get_quote')}
+                                onClick={() => Analytics.trackBookingClick('hero_get_a_quote')}
                                 className="hidden sm:flex group items-center gap-2 px-8 py-4 text-black font-bold uppercase tracking-wider rounded transition-all duration-300"
                                 style={{
                                     backgroundColor: 'var(--color-primary)',

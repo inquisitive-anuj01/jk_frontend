@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Autocomplete } from "@react-google-maps/api";
+import Analytics from "../../Utils/analytics";
 import {
   MapPin,
   Flag,
@@ -961,7 +962,10 @@ function Locations({ data, updateData, onNext, isOnHome = false }) {
           {/* CTA Button — full width below date & time on all screen sizes */}
           <div className="pt-1">
             <button
-              onClick={validateAndProceed}
+              onClick={() => {
+                Analytics.trackGetPrice({ source: 'booking_step_1_search' });
+                validateAndProceed();
+              }}
               className="w-full font-medium  cursor-pointer py-3.5 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 shadow-xl"
               style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-dark)' }}
             >
