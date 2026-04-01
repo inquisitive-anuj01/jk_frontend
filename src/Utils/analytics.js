@@ -56,7 +56,7 @@ class AnalyticsWrapper {
     if (this.scriptsLoaded) return Promise.resolve();
 
     return new Promise((resolve) => {
-      const gtmIdVal = import.meta.env.VITE_GTM_ID || "GTM-WMZR9JNW";
+      const gtmIdVal = "GTM-WMZR9JNW";
       const pixelIdVal = import.meta.env.VITE_PIXEL_ID || "4021930454788333";
 
       // ── Google Tag Manager <script> ──────────────────────────
