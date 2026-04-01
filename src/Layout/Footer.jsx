@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Clock } from 'lucide-react';
 import JkLogo from '../assets/JkLogo.png';
+import Analytics from '../Utils/analytics';
 
 // SVG Social Icons
 const WhatsAppIcon = () => (
@@ -68,6 +69,9 @@ function SocialIcon({ social }) {
         href={social.href}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() => {
+          if (social.name === 'WhatsApp') Analytics.trackCallClick('footer_whatsapp_icon');
+        }}
         className="w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-300"
         style={{
           backgroundColor: hovered ? (social.hoverBg.includes('gradient') ? undefined : social.hoverBg) : 'rgba(255,255,255,0.06)',
@@ -234,10 +238,10 @@ function Footer() {
                   <Phone className="w-3.5 h-3.5" style={{ color: 'var(--color-primary)' }} />
                 </div>
                 <div className="text-left">
-                  <a href="tel:+442034759906" className="text-sm text-white/70 hover:text-white transition-colors block">
+                  <a href="tel:+442034759906" onClick={() => Analytics.trackCallClick('footer_uk_phone')} className="text-sm text-white/70 hover:text-white transition-colors block">
                     UK: +44 (0) 203 475 9906
                   </a>
-                  <a href="tel:+19175085481" className="text-sm text-white/70 hover:text-white transition-colors block">
+                  <a href="tel:+19175085481" onClick={() => Analytics.trackCallClick('footer_us_phone')} className="text-sm text-white/70 hover:text-white transition-colors block">
                     US: +1 917 508 5481
                   </a>
                   <p className="text-[11px] text-white/30 mt-0.5">Available 24/7</p>

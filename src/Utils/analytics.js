@@ -62,7 +62,7 @@ class AnalyticsWrapper {
       // ── Google Tag Manager <script> ──────────────────────────
       const gtmScript = document.createElement("script");
       gtmScript.innerHTML = `
-        function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
@@ -129,7 +129,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
     await this.loadTrackingScripts();
 
-    this.gtmId = import.meta.env.VITE_GTM_ID || "GTM-K6TCGLZS";
+    this.gtmId = import.meta.env.VITE_GTM_ID || "GTM-WMZR9JNW";
     this.pixelId = import.meta.env.VITE_PIXEL_ID || "4021930454788333";
     this.isInitialized = true;
 
@@ -188,7 +188,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     if (this.isProduction()) {
       switch (eventName) {
         case this.ALLOWED_EVENTS.PURCHASE:
-          this.safeTrack("fbq", "track", "PURCHASE", {
+          this.safeTrack("fbq", "track", "Purchase", {
             value: payload.value,
             currency: payload.currency || "GBP",
             content_name: payload.content_name || payload.vehicle,
@@ -196,36 +196,36 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           break;
 
         case this.ALLOWED_EVENTS.INQUIRY_GENERATED:
-          this.safeTrack("fbq", "track", "INQUIRY_GENERATED", {
+          this.safeTrack("fbq", "track", "Lead", {
             value: payload.amount,
             currency: "GBP",
           });
           break;
 
         case this.ALLOWED_EVENTS.BOOK_NOW_BUTTON_CLICK:
-          this.safeTrack("fbq", "track", "BOOK_NOW_BUTTON_CLICK", {
+          this.safeTrack("fbq", "track", "BookNowClick", {
             content_name: payload.button_name || "book_now",
           });
           break;
 
         case this.ALLOWED_EVENTS.GET_PRICE_BUTTON_CLICK:
-          this.safeTrack("fbq", "trackCustom", "GET_PRICE_BUTTON_CLICK", {
+          this.safeTrack("fbq", "track", "GetPriceClick", {
             source: payload.source,
           });
           break;
 
         case this.ALLOWED_EVENTS.CALL_BUTTON_CLICK:
-          this.safeTrack("fbq", "trackCustom", "CALL_BUTTON_CLICK", {
+          this.safeTrack("fbq", "track", "CallClick", {
             call_source: payload.call_source,
           });
           break;
 
         case this.ALLOWED_EVENTS.LOGIN_BUTTON_CLICK:
-          this.safeTrack("fbq", "trackCustom", "LOGIN_BUTTON_CLICK", {});
+          this.safeTrack("fbq", "track", "LoginClick", {});
           break;
 
         case this.ALLOWED_EVENTS.PAYMENT_FAILURE:
-          this.safeTrack("fbq", "trackCustom", "PAYMENT_FAILURE", {
+          this.safeTrack("fbq", "track", "PaymentFailure", {
             reason: payload.error_description,
           });
           break;
@@ -303,6 +303,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     this.track(this.ALLOWED_EVENTS.PAYMENT_FAILURE, {
       error_description: reason,
       currency: "GBP",
+      ...extra,
+    });
+  }
+
+  /** Track a page view — called on every route change */
+  trackPageView(path, extra = {}) {
+    this.track(this.ALLOWED_EVENTS.PAGE_VIEW, {
+      page_path: path || window.location.pathname,
+      page_title: document.title,
+      page_location: window.location.href,
       ...extra,
     });
   }

@@ -668,9 +668,9 @@ function Locations({ data, updateData, onNext, isOnHome = false }) {
       if (fullAddress) {
         // Check if dropoff is same as pickup
         if (data.pickup && fullAddress.toLowerCase().trim() === data.pickup.toLowerCase().trim()) {
-          setErrors((prev) => ({ 
-            ...prev, 
-            dropoff: "Pickup and dropoff locations cannot be the same" 
+          setErrors((prev) => ({
+            ...prev,
+            dropoff: "Pickup and dropoff locations cannot be the same"
           }));
           if (dropoffInputRef.current) {
             dropoffInputRef.current.value = "";
@@ -786,6 +786,8 @@ function Locations({ data, updateData, onNext, isOnHome = false }) {
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
+      // Fire GET_PRICE event only when validation passes (user actually proceeds)
+      Analytics.trackGetPrice({ source: 'booking_step_1_search' });
       onNext();
     }
   };
@@ -962,10 +964,7 @@ function Locations({ data, updateData, onNext, isOnHome = false }) {
           {/* CTA Button — full width below date & time on all screen sizes */}
           <div className="pt-1">
             <button
-              onClick={() => {
-                Analytics.trackGetPrice({ source: 'booking_step_1_search' });
-                validateAndProceed();
-              }}
+              onClick={validateAndProceed}
               className="w-full font-medium  cursor-pointer py-3.5 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 shadow-xl"
               style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-dark)' }}
             >
@@ -978,6 +977,7 @@ function Locations({ data, updateData, onNext, isOnHome = false }) {
             <span className={`${isOnHome ? 'text-center' : 'text-center sm:text-left'}`}>Airport pickup includes 60 minutes free waiting, non-airport pickups include 15 minutes</span>
             <a
               href="tel:+442034759906"
+              onClick={() => Analytics.trackCallClick('booking_form_footer_phone')}
               className={`flex items-center gap-2 text-[var(--color-primary)] font-bold hover:opacity-80 transition-opacity ${isOnHome ? 'mt-2' : 'mt-2 sm:mt-0'}`}
             >
               <Phone size={12} /> +44 (0) 203 475 9906

@@ -57,7 +57,7 @@ function Booking() {
 
   const location = useLocation();
   const { bookingData, updateBooking, resetBooking, isFromHero, hasValidLocations } = useBooking();
-  
+
   // Use context data as source of truth, initialize from context
   const [currentStep, setCurrentStep] = useState(() => {
     // If coming from hero with valid locations, start at step 2
@@ -71,22 +71,35 @@ function Booking() {
   const [isTestMode, setIsTestMode] = useState(false);
   const userDetailsRef = useRef(null);
 
-  // Track step-4 abandonment via browser Back button (popstate)
-  // If the user navigates away from URL while on step 4, fire payment_failure
-  const paymentCompletedRef = useRef(false);
+  // ── Payment failure tracking refs ──────────────────────────────
+  const paymentCompletedRef = useRef(false);  // true when Stripe payment succeeds
+  const failureFiredRef = useRef(false);      // true when any failure event already fired (prevents duplicates)
+  const currentStepRef = useRef(currentStep); // latest step (for unmount cleanup)
+  const bookingDataRef = useRef(bookingData); // latest data  (for unmount cleanup)
 
+  // Keep refs in sync with state
+  useEffect(() => { currentStepRef.current = currentStep; }, [currentStep]);
+  useEffect(() => { bookingDataRef.current = bookingData; }, [bookingData]);
+
+  // Reset guards when entering step 4
+  useEffect(() => {
+    if (currentStep === 4) {
+      paymentCompletedRef.current = false;
+      failureFiredRef.current = false;
+    }
+  }, [currentStep]);
+
+  // Track step-4 abandonment via browser Back button (popstate)
   useEffect(() => {
     if (currentStep !== 4 || !clientSecret) return;
 
-    // Reset the completion guard whenever we (re-)enter step 4
-    paymentCompletedRef.current = false;
-
     const handlePopState = () => {
-      if (!paymentCompletedRef.current) {
+      if (!paymentCompletedRef.current && !failureFiredRef.current) {
+        failureFiredRef.current = true;
         Analytics.trackPaymentFailure("user_navigated_back_from_payment", {
-          amount:  bookingData.selectedVehicle?.pricing?.totalPrice,
+          amount: bookingData.selectedVehicle?.pricing?.totalPrice,
           vehicle: bookingData.selectedVehicle?.categoryName,
-          reason:  "browser_back_button",
+          reason: "browser_back_button",
         });
       }
     };
@@ -94,6 +107,24 @@ function Booking() {
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, [currentStep, clientSecret, bookingData]);
+
+  // Fire payment_failure when Booking page unmounts while on step 4
+  // Covers: user clicks header nav link, types a new URL, or any React Router navigation
+  useEffect(() => {
+    return () => {
+      if (
+        currentStepRef.current === 4 &&
+        !paymentCompletedRef.current &&
+        !failureFiredRef.current
+      ) {
+        Analytics.trackPaymentFailure("payment_abandoned", {
+          amount: bookingDataRef.current?.selectedVehicle?.pricing?.totalPrice,
+          vehicle: bookingDataRef.current?.selectedVehicle?.categoryName,
+          reason: "user_navigated_away_from_payment",
+        });
+      }
+    };
+  }, []);
 
   const goToStep = (step) => {
     setCurrentStep(step);
@@ -443,17 +474,19 @@ function Booking() {
                     clientSecret={clientSecret}
                     onBack={() => {
                       // TRACK: user clicked "Edit Details" — going back from payment step
-                      if (!paymentCompletedRef.current) {
+                      if (!paymentCompletedRef.current && !failureFiredRef.current) {
+                        failureFiredRef.current = true;
                         Analytics.trackPaymentFailure("user_went_back_from_payment", {
-                          amount:  bookingData.selectedVehicle?.pricing?.totalPrice,
+                          amount: bookingData.selectedVehicle?.pricing?.totalPrice,
                           vehicle: bookingData.selectedVehicle?.categoryName,
-                          reason:  "user_clicked_back_button",
+                          reason: "user_clicked_back_button",
                         });
                       }
                       goToStep(3);
                     }}
                     onPaymentSuccess={(paymentIntent) => {
-                      paymentCompletedRef.current = true; // prevent false failure events
+                      paymentCompletedRef.current = true;
+                      failureFiredRef.current = true; // prevent unmount cleanup from firing
                       handlePaymentSuccess(paymentIntent);
                     }}
                     onPaymentFailure={(reason, extra) =>
