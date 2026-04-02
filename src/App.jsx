@@ -28,6 +28,15 @@ function ScrollToTop() {
   return null;
 }
 
+// Fire page_view analytics event on every route change
+function PageViewTracker() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    Analytics.trackPageView(pathname);
+  }, [pathname]);
+  return null;
+}
+
 // Component to handle Tawk.to integration with route awareness
 function TawkIntegration() {
   const location = useLocation();
@@ -161,6 +170,7 @@ function App() {
       <Router>
         <BookingProvider>
           <ScrollToTop />
+          <PageViewTracker />
           <TawkIntegration />
           <CanonicalUpdater />
           <Suspense fallback={<SkeletonLoader />}>
