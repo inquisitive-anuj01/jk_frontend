@@ -3,7 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useJsApiLoader } from '@react-google-maps/api';
-import heroImage from '../../assets/heroImage.png';
+// import heroImage from '../../assets/heroImage.png';
+// Import WebP version after you convert it (heroImage.webp)
+import heroImageWebp from '../../assets/heroImage.webp';
 import Analytics from '../../Utils/analytics';
 import { useBooking } from '../../Context/BookingContext';
 import Locations from '../booking/Locations';
@@ -47,11 +49,18 @@ function HeroSection() {
         <section className="relative min-h-screen flex items-center justify-center overflow-x-hidden">
             {/* Image Background */}
             <div className="absolute inset-0 z-0">
-                <img
-                    src={heroImage}
-                    alt="Hero background"
-                    className="w-full h-full object-cover"
-                />
+                <picture>
+                    {/* WebP format loading */}
+                    <source srcSet={heroImageWebp} type="image/webp" />
+                    <img
+                        src={heroImageWebp}
+                        alt="Luxury Chauffeur Service Hero Background"
+                        className="w-full h-full object-cover"
+                        fetchPriority="high"
+                        loading="eager"
+                        decoding="async"
+                    />
+                </picture>
                 {/* Dark Overlay */}
                 <div className="absolute inset-0 bg-black/60" />
                 {/* Gradient Overlay for depth */}
