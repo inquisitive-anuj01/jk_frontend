@@ -97,16 +97,25 @@ function HeroSection() {
                                 <span className="block mb-1">Chauffeurs for</span>
                                 {/* Rotating Text - indented to the right */}
                                 <span className="block pl-8 md:pl-16 lg:pl-24">
-                                    <span className="relative inline-block h-[1.4em] overflow-hidden">
-                                        <AnimatePresence mode="wait">
+                                    <span
+                                        className="relative inline-block"
+                                        style={{ height: '1.4em', minWidth: '12ch' }}
+                                    >
+                                        <AnimatePresence mode="popLayout">
                                             <motion.span
                                                 key={currentTextIndex}
-                                                initial={{ y: '100%', opacity: 0 }}
-                                                animate={{ y: 0, opacity: 1 }}
-                                                exit={{ y: '-100%', opacity: 0 }}
-                                                transition={{ duration: 0.5, ease: 'easeInOut' }}
-                                                className="block font-semibold"
-                                                style={{ color: 'var(--color-primary)' }}
+                                                initial={{ opacity: 0, y: 15 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -15 }}
+                                                transition={{
+                                                    duration: 0.5,
+                                                    ease: [0.33, 1, 0.68, 1] // Premium cubic-bezier easing (feels elegant)
+                                                }}
+                                                className="absolute inset-0 font-semibold whitespace-nowrap"
+                                                style={{
+                                                    color: 'var(--color-primary)',
+                                                    willChange: 'transform, opacity',
+                                                }}
                                             >
                                                 {ROTATING_TEXTS[currentTextIndex]}
                                             </motion.span>
