@@ -131,8 +131,8 @@ const LocationCard = ({ location, onEdit, onDelete, onSetPricing, onSetZone }) =
                 <div className="flex items-center justify-between">
                     <LocationTypeBadge type={location.locationType} />
                     <span className={`px-2 py-1 rounded-full text-xs font-semibold ${location.isActive
-                            ? "bg-green-100 text-green-700"
-                            : "bg-gray-100 text-gray-500"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-gray-100 text-gray-500"
                         }`}>
                         {location.isActive ? "Active" : "Inactive"}
                     </span>
@@ -164,14 +164,6 @@ const LocationCard = ({ location, onEdit, onDelete, onSetPricing, onSetZone }) =
                 >
                     <DollarSign size={16} />
                     <span className="hidden sm:inline">Pricing</span>
-                </button>
-                <div className="w-px bg-gray-100" />
-                <button
-                    onClick={() => onSetZone(location)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-3 text-amber-600 hover:bg-amber-50 transition-colors text-sm font-medium"
-                >
-                    <Hexagon size={16} />
-                    <span className="hidden sm:inline">Zone</span>
                 </button>
                 <div className="w-px bg-gray-100" />
                 <button
