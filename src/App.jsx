@@ -4,6 +4,7 @@ import Analytics from "./Utils/analytics";
 import Lenis from "lenis";
 import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
 import { BookingProvider } from "./Context/BookingContext";
+import { GoogleMapsProvider } from "./Context/GoogleMapsContext";
 import Layout from "./Layout/Layout";
 import SkeletonLoader from "./Components/SkeletonLoader";
 
@@ -138,6 +139,7 @@ const AdminAllPricing = lazy(() => import("./Components/Admin/AdminAllPricing"))
 const AdminAllLocations = lazy(() => import("./Components/Admin/AdminAllLocations"));
 const AdminAddLocation = lazy(() => import("./Components/Admin/AdminAddLocation"));
 const AdminLocationPricing = lazy(() => import("./Components/Admin/AdminLocationPricing"));
+const AdminLocationZoneSetup = lazy(() => import("./Components/Admin/AdminLocationZoneSetup"));
 
 function App() {
   useEffect(() => {
@@ -168,6 +170,7 @@ function App() {
   return (
     <HelmetProvider>
       <Router>
+        <GoogleMapsProvider>
         <BookingProvider>
           <ScrollToTop />
           <PageViewTracker />
@@ -208,6 +211,7 @@ function App() {
               <Route path="/admin/add-location" element={<AdminAddLocation />} />
               <Route path="/admin/edit-location/:id" element={<AdminAddLocation />} />
               <Route path="/admin/location-pricing/:locationId" element={<AdminLocationPricing />} />
+              <Route path="/admin/location-zone/:id" element={<AdminLocationZoneSetup />} />
 
 
               {/* Catch undefined routes and fallback to home */}
@@ -216,6 +220,7 @@ function App() {
             </Routes>
           </Suspense>
         </BookingProvider>
+        </GoogleMapsProvider>
       </Router>
     </HelmetProvider>
   );
