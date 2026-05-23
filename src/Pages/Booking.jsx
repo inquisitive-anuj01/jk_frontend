@@ -190,26 +190,23 @@ function Booking() {
     const existingBookingId = bookingData.savedBookingId;
     const currentPassengerDetails = formData?.passengerDetails || bookingData.passengerDetails;
 
-    // If booking already exists (re-submit from edit)
+    // If booking already exists (user went back and re-submitted)
+    // Always send the full payload so DB stays in sync with any location/vehicle/date changes
     if (existingBookingId) {
-      const currentEmail = currentPassengerDetails?.email;
-      const originalEmail = bookingData.originalEmail;
-
-      // Update booking if email changed
-      if (currentEmail !== originalEmail) {
-        setIsLoadingPayment(true);
-        try {
-          await bookingAPI.updateBookingDetails(existingBookingId, {
-            ...buildBookingPayload(formData),
-            originalEmail: originalEmail,
-          });
-          updateBooking("originalEmail", currentEmail);
-          console.log("Booking updated with new email:", currentEmail);
-        } catch (error) {
-          console.error("Error updating booking:", error);
-        } finally {
-          setIsLoadingPayment(false);
-        }
+      setIsLoadingPayment(true);
+      try {
+        await bookingAPI.updateBookingDetails(existingBookingId, {
+          ...buildBookingPayload(formData),
+          originalEmail: bookingData.originalEmail,
+        });
+        // Keep originalEmail in sync in case it changed
+        updateBooking("originalEmail", currentPassengerDetails?.email);
+        console.log("Booking fully updated with latest details (location, vehicle, passenger, date)");
+      } catch (error) {
+        console.error("Error updating booking:", error);
+        // Don't block payment flow if update fails — log and continue
+      } finally {
+        setIsLoadingPayment(false);
       }
 
       // Create payment intent and go to payment — pass formData so Stripe gets fresh customer info
