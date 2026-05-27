@@ -9,6 +9,7 @@ import heroImageWebp from '../../assets/heroImage.webp';
 import Analytics from '../../Utils/analytics';
 import { useBooking } from '../../Context/BookingContext';
 import Locations from '../booking/Locations';
+import BookingFormSkeleton from '../booking/BookingFormSkeleton';
 
 // Libraries are managed globally via GoogleMapsProvider in App.jsx
 
@@ -73,9 +74,6 @@ function HeroSection() {
                     <div className="text-left">
                         {/* Small Tagline - positioned left above Chauffeur */}
                         <motion.p
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8, delay: 0.2 }}
                             className="font-medium tracking-[0.2em] uppercase text-xs md:text-sm mb-2"
                             style={{ color: 'var(--color-primary)' }}
                         >
@@ -84,60 +82,33 @@ function HeroSection() {
 
                         {/* Main Heading with Rotating Text */}
                         <motion.div
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8, delay: 0.4 }}
                             className="mb-8"
                         >
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight">
-                                {/* Chauffeur for - positioned left */}
-                                <span className="block mb-1">Chauffeurs for</span>
-                                {/* Rotating Text - indented to the right */}
-                                <span className="block pl-8 md:pl-16 lg:pl-24">
-                                    <span
-                                        className="relative inline-block"
-                                        style={{ height: '1.4em', minWidth: '12ch' }}
-                                    >
-                                        <AnimatePresence mode="popLayout">
-                                            <motion.span
-                                                key={currentTextIndex}
-                                                initial={{ opacity: 0, y: 15 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, y: -15 }}
-                                                transition={{
-                                                    duration: 0.5,
-                                                    ease: [0.33, 1, 0.68, 1] // Premium cubic-bezier easing (feels elegant)
-                                                }}
-                                                className="absolute inset-0 font-semibold whitespace-nowrap"
-                                                style={{
-                                                    color: 'var(--color-primary)',
-                                                    willChange: 'transform, opacity',
-                                                }}
-                                            >
-                                                {ROTATING_TEXTS[currentTextIndex]}
-                                            </motion.span>
-                                        </AnimatePresence>
-                                    </span>
+                                <span className="block mb-1">Luxury Chauffeur</span>
+                                <span
+                                    className="block pl-8 md:pl-16 lg:pl-24 font-semibold whitespace-nowrap"
+                                    style={{ color: 'var(--color-primary)' }}
+                                >
+                                    Service in London
                                 </span>
                             </h1>
                         </motion.div>
 
                         {/* Subheading */}
-                        <motion.p
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8, delay: 0.6 }}
-                            className="text-base md:text-lg text-white/80 max-w-xl mb-4 leading-relaxed"
+                        <motion.div
+                            className="max-w-xl mb-4"
                         >
-                            Experience unrivalled reliability and multi-award-winning service.
-                            Your personal chauffeur, available 24/7 across London and beyond.
-                        </motion.p>
+                            <p className="text-sm md:text-base text-white mb-1 leading-snug">
+                                Executive Travel for Airports, Corporate Meetings &amp; Special Events
+                            </p>
+                            <p className="text-sm md:text-base text-white/75 leading-relaxed">
+                                Experience unrivalled reliability and multi-award-winning service with your personal chauffeur, available 24/7 across London and beyond.
+                            </p>
+                        </motion.div>
 
                         {/* CTA Buttons */}
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8, delay: 0.8 }}
                             className="flex flex-col sm:flex-row items-start gap-4"
                         >
                             <Link
@@ -173,39 +144,33 @@ function HeroSection() {
                     </div>
 
                     {/* RIGHT: Booking Form - Desktop only */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.8, delay: 1 }}
-                        className="hidden lg:block relative z-[50]"
-                    >
-                        {isLoaded && (
+                    <div className="hidden lg:block relative z-[50]">
+                        {isLoaded ? (
                             <Locations
                                 data={bookingData}
                                 updateData={updateBooking}
                                 onNext={handleHeroSubmit}
                                 isOnHome={true}
                             />
+                        ) : (
+                            <BookingFormSkeleton isOnHome={true} />
                         )}
-                    </motion.div>
+                    </div>
                 </div>
 
                 {/* Mobile Booking Form - shown under content */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 1.2 }}
-                    className="lg:hidden mt-8 pb-8 relative z-[50]"
-                >
-                    {isLoaded && (
+                <div className="lg:hidden mt-8 pb-8 relative z-[50]">
+                    {isLoaded ? (
                         <Locations
                             data={bookingData}
                             updateData={updateBooking}
                             onNext={handleHeroSubmit}
                             isOnHome={true}
                         />
+                    ) : (
+                        <BookingFormSkeleton isOnHome={true} />
                     )}
-                </motion.div>
+                </div>
             </div>
         </section>
     );
