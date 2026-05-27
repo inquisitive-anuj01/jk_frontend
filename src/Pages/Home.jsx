@@ -106,7 +106,7 @@ function Home() {
                     {JSON.stringify(orgSchema)}
                 </script>
 
-                <title>Chauffeur Service in London – Luxury Private Hire | JK Executive</title>
+                <title>Executive Chauffeur Service London | JK Executive Chauffeurs</title>
                 <meta name="description" content="Book a luxury chauffeur service in London. Professional drivers, premium fleet & 24/7 availability. Airport transfers, corporate & wedding. Call now." />
             </Helmet>
             <main style={{ backgroundColor: 'var(--color-dark)' }}>
