@@ -110,7 +110,7 @@ const computeDefaultTime = (val) => {
     return { hours: h, minutes: m, ampm: period };
   }
   const { h, m } = getUKHourMinute();
-  const totalMinutes = h * 60 + m + 30;
+  const totalMinutes = h * 60 + m + 240;
   const roundedMinutes = Math.ceil(totalMinutes / 30) * 30;
   const hour24 = Math.floor(roundedMinutes / 60) % 24;
   const min = roundedMinutes % 60;
@@ -183,8 +183,13 @@ const CustomTimePicker = ({ value, onChange, onClose, selectedDate, onTimeValida
 
     // Compute minimum selectable time: GMT + 30 min rounded UP to next 30-min slot
     const { h: ukH, m: ukM } = getUKHourMinute();
-    const totalMins = ukH * 60 + ukM + 30;
+    const totalMins = ukH * 60 + ukM + 240;
     const roundedMins = Math.ceil(totalMins / 30) * 30;
+    
+    // If the minimum time crosses midnight into tomorrow, 
+    // then ALL times selected for today are invalid.
+    if (roundedMins >= 1440) return true;
+
     const minHour24 = Math.floor(roundedMins / 60) % 24;
     const minMinute = roundedMins % 60;
 
@@ -400,7 +405,21 @@ const CustomDatePicker = ({ value, onChange, onClose }) => {
 
   const isPast = (day) => {
     const target = new Date(year, month, day);
-    return target < today;
+    if (target < today) return true;
+
+    // Check if target is today and if all times are pushed to tomorrow
+    if (
+      target.getDate() === today.getDate() &&
+      target.getMonth() === today.getMonth() &&
+      target.getFullYear() === today.getFullYear()
+    ) {
+      const { h: ukH, m: ukM } = getUKHourMinute();
+      const totalMins = ukH * 60 + ukM + 240;
+      const roundedMins = Math.ceil(totalMins / 30) * 30;
+      if (roundedMins >= 1440) return true;
+    }
+
+    return false;
   };
 
   const isPrevDisabled =
@@ -760,8 +779,11 @@ function Locations({ data, updateData, onNext, isOnHome = false }) {
 
     // Minimum selectable time: GMT + 30 min rounded UP to next 30-min slot
     const { h: ukH, m: ukM } = getUKHourMinute();
-    const totalMins = ukH * 60 + ukM + 30;
+    const totalMins = ukH * 60 + ukM + 240;
     const roundedMins = Math.ceil(totalMins / 30) * 30;
+    
+    if (roundedMins >= 1440) return true;
+
     const minHour24 = Math.floor(roundedMins / 60) % 24;
     const minMinute = roundedMins % 60;
 

@@ -30,8 +30,8 @@ const getDefaultPickupTime = () => {
   const ukH = parseInt(parts.find((p) => p.type === "hour").value, 10);
   const ukM = parseInt(parts.find((p) => p.type === "minute").value, 10);
 
-  // Add 30 min, round UP to next 30-min boundary
-  const totalMinutes = ukH * 60 + ukM + 30;
+  // Add 4 hours (240 mins), round UP to next 30-min boundary
+  const totalMinutes = ukH * 60 + ukM + 240;
   const roundedMinutes = Math.ceil(totalMinutes / 30) * 30;
   const hour24 = Math.floor(roundedMinutes / 60) % 24;
   const min = roundedMinutes % 60;

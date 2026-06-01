@@ -2,8 +2,8 @@ import React, { createContext, useContext, useState, useCallback } from "react";
 
 const BookingContext = createContext(null);
 
-// Compute default pickup time: GMT now + 30 min, rounded UP to next 30-min slot
-const getDefaultPickupTime = () => {
+// Compute default pickup date and time: GMT now + 4.5 hours
+const getDefaultPickupDateTime = () => {
   const now = new Date();
   const parts = new Intl.DateTimeFormat("en-GB", {
     timeZone: "Europe/London",
@@ -14,8 +14,15 @@ const getDefaultPickupTime = () => {
   const ukH = parseInt(parts.find((p) => p.type === "hour").value, 10);
   const ukM = parseInt(parts.find((p) => p.type === "minute").value, 10);
 
-  const totalMinutes = ukH * 60 + ukM + 30;
+  // Add 4 hours (240 mins), round UP to next 30-min boundary
+  const totalMinutes = ukH * 60 + ukM + 240;
   const roundedMinutes = Math.ceil(totalMinutes / 30) * 30;
+  
+  let targetDate = new Date();
+  if (roundedMinutes >= 1440) {
+    targetDate.setDate(targetDate.getDate() + 1); // Push to tomorrow
+  }
+
   const hour24 = Math.floor(roundedMinutes / 60) % 24;
   const min = roundedMinutes % 60;
 
@@ -23,14 +30,19 @@ const getDefaultPickupTime = () => {
   const minStr = min.toString().padStart(2, "0");
   const ampm = hour24 >= 12 ? "PM" : "AM";
 
-  return `${hour12}:${minStr} ${ampm}`;
+  return {
+    date: targetDate,
+    time: `${hour12}:${minStr} ${ampm}`
+  };
 };
+
+const defaultDateTime = getDefaultPickupDateTime();
 
 const defaultBookingData = {
   pickup: null,
   dropoff: null,
-  pickupDate: new Date(),
-  pickupTime: getDefaultPickupTime(),
+  pickupDate: defaultDateTime.date,
+  pickupTime: defaultDateTime.time,
   serviceType: "oneway",
   hours: 2,
   selectedVehicle: null,
