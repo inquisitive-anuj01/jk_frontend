@@ -13,6 +13,7 @@ import {
   Timer,
   Phone
 } from "lucide-react";
+import { getMinimumBookingTime, getUKHourMinute } from "../../Utils/timeHelpers";
 
 // --- ENHANCED CSS FOR AUTOCOMPLETE & SCROLLBARS ---
 const customStyles = `
@@ -87,37 +88,18 @@ function useClickOutside(ref, handler) {
 
 // --- CUSTOM TIME PICKER COMPONENT ---
 
-// Helper: get current GMT (UK) hour and minute via Intl API
-const getUKHourMinute = () => {
-  const now = new Date();
-  // Use Intl.DateTimeFormat to reliably get UK time parts
-  const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Europe/London",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).formatToParts(now);
-  const h = parseInt(parts.find((p) => p.type === "hour").value, 10);
-  const m = parseInt(parts.find((p) => p.type === "minute").value, 10);
-  return { h, m };
-};
-
-// Helper: compute default time = GMT now + 30 min, rounded UP to next 30-min slot
+// Helper: compute default time = GMT now + 4 hours, rounded UP to next 30-min slot
 const computeDefaultTime = (val) => {
   if (val) {
     const [time, period] = val.split(" ");
     const [h, m] = time.split(":");
     return { hours: h, minutes: m, ampm: period };
   }
-  const { h, m } = getUKHourMinute();
-  const totalMinutes = h * 60 + m + 240;
-  const roundedMinutes = Math.ceil(totalMinutes / 30) * 30;
-  const hour24 = Math.floor(roundedMinutes / 60) % 24;
-  const min = roundedMinutes % 60;
+  const { minHour24, minMinute } = getMinimumBookingTime();
   return {
-    hours: (hour24 % 12 || 12).toString().padStart(2, "0"),
-    minutes: min.toString().padStart(2, "0"),
-    ampm: hour24 >= 12 ? "PM" : "AM",
+    hours: (minHour24 % 12 || 12).toString().padStart(2, "0"),
+    minutes: minMinute.toString().padStart(2, "0"),
+    ampm: minHour24 >= 12 ? "PM" : "AM",
   };
 };
 
@@ -181,17 +163,12 @@ const CustomTimePicker = ({ value, onChange, onClose, selectedDate, onTimeValida
     if (ampm === "AM" && hour24 === 12) hour24 = 0;
     const minuteInt = parseInt(m);
 
-    // Compute minimum selectable time: GMT + 30 min rounded UP to next 30-min slot
-    const { h: ukH, m: ukM } = getUKHourMinute();
-    const totalMins = ukH * 60 + ukM + 240;
-    const roundedMins = Math.ceil(totalMins / 30) * 30;
+    // Compute minimum selectable time
+    const { minHour24, minMinute, isTomorrow } = getMinimumBookingTime();
     
     // If the minimum time crosses midnight into tomorrow, 
     // then ALL times selected for today are invalid.
-    if (roundedMins >= 1440) return true;
-
-    const minHour24 = Math.floor(roundedMins / 60) % 24;
-    const minMinute = roundedMins % 60;
+    if (isTomorrow) return true;
 
     // Block anything BEFORE the minimum
     if (hour24 < minHour24) return true;
@@ -413,10 +390,8 @@ const CustomDatePicker = ({ value, onChange, onClose }) => {
       target.getMonth() === today.getMonth() &&
       target.getFullYear() === today.getFullYear()
     ) {
-      const { h: ukH, m: ukM } = getUKHourMinute();
-      const totalMins = ukH * 60 + ukM + 240;
-      const roundedMins = Math.ceil(totalMins / 30) * 30;
-      if (roundedMins >= 1440) return true;
+      const { isTomorrow } = getMinimumBookingTime();
+      if (isTomorrow) return true;
     }
 
     return false;
@@ -777,15 +752,10 @@ function Locations({ data, updateData, onNext, isOnHome = false }) {
     if (period === "AM" && hour24 === 12) hour24 = 0;
     const minuteInt = parseInt(m);
 
-    // Minimum selectable time: GMT + 30 min rounded UP to next 30-min slot
-    const { h: ukH, m: ukM } = getUKHourMinute();
-    const totalMins = ukH * 60 + ukM + 240;
-    const roundedMins = Math.ceil(totalMins / 30) * 30;
+    // Minimum selectable time
+    const { minHour24, minMinute, isTomorrow } = getMinimumBookingTime();
     
-    if (roundedMins >= 1440) return true;
-
-    const minHour24 = Math.floor(roundedMins / 60) % 24;
-    const minMinute = roundedMins % 60;
+    if (isTomorrow) return true;
 
     // Block anything before the minimum
     const isPastHour = hour24 < minHour24;
