@@ -139,13 +139,16 @@ function Footer() {
               London's premier chauffeur service. Experience luxury, reliability, and professionalism with every journey.
             </p>
 
-            {/* Company & VAT */}
+            {/* Company, VAT & TfL */}
             <div className="space-y-1 mb-5">
               <p className="text-xs text-white/40">
                 <span className="text-white/50 font-medium">Company No</span> — 10696876
               </p>
               <p className="text-xs text-white/40">
                 <span className="text-white/50 font-medium">VAT No</span> — 280189982
+              </p>
+              <p className="text-xs text-white/40">
+                <span className="text-white/50 font-medium">TfL Licence No</span> — 010468
               </p>
             </div>
 
