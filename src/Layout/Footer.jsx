@@ -148,7 +148,7 @@ function Footer() {
                 <span className="text-white/50 font-medium">VAT No</span> — 280189982
               </p>
               <p className="text-xs text-white/40">
-                <span className="text-white/50 font-medium">TfL Licence No</span> — 010468
+                <span className="text-white/50 font-medium">TFL Licence No</span> — 010468
               </p>
             </div>
 

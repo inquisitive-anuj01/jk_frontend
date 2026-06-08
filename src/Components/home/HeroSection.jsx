@@ -141,6 +141,14 @@ function HeroSection() {
                                 Speak to Us
                             </button>
                         </motion.div>
+
+                        {/* TfL Licence */}
+                        <motion.div 
+                            className="mt-8 flex items-center gap-3 text-white/70 text-xs md:text-sm font-medium tracking-wider uppercase"
+                        >
+                            <span className="w-8 h-[2px] bg-[var(--color-primary)]"></span>
+                            TfL Licence No — <span className="text-white">010468</span>
+                        </motion.div>
                     </div>
 
                     {/* RIGHT: Booking Form - Desktop only */}
