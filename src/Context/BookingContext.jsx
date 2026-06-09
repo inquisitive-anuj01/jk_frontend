@@ -1,36 +1,34 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
+import { getMinimumBookingTime } from "../Utils/timeHelpers";
 
 const BookingContext = createContext(null);
 
-// Compute default pickup time: GMT now + 30 min, rounded UP to next 30-min slot
-const getDefaultPickupTime = () => {
-  const now = new Date();
-  const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Europe/London",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).formatToParts(now);
-  const ukH = parseInt(parts.find((p) => p.type === "hour").value, 10);
-  const ukM = parseInt(parts.find((p) => p.type === "minute").value, 10);
+// Compute default pickup date and time using centralized helper
+const getDefaultPickupDateTime = () => {
+  const { minHour24, minMinute, isTomorrow } = getMinimumBookingTime();
+  
+  let targetDate = new Date();
+  if (isTomorrow) {
+    targetDate.setDate(targetDate.getDate() + 1); // Push to tomorrow
+  }
 
-  const totalMinutes = ukH * 60 + ukM + 30;
-  const roundedMinutes = Math.ceil(totalMinutes / 30) * 30;
-  const hour24 = Math.floor(roundedMinutes / 60) % 24;
-  const min = roundedMinutes % 60;
+  const hour12 = (minHour24 % 12 || 12).toString().padStart(2, "0");
+  const minStr = minMinute.toString().padStart(2, "0");
+  const ampm = minHour24 >= 12 ? "PM" : "AM";
 
-  const hour12 = (hour24 % 12 || 12).toString().padStart(2, "0");
-  const minStr = min.toString().padStart(2, "0");
-  const ampm = hour24 >= 12 ? "PM" : "AM";
-
-  return `${hour12}:${minStr} ${ampm}`;
+  return {
+    date: targetDate,
+    time: `${hour12}:${minStr} ${ampm}`
+  };
 };
+
+const defaultDateTime = getDefaultPickupDateTime();
 
 const defaultBookingData = {
   pickup: null,
   dropoff: null,
-  pickupDate: new Date(),
-  pickupTime: getDefaultPickupTime(),
+  pickupDate: defaultDateTime.date,
+  pickupTime: defaultDateTime.time,
   serviceType: "oneway",
   hours: 2,
   selectedVehicle: null,
