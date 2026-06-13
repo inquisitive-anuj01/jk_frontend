@@ -117,7 +117,9 @@ function Booking() {
       dropoff: {
         address: isHourly ? bookingData.pickup : bookingData.dropoff,
       },
-      pickupDate: bookingData.pickupDate,
+      pickupDate: bookingData.pickupDate instanceof Date
+        ? `${bookingData.pickupDate.getFullYear()}-${String(bookingData.pickupDate.getMonth() + 1).padStart(2, '0')}-${String(bookingData.pickupDate.getDate()).padStart(2, '0')}`
+        : bookingData.pickupDate,
       pickupTime: bookingData.pickupTime,
       serviceType: bookingData.serviceType,
       journeyInfo: {
