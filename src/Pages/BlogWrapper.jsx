@@ -10,7 +10,7 @@ import InlineFAQSection from '../Components/home/InlineFAQSection';
 import FleetSection from '../Components/home/FleetSection';
 import TestimonialsSection from '../Components/home/TestimonialsSection';
 
-const BASE_URL = 'https://jkexecutivechauffeurs.com';
+const BASE_URL = 'https://www.jkexecutivechauffeurs.com';
 
 function BlogWrapper() {
     const { slug } = useParams();
@@ -197,6 +197,7 @@ function BlogWrapper() {
             <Helmet>
                 <title>{seoTitle}</title>
                 <meta name="description" content={seoDesc} />
+                <link rel="canonical" href={`${BASE_URL}/blog/${slug}`} />
                 <script type="application/ld+json">
                     {JSON.stringify(breadcrumbSchema)}
                 </script>

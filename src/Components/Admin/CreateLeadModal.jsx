@@ -624,7 +624,7 @@ const CreateLeadModal = ({ isOpen, onClose, onCreate }) => {
                 const searchData = {
                     pickupAddress: formData.pickupAddress,
                     dropoffAddress: formData.serviceType === "hourly" ? formData.pickupAddress : formData.dropoffAddress,
-                    pickupDate: formData.pickupDate instanceof Date ? formData.pickupDate.toISOString().split("T")[0] : "",
+                    pickupDate: formData.pickupDate instanceof Date ? `${formData.pickupDate.getFullYear()}-${String(formData.pickupDate.getMonth() + 1).padStart(2, '0')}-${String(formData.pickupDate.getDate()).padStart(2, '0')}` : "",
                     pickupTime: formData.pickupTime || "12:00",
                     bookingType: formData.serviceType === "hourly" ? "hourly" : "p2p",
                     hours: formData.serviceType === "hourly" ? formData.hours || 2 : undefined,
@@ -678,7 +678,7 @@ const CreateLeadModal = ({ isOpen, onClose, onCreate }) => {
                     const searchData = {
                         pickupAddress: formData.pickupAddress,
                         dropoffAddress: formData.serviceType === "hourly" ? formData.pickupAddress : formData.dropoffAddress,
-                        pickupDate: formData.pickupDate instanceof Date ? formData.pickupDate.toISOString().split("T")[0] : "",
+                        pickupDate: formData.pickupDate instanceof Date ? `${formData.pickupDate.getFullYear()}-${String(formData.pickupDate.getMonth() + 1).padStart(2, '0')}-${String(formData.pickupDate.getDate()).padStart(2, '0')}` : "",
                         pickupTime: formData.pickupTime || "12:00",
                         bookingType: formData.serviceType === "hourly" ? "hourly" : "p2p",
                         hours: formData.serviceType === "hourly" ? formData.hours || 2 : undefined,
@@ -806,7 +806,7 @@ const CreateLeadModal = ({ isOpen, onClose, onCreate }) => {
         setIsLoading(true);
         try {
             const pickupDateStr = formData.pickupDate instanceof Date
-                ? formData.pickupDate.toISOString().split("T")[0]
+                ? `${formData.pickupDate.getFullYear()}-${String(formData.pickupDate.getMonth() + 1).padStart(2, '0')}-${String(formData.pickupDate.getDate()).padStart(2, '0')}`
                 : formData.pickupDate;
 
             const payload = {

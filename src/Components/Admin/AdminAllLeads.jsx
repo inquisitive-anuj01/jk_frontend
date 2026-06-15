@@ -95,6 +95,7 @@ const ServiceTypeBadge = ({ type }) => {
 const LeadCard = ({ booking, onEdit, onDelete }) => {
     const formatDate = (date) => {
         return new Date(date).toLocaleDateString("en-GB", {
+            timeZone: "UTC",
             weekday: "short",
             day: "numeric",
             month: "short",
@@ -209,6 +210,7 @@ const LeadCard = ({ booking, onEdit, onDelete }) => {
                         <p className="font-semibold text-gray-800 text-sm">
                             {booking.pickupDate
                                 ? new Date(booking.pickupDate).toLocaleDateString("en-GB", {
+                                    timeZone: "UTC",
                                     day: "2-digit",
                                     month: "short",
                                 })
@@ -318,6 +320,7 @@ const EditLeadModal = ({ booking, isOpen, onClose, onSave }) => {
 
     const formatDate = (date) => {
         return new Date(date).toLocaleDateString("en-GB", {
+            timeZone: "UTC",
             weekday: "long",
             day: "numeric",
             month: "long",
