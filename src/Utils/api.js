@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 
 const Environment = {
     LOCAL_URL: "http://localhost:5005",
-    STAGING_URL: "https://dev.jkexecutivechauffeurs.com",
+    STAGING_URL: "https://www.dev.jkexecutivechauffeurs.com",
     PRODUCTION_URL: "https://www.jkexecutivechauffeurs.com",
 };
 
@@ -21,7 +21,7 @@ if (hostname.includes("dev.") || hostname === "dev.jkexecutivechauffeurs.com") {
     BASE_URL = Environment.PRODUCTION_URL;
 }
 
-export const BASE_URL_IMAGE = BASE_URL; 
+export const BASE_URL_IMAGE = BASE_URL;
 
 export function getImageUrl(path, fallback = "") {
     if (!path) return fallback;

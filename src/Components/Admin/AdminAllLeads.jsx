@@ -94,8 +94,19 @@ const ServiceTypeBadge = ({ type }) => {
 // Lead Card Component
 const LeadCard = ({ booking, onEdit, onDelete }) => {
     const formatDate = (date) => {
+        if (!date) return "N/A";
+        // If it's the YYYY-MM-DD string, parse it manually to avoid timezone shift
+        if (typeof date === "string" && date.length === 10 && date.includes("-")) {
+            const [y, m, d] = date.split("-").map(Number);
+            return new Date(y, m - 1, d).toLocaleDateString("en-GB", {
+                weekday: "short",
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+            });
+        }
         return new Date(date).toLocaleDateString("en-GB", {
-            timeZone: "UTC",
+            timeZone: "Europe/London",
             weekday: "short",
             day: "numeric",
             month: "short",
@@ -209,11 +220,20 @@ const LeadCard = ({ booking, onEdit, onDelete }) => {
                         <p className="text-xs text-gray-500">Date</p>
                         <p className="font-semibold text-gray-800 text-sm">
                             {booking.pickupDate
-                                ? new Date(booking.pickupDate).toLocaleDateString("en-GB", {
-                                    timeZone: "UTC",
-                                    day: "2-digit",
-                                    month: "short",
-                                })
+                                ? (() => {
+                                    if (typeof booking.pickupDate === "string" && booking.pickupDate.length === 10) {
+                                        const [y, m, d] = booking.pickupDate.split("-").map(Number);
+                                        return new Date(y, m - 1, d).toLocaleDateString("en-GB", {
+                                            day: "2-digit",
+                                            month: "short",
+                                        });
+                                    }
+                                    return new Date(booking.pickupDate).toLocaleDateString("en-GB", {
+                                        timeZone: "Europe/London",
+                                        day: "2-digit",
+                                        month: "short",
+                                    });
+                                })()
                                 : "N/A"}
                         </p>
                     </div>
@@ -320,7 +340,7 @@ const EditLeadModal = ({ booking, isOpen, onClose, onSave }) => {
 
     const formatDate = (date) => {
         return new Date(date).toLocaleDateString("en-GB", {
-            timeZone: "UTC",
+            timeZone: "Europe/London",
             weekday: "long",
             day: "numeric",
             month: "long",

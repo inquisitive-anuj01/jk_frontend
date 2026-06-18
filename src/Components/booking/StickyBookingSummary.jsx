@@ -36,7 +36,13 @@ function StickyBookingSummary({
 }) {
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
-    const dateObj = new Date(dateStr);
+    let dateObj;
+    if (typeof dateStr === "string" && dateStr.includes("-")) {
+      const [y, m, d] = dateStr.split("T")[0].split("-").map(Number);
+      dateObj = new Date(y, m - 1, d);
+    } else {
+      dateObj = new Date(dateStr);
+    }
     return dateObj.toLocaleDateString("en-GB", {
       day: "numeric",
       month: "short",
