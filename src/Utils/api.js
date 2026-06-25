@@ -403,6 +403,58 @@ export const fleetAPI = {
         const response = await api.get(`/api/fleet/${slug}`);
         return response.data;
     },
+
+    // ===== ADMIN ROUTES =====
+
+    // Get all fleets (Admin)
+    getAllAdmin: async (page = 1, limit = 20, search = "") => {
+        const response = await api.get("/api/fleet/admin/all", {
+            params: { page, limit, search },
+        });
+        return response.data;
+    },
+
+    // Get fleet by ID (Admin)
+    getById: async (id) => {
+        const response = await api.get(`/api/fleet/admin/${id}`);
+        return response.data;
+    },
+
+    // Create new fleet
+    create: async (formData) => {
+        const response = await api.post("/api/fleet", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+        return response.data;
+    },
+
+    // Update fleet
+    update: async (id, formData) => {
+        const response = await api.put(`/api/fleet/${id}`, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+        return response.data;
+    },
+
+    // Delete fleet
+    delete: async (id) => {
+        const response = await api.delete(`/api/fleet/${id}`);
+        return response.data;
+    },
+
+    // Toggle Active Status
+    toggleActive: async (id, isActive) => {
+        const fd = new FormData();
+        fd.append("isActive", String(isActive));
+        const response = await api.put(`/api/fleet/${id}`, fd, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
+        return response.data;
+    },
 };
 
 // Event APIs
