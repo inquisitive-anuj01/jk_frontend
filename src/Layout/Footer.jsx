@@ -121,7 +121,7 @@ function Footer() {
     <footer className="bg-[#0a0a0a] text-white/80">
       {/* Main Footer */}
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-10 md:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 md:gap-12">
 
           {/* Brand Column */}
           <div className="lg:col-span-1 text-center lg:text-left flex flex-col items-center lg:items-start">
@@ -160,7 +160,7 @@ function Footer() {
             </div>
           </div>
 
-          {/* Quick Links + Services — 2-col on mobile, each 1 col on lg */}
+          {/* Quick Links + Services + Fleet — 2-col on mobile, each 1 col on lg */}
           <div className="grid grid-cols-2 lg:contents gap-8">
             {/* Quick Links */}
             <div className="text-center lg:text-left">
@@ -208,6 +208,39 @@ function Footer() {
                   { label: 'London Chauffeur', href: '/services/london-chauffeur-service' },
                   { label: 'Event Chauffeur', href: '/services/event-chauffeur-service-in-london' },
                   { label: 'Sports Events', href: '/events/chauffeur-service-for-sports-event' },
+                ].map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      to={link.href}
+                      className="text-sm text-white/50 transition-colors"
+                      style={linkStyle}
+                      onMouseEnter={(e) => handleLinkHover(e, true)}
+                      onMouseLeave={(e) => handleLinkHover(e, false)}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Our Fleet — dynamically fetched from backend */}
+            <div className="text-center lg:text-left col-span-2 lg:col-span-1">
+              <h3 className="text-white font-semibold uppercase tracking-wider text-xs mb-5 flex items-center justify-center lg:justify-start gap-2">
+                <span className="w-5 h-px hidden lg:block" style={{ backgroundColor: 'var(--color-primary)' }} />
+                Our Fleet
+              </h3>
+              <ul className="space-y-2.5">
+                {[
+                  { label: 'All Vehicles', href: '/fleet' },
+                  { label: 'Mercedes E Class', href: '/fleet/mercedes-e-class' },
+                  { label: 'Mercedes S Class', href: '/fleet/mercedes-s-class' },
+                  { label: 'Mercedes V Class', href: '/fleet/mercedes-v-class' },
+                  { label: 'Mercedes Benz EQE', href: '/fleet/mercedes-benz-eqe' },
+                  { label: 'Rolls Royce', href: '/fleet/rolls-royce' },
+                  { label: 'Range Rover', href: '/fleet/range-rover' },
+                  { label: 'Mini Coach', href: '/fleet/mini-coach' },
+                  { label: 'Coach Hire For Every Occasion', href: '/fleet/coach-hire-for-every-occasion' },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link

@@ -422,9 +422,11 @@ export const fleetAPI = {
 
     // Create new fleet
     create: async (formData) => {
+        const token = localStorage.getItem("adminToken");
         const response = await api.post("/api/fleet", formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
+                ...(token ? { "Authorization": `Bearer ${token}` } : {}),
             },
         });
         return response.data;
@@ -432,9 +434,11 @@ export const fleetAPI = {
 
     // Update fleet
     update: async (id, formData) => {
+        const token = localStorage.getItem("adminToken");
         const response = await api.put(`/api/fleet/${id}`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
+                ...(token ? { "Authorization": `Bearer ${token}` } : {}),
             },
         });
         return response.data;

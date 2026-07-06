@@ -16,6 +16,7 @@ const toSlug = (str) =>
 const EMPTY_SUBSECTION = () => ({ subheading: "", text: "", listItems: [] });
 const EMPTY_SECTION = () => ({ heading: "", subsections: [EMPTY_SUBSECTION()] });
 const EMPTY_FAQ = () => ({ question: "", answer: "", tag: "FAQ" });
+const EMPTY_PRICING_OPTION = () => ({ label: "", price: "" });
 
 const stopTextareaScroll = (e) => {
   const el = e.currentTarget;
@@ -207,6 +208,7 @@ function AdminAddFleet() {
   const [features, setFeatures] = useState([]);
   const [sections, setSections] = useState([]);
   const [faqs, setFaqs] = useState([]);
+  const [pricingOptions, setPricingOptions] = useState([]);
   const [showHtmlImportModal, setShowHtmlImportModal] = useState(false);
   const [htmlImportContent, setHtmlImportContent] = useState("");
   const [heroImage, setHeroImage] = useState(null);
@@ -248,6 +250,7 @@ function AdminAddFleet() {
       setFeatures(f.features || []);
       setSections(f.sections || []);
       setFaqs(f.faqs || []);
+      setPricingOptions(f.pricingOptions || []);
       const imgUrl = f.heroImage?.url || null;
       if (imgUrl) setHeroImagePreview(getImageUrl(imgUrl));
     } catch {
@@ -354,6 +357,12 @@ function AdminAddFleet() {
   const handleFaqChange = (idx, field, value) =>
     setFaqs((prev) => { const next = [...prev]; next[idx] = { ...next[idx], [field]: value }; return next; });
 
+  // ── Pricing Option operations ──────────────────────────────────────────
+  const addPricingOption = () => setPricingOptions((prev) => [...prev, EMPTY_PRICING_OPTION()]);
+  const removePricingOption = (idx) => setPricingOptions((prev) => prev.filter((_, i) => i !== idx));
+  const handlePricingOptionChange = (idx, field, value) =>
+    setPricingOptions((prev) => { const next = [...prev]; next[idx] = { ...next[idx], [field]: value }; return next; });
+
   // ── Submit ───────────────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -371,6 +380,7 @@ function AdminAddFleet() {
       fd.append("slug", formData.slug.trim());
       fd.append("description", formData.description);
       fd.append("longDescription", formData.longDescription);
+      fd.append("category", formData.category || "");
       fd.append("seoTitle", formData.seoTitle);
       fd.append("seoDescription", formData.seoDescription);
       fd.append("passengers", String(formData.passengers));
@@ -381,6 +391,7 @@ function AdminAddFleet() {
       fd.append("features", JSON.stringify(features.filter(Boolean)));
       fd.append("sections", JSON.stringify(sections));
       fd.append("faqs", JSON.stringify(faqs));
+      fd.append("pricingOptions", JSON.stringify(pricingOptions.filter((p) => p.label || p.price)));
       if (heroImage) fd.append("heroImage", heroImage);
 
       if (isEditing) {
@@ -609,6 +620,57 @@ function AdminAddFleet() {
                     <HelpCircle size={28} className="mx-auto text-amber-200 mb-2" />
                     <p className="text-sm font-medium text-gray-500">No FAQs yet</p>
                     <p className="text-xs text-gray-400 mt-1">Click <strong>Add FAQ</strong> to add questions &amp; answers</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Pricing Options builder */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                  <Tag size={18} className="text-emerald-500" /> Pricing Options
+                  <span className="text-xs font-normal text-gray-400 ml-1">(optional)</span>
+                </h2>
+                <button type="button" onClick={addPricingOption}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg transition-colors text-sm font-medium">
+                  <Plus size={15} /> Add Pricing
+                </button>
+              </div>
+              <div className="space-y-4">
+                <AnimatePresence mode="popLayout">
+                  {pricingOptions.map((opt, i) => (
+                    <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                      className="border border-emerald-200 rounded-xl p-5 bg-emerald-50 relative">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-sm font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-lg">Option {i + 1}</span>
+                        <button type="button" onClick={() => removePricingOption(i)}
+                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Label</label>
+                          <input type="text" value={opt.label || ""} onChange={(e) => handlePricingOptionChange(i, "label", e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent"
+                            placeholder="e.g. Hourly rate (minimum 3 hours)" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Price</label>
+                          <input type="text" value={opt.price || ""} onChange={(e) => handlePricingOptionChange(i, "price", e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent"
+                            placeholder="e.g. £75" />
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+                {pricingOptions.length === 0 && (
+                  <div className="text-center py-10 border-2 border-dashed border-emerald-100 rounded-xl">
+                    <Tag size={28} className="mx-auto text-emerald-200 mb-2" />
+                    <p className="text-sm font-medium text-gray-500">No Pricing Options yet</p>
+                    <p className="text-xs text-gray-400 mt-1">Click <strong>Add Pricing</strong> to add pricing rows</p>
                   </div>
                 )}
               </div>
