@@ -233,14 +233,14 @@ function Footer() {
               <ul className="space-y-2.5">
                 {[
                   { label: 'All Vehicles', href: '/fleet' },
-                  { label: 'Mercedes E Class', href: '/fleet/mercedes-e-class' },
-                  { label: 'Mercedes S Class', href: '/fleet/mercedes-s-class' },
-                  { label: 'Mercedes V Class', href: '/fleet/mercedes-v-class' },
+                  { label: 'Mercedes E Class', href: '/fleet/fleets-mercedes-e-class' },
+                  { label: 'Mercedes S Class', href: '/fleet/fleets-mercedes-s-class' },
+                  { label: 'Mercedes V Class', href: '/fleet/fleets-mercedes-v-class' },
                   { label: 'Mercedes Benz EQE', href: '/fleet/mercedes-benz-eqe' },
-                  { label: 'Rolls Royce', href: '/fleet/rolls-royce' },
-                  { label: 'Range Rover', href: '/fleet/range-rover' },
-                  { label: 'Mini Coach', href: '/fleet/mini-coach' },
-                  { label: 'Coach Hire For Every Occasion', href: '/fleet/coach-hire-for-every-occasion' },
+                  { label: 'Rolls Royce', href: '/fleet/rolls-royce-chauffeur-hire-london' },
+                  { label: 'Range Rover', href: '/fleet/range-rover-chauffeur-hire-london' },
+                  { label: 'Mini Coach', href: '/fleet/mini-coach-chauffeur-hire-london' },
+                  { label: 'Coach Hire', href: '/fleet/coaches-hire-london' },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link
