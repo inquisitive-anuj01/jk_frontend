@@ -352,13 +352,30 @@ function Payment({ data, clientSecret, onBack, onPaymentSuccess, onPaymentFailur
   // Format date
   const formatDate = (dateStr) => {
     if (!dateStr) return "—";
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("en-GB", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
+    try {
+        // If it's a simple YYYY-MM-DD string, parse it as noon UTC to avoid any timezone shifts
+        if (typeof dateStr === "string" && /^\d{4}-\d{2}-\d{2}$/.test(dateStr.trim())) {
+            const [y, m, d] = dateStr.trim().split("-").map(Number);
+            const date = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+            return date.toLocaleDateString("en-GB", {
+                timeZone: "UTC",
+                weekday: "short",
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+            });
+        }
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return String(dateStr);
+        return date.toLocaleDateString("en-GB", {
+            weekday: "short",
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+        });
+    } catch (error) {
+        return String(dateStr);
+    }
   };
 
   return (

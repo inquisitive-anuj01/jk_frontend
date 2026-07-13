@@ -103,7 +103,18 @@ const getTodayDate = () => new Date();
 
 const formatDateDisplay = (date) => {
     if (!date) return "";
-    return date.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+    try {
+        if (typeof date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(date.trim())) {
+            const [y, m, d] = date.trim().split("-").map(Number);
+            const dateObj = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+            return dateObj.toLocaleDateString("en-GB", { timeZone: "UTC", weekday: "short", day: "numeric", month: "short", year: "numeric" });
+        }
+        const dateObj = typeof date === "string" ? new Date(date) : date;
+        if (isNaN(dateObj.getTime())) return String(date);
+        return dateObj.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+    } catch (error) {
+        return String(date);
+    }
 };
 const formatTimeDisplay = (t) => t || "Select time";
 
