@@ -10,7 +10,7 @@ import InlineFAQSection from '../Components/home/InlineFAQSection';
 import FleetSection from '../Components/home/FleetSection';
 import TestimonialsSection from '../Components/home/TestimonialsSection';
 
-const BASE_URL = 'https://jkexecutivechauffeurs.com';
+const BASE_URL = 'https://www.jkexecutivechauffeurs.com';
 
 function BlogWrapper() {
     const { slug } = useParams();
@@ -150,6 +150,32 @@ function BlogWrapper() {
     const seoTitle = blog.seoTitle || blog.title;
     const seoDesc = blog.seoDescription || blog.excerpt || (blog.intro ? blog.intro.replace(/<[^>]+>/g, '').slice(0, 160) : '');
 
+    const articleSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': `${BASE_URL}/blog/${blog.slug}`,
+        },
+        headline: seoTitle,
+        description: seoDesc,
+        image: heroSrc || `${BASE_URL}/logo.png`,
+        author: {
+            '@type': 'Person',
+            name: blog.author || 'JK Executive Chauffeurs',
+        },
+        publisher: {
+            '@type': 'Organization',
+            name: 'JK Executive Chauffeurs',
+            logo: {
+                '@type': 'ImageObject',
+                url: `${BASE_URL}/logo.png`,
+            },
+        },
+        datePublished: blog.publishDate || blog.createdAt,
+        dateModified: blog.updatedAt || blog.createdAt,
+    };
+
     // FAQ structured data — only built when FAQs exist
     const faqSchema = blog.faqs && blog.faqs.length > 0
         ? {
@@ -171,11 +197,15 @@ function BlogWrapper() {
             <Helmet>
                 <title>{seoTitle}</title>
                 <meta name="description" content={seoDesc} />
+                <link rel="canonical" href={`${BASE_URL}/blog/${slug}`} />
                 <script type="application/ld+json">
                     {JSON.stringify(breadcrumbSchema)}
                 </script>
                 <script type="application/ld+json">
                     {JSON.stringify(blogPostingSchema)}
+                </script>
+                <script type="application/ld+json">
+                    {JSON.stringify(articleSchema)}
                 </script>
                 {faqSchema && (
                     <script type="application/ld+json">

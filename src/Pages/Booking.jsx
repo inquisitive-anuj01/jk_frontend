@@ -16,34 +16,6 @@ import Analytics from "../Utils/analytics";
 
 // Libraries are managed globally via GoogleMapsProvider in App.jsx
 
-// Compute default pickup time: GMT now + 30 min, rounded UP to next 30-min slot
-// Returns a 12-hour formatted string like "02:00 PM"
-const getDefaultPickupTime = () => {
-  const now = new Date();
-  // Use Intl.DateTimeFormat to get reliable UK/GMT time parts
-  const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Europe/London",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).formatToParts(now);
-  const ukH = parseInt(parts.find((p) => p.type === "hour").value, 10);
-  const ukM = parseInt(parts.find((p) => p.type === "minute").value, 10);
-
-  // Add 30 min, round UP to next 30-min boundary
-  const totalMinutes = ukH * 60 + ukM + 30;
-  const roundedMinutes = Math.ceil(totalMinutes / 30) * 30;
-  const hour24 = Math.floor(roundedMinutes / 60) % 24;
-  const min = roundedMinutes % 60;
-
-  // Convert to 12-hour format
-  const hour12 = (hour24 % 12 || 12).toString().padStart(2, "0");
-  const minStr = min.toString().padStart(2, "0");
-  const ampm = hour24 >= 12 ? "PM" : "AM";
-
-  return `${hour12}:${minStr} ${ampm}`;
-};
-
 // Step configurations - 4 steps including payment
 const STEPS = [
   { id: 1, label: "Locations", description: "Where would you like to go?" },
@@ -145,7 +117,9 @@ function Booking() {
       dropoff: {
         address: isHourly ? bookingData.pickup : bookingData.dropoff,
       },
-      pickupDate: bookingData.pickupDate,
+      pickupDate: bookingData.pickupDate instanceof Date
+        ? `${bookingData.pickupDate.getFullYear()}-${String(bookingData.pickupDate.getMonth() + 1).padStart(2, '0')}-${String(bookingData.pickupDate.getDate()).padStart(2, '0')}`
+        : bookingData.pickupDate,
       pickupTime: bookingData.pickupTime,
       serviceType: bookingData.serviceType,
       journeyInfo: {
@@ -190,26 +164,23 @@ function Booking() {
     const existingBookingId = bookingData.savedBookingId;
     const currentPassengerDetails = formData?.passengerDetails || bookingData.passengerDetails;
 
-    // If booking already exists (re-submit from edit)
+    // If booking already exists (user went back and re-submitted)
+    // Always send the full payload so DB stays in sync with any location/vehicle/date changes
     if (existingBookingId) {
-      const currentEmail = currentPassengerDetails?.email;
-      const originalEmail = bookingData.originalEmail;
-
-      // Update booking if email changed
-      if (currentEmail !== originalEmail) {
-        setIsLoadingPayment(true);
-        try {
-          await bookingAPI.updateBookingDetails(existingBookingId, {
-            ...buildBookingPayload(formData),
-            originalEmail: originalEmail,
-          });
-          updateBooking("originalEmail", currentEmail);
-          console.log("Booking updated with new email:", currentEmail);
-        } catch (error) {
-          console.error("Error updating booking:", error);
-        } finally {
-          setIsLoadingPayment(false);
-        }
+      setIsLoadingPayment(true);
+      try {
+        await bookingAPI.updateBookingDetails(existingBookingId, {
+          ...buildBookingPayload(formData),
+          originalEmail: bookingData.originalEmail,
+        });
+        // Keep originalEmail in sync in case it changed
+        updateBooking("originalEmail", currentPassengerDetails?.email);
+        console.log("Booking fully updated with latest details (location, vehicle, passenger, date)");
+      } catch (error) {
+        console.error("Error updating booking:", error);
+        // Don't block payment flow if update fails — log and continue
+      } finally {
+        setIsLoadingPayment(false);
       }
 
       // Create payment intent and go to payment — pass formData so Stripe gets fresh customer info

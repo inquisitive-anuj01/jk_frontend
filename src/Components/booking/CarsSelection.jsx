@@ -35,7 +35,7 @@ function CarsSelection({ data, updateData, onNext, onBack }) {
       dropoffAddress: dropoffAddress || "",
       pickupDate:
         data.pickupDate instanceof Date
-          ? data.pickupDate.toISOString().split("T")[0]
+          ? `${data.pickupDate.getFullYear()}-${String(data.pickupDate.getMonth() + 1).padStart(2, '0')}-${String(data.pickupDate.getDate()).padStart(2, '0')}`
           : "",
       pickupTime: data.pickupTime || "12:00",
       bookingType: data.serviceType === "hourly" ? "hourly" : "p2p",

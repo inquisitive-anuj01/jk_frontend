@@ -46,6 +46,7 @@ function Header({ isTransparent = false, theme = 'dark' }) {
   const [navItems, setNavItems] = useState([]);
   const [serviceMenuItems, setServiceMenuItems] = useState([]);
   const [eventNavItems, setEventNavItems] = useState([]);
+  const [isNavLoading, setIsNavLoading] = useState(true);
   const location = useLocation();
 
   // Check if we're on the home page or booking page
@@ -136,6 +137,8 @@ function Header({ isTransparent = false, theme = 'dark' }) {
           dropdownItems: [],
         };
         setNavItems([fallbackServicesItem, ...STATIC_NAV_ITEMS]);
+      } finally {
+        setIsNavLoading(false);
       }
     };
 
@@ -302,7 +305,38 @@ function Header({ isTransparent = false, theme = 'dark' }) {
 
           {/* Navigation Bar - Desktop */}
           <nav className="hidden lg:flex items-center justify-center gap-1 pb-4">
-            {navItems.map((item) => (
+            {/* Shimmer skeleton while loading */}
+            {isNavLoading && (
+              <>
+                <style>{`
+                  @keyframes header-shimmer {
+                    0%   { background-position: -400px 0; }
+                    100% { background-position: 400px 0; }
+                  }
+                  .nav-skeleton-box {
+                    background: linear-gradient(
+                      90deg,
+                      rgba(255,255,255,0.06) 25%,
+                      rgba(200,160,60,0.18) 50%,
+                      rgba(255,255,255,0.06) 75%
+                    );
+                    background-size: 800px 100%;
+                    animation: header-shimmer 1.6s infinite linear;
+                    border-radius: 6px;
+                  }
+                `}</style>
+                {[110, 95, 80, 55, 80, 95].map((w, i) => (
+                  <div
+                    key={i}
+                    className="nav-skeleton-box"
+                    style={{ width: w, height: 28, margin: '0 6px' }}
+                  />
+                ))}
+              </>
+            )}
+
+            {/* Real nav items once loaded */}
+            {!isNavLoading && navItems.map((item) => (
               <div
                 key={item.label}
                 className="relative"
@@ -456,8 +490,19 @@ function Header({ isTransparent = false, theme = 'dark' }) {
 
             {/* Scrollable Content Area */}
             <div className="flex-1 overflow-y-auto px-6 pb-8">
-              {/* Mobile Nav Items */}
-              {navItems.map((item) => (
+              {/* Mobile Nav Items - skeleton while loading */}
+              {isNavLoading && (
+                <div className="space-y-2 py-2">
+                  {[130, 100, 80, 55, 80, 95].map((w, i) => (
+                    <div
+                      key={i}
+                      className="nav-skeleton-box"
+                      style={{ width: w, height: 20, borderRadius: 4 }}
+                    />
+                  ))}
+                </div>
+              )}
+              {!isNavLoading && navItems.map((item) => (
                 <MobileNavItem
                   key={item.label}
                   item={item}

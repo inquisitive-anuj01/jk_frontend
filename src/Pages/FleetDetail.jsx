@@ -174,7 +174,7 @@ function FleetDetail() {
                                 transition={{ duration: 0.5, delay: 0.1 }}
                                 className="text-3xl md:text-4xl lg:text-5xl font-light text-white"
                             >
-                                {fleet.title}
+                                {fleet.title}  Chauffeur London
                             </motion.h1>
                         </div>
 

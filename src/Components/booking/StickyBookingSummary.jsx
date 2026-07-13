@@ -36,12 +36,27 @@ function StickyBookingSummary({
 }) {
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
-    const dateObj = new Date(dateStr);
-    return dateObj.toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
+    try {
+        if (typeof dateStr === "string" && /^\d{4}-\d{2}-\d{2}$/.test(dateStr.trim())) {
+            const [y, m, d] = dateStr.trim().split("-").map(Number);
+            const dateObj = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+            return dateObj.toLocaleDateString("en-GB", {
+                timeZone: "UTC",
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+            });
+        }
+        const dateObj = new Date(dateStr);
+        if (isNaN(dateObj.getTime())) return String(dateStr);
+        return dateObj.toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+        });
+    } catch (error) {
+        return String(dateStr);
+    }
   };
 
   const isHourly = serviceType === "hourly";

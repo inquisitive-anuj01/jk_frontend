@@ -121,7 +121,7 @@ function Footer() {
     <footer className="bg-[#0a0a0a] text-white/80">
       {/* Main Footer */}
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-10 md:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 md:gap-12">
 
           {/* Brand Column */}
           <div className="lg:col-span-1 text-center lg:text-left flex flex-col items-center lg:items-start">
@@ -139,13 +139,16 @@ function Footer() {
               London's premier chauffeur service. Experience luxury, reliability, and professionalism with every journey.
             </p>
 
-            {/* Company & VAT */}
+            {/* Company, VAT & TfL */}
             <div className="space-y-1 mb-5">
               <p className="text-xs text-white/40">
                 <span className="text-white/50 font-medium">Company No</span> — 10696876
               </p>
               <p className="text-xs text-white/40">
                 <span className="text-white/50 font-medium">VAT No</span> — 280189982
+              </p>
+              <p className="text-xs text-white/40">
+                <span className="text-white/50 font-medium">TFL Licence No</span> — 010468
               </p>
             </div>
 
@@ -205,6 +208,39 @@ function Footer() {
                   { label: 'London Chauffeur', href: '/services/london-chauffeur-service' },
                   { label: 'Event Chauffeur', href: '/services/event-chauffeur-service-in-london' },
                   { label: 'Sports Events', href: '/events/chauffeur-service-for-sports-event' },
+                ].map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      to={link.href}
+                      className="text-sm text-white/50 transition-colors"
+                      style={linkStyle}
+                      onMouseEnter={(e) => handleLinkHover(e, true)}
+                      onMouseLeave={(e) => handleLinkHover(e, false)}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Our Fleet */}
+            <div className="text-center lg:text-left col-span-2 lg:col-span-1">
+              <h3 className="text-white font-semibold uppercase tracking-wider text-xs mb-5 flex items-center justify-center lg:justify-start gap-2">
+                <span className="w-5 h-px hidden lg:block" style={{ backgroundColor: 'var(--color-primary)' }} />
+                Our Fleet
+              </h3>
+              <ul className="space-y-2.5">
+                {[
+                  { label: 'All Vehicles', href: '/fleet' },
+                  { label: 'Mercedes E Class', href: '/fleet/fleets-mercedes-e-class' },
+                  { label: 'Mercedes S Class', href: '/fleet/fleets-mercedes-s-class' },
+                  { label: 'Mercedes V Class', href: '/fleet/fleets-mercedes-v-class' },
+                  { label: 'Mercedes Benz EQE', href: '/fleet/mercedes-benz-eqe' },
+                  { label: 'Rolls Royce', href: '/fleet/rolls-royce-chauffeur-hire-london' },
+                  { label: 'Range Rover', href: '/fleet/range-rover-chauffeur-hire-london' },
+                  { label: 'Mini Coach', href: '/fleet/mini-coach-chauffeur-hire-london' },
+                  { label: 'Coach Hire', href: '/fleet/coaches-hire-london' },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link
