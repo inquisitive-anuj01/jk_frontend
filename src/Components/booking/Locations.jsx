@@ -923,7 +923,12 @@ function Locations({ data, updateData, onNext, isOnHome = false }) {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[10px] uppercase tracking-widest font-bold text-[var(--color-primary)] ml-1">Time</label>
+              <div className="flex items-center justify-between ml-1">
+                <label className="text-[10px] uppercase tracking-widest font-bold text-[var(--color-primary)]">Time</label>
+                <span className="text-[9px] uppercase tracking-widest font-bold text-white flex items-center gap-1 bg-[var(--color-primary)]/20 px-2 py-0.5 rounded border border-[var(--color-primary)]/30 shadow-[0_0_8px_rgba(215,183,94,0.15)]">
+                  <Clock size={10} className="text-[var(--color-primary)]" /> UK (London) Time
+                </span>
+              </div>
               <div className="relative">
                 <div
                   onClick={() => setActivePicker(activePicker === 'time' ? null : 'time')}
