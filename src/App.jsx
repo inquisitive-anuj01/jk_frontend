@@ -145,6 +145,8 @@ const AdminAllBlogs = lazy(() => import("./Components/Admin/AdminAllBlogs"));
 const AdminAddBlog = lazy(() => import("./Components/Admin/AdminAddBlog"));
 const AdminAllServices = lazy(() => import("./Components/Admin/AdminAllServices"));
 const AdminAddService = lazy(() => import("./Components/Admin/AdminAddService"));
+const AdminAllFleets = lazy(() => import("./Components/Admin/AdminAllFleets"));
+const AdminAddFleet = lazy(() => import("./Components/Admin/AdminAddFleet"));
 const AdminEventCalendar = lazy(() => import("./Components/Admin/AdminEventCalendar"));
 
 function App() {
@@ -213,6 +215,8 @@ function App() {
                 <Route path="/admin/all-pricing" element={<AdminAllPricing />} />
                 <Route path="/admin/blogs" element={<AdminAllBlogs />} />
                 <Route path="/admin/add-blog" element={<AdminAddBlog />} />
+                <Route path="/admin/fleets" element={<AdminAllFleets />} />
+                <Route path="/admin/add-fleet" element={<AdminAddFleet />} />
                 <Route path="/admin/services" element={<AdminAllServices />} />
                 <Route path="/admin/add-service" element={<AdminAddService />} />
 

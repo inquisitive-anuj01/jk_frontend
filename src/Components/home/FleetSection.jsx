@@ -190,7 +190,7 @@ function FleetSection() {
                           loading="lazy"
                           onError={(e) => {
                             e.target.src =
-                              "https://via.placeholder.com/400x250?text=Vehicle";
+                              "https://placehold.co/400x250?text=Vehicle";
                           }}
                         />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-500" />
