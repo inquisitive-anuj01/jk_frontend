@@ -94,24 +94,30 @@ const ServiceTypeBadge = ({ type }) => {
 // Lead Card Component
 const LeadCard = ({ booking, onEdit, onDelete }) => {
     const formatDate = (date) => {
-        if (!date) return "N/A";
-        // If it's the YYYY-MM-DD string, parse it manually to avoid timezone shift
-        if (typeof date === "string" && date.length === 10 && date.includes("-")) {
-            const [y, m, d] = date.split("-").map(Number);
-            return new Date(y, m - 1, d).toLocaleDateString("en-GB", {
+        if (!date) return "—";
+        try {
+            if (typeof date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(date.trim())) {
+                const [y, m, d] = date.trim().split("-").map(Number);
+                const dateObj = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+                return dateObj.toLocaleDateString("en-GB", {
+                    timeZone: "UTC",
+                    weekday: "short",
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                });
+            }
+            const dateObj = new Date(date);
+            if (isNaN(dateObj.getTime())) return String(date);
+            return dateObj.toLocaleDateString("en-GB", {
                 weekday: "short",
                 day: "numeric",
                 month: "short",
                 year: "numeric",
             });
+        } catch (error) {
+            return String(date);
         }
-        return new Date(date).toLocaleDateString("en-GB", {
-            timeZone: "Europe/London",
-            weekday: "short",
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-        });
     };
 
     const getPaymentBadgeColor = () => {
@@ -339,13 +345,30 @@ const EditLeadModal = ({ booking, isOpen, onClose, onSave }) => {
     if (!isOpen || !booking) return null;
 
     const formatDate = (date) => {
-        return new Date(date).toLocaleDateString("en-GB", {
-            timeZone: "Europe/London",
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-        });
+        if (!date) return "—";
+        try {
+            if (typeof date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(date.trim())) {
+                const [y, m, d] = date.trim().split("-").map(Number);
+                const dateObj = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+                return dateObj.toLocaleDateString("en-GB", {
+                    timeZone: "UTC",
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                });
+            }
+            const dateObj = new Date(date);
+            if (isNaN(dateObj.getTime())) return String(date);
+            return dateObj.toLocaleDateString("en-GB", {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+            });
+        } catch (error) {
+            return String(date);
+        }
     };
 
     return (

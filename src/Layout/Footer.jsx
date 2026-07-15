@@ -224,7 +224,7 @@ function Footer() {
               </ul>
             </div>
 
-            {/* Our Fleet — dynamically fetched from backend */}
+            {/* Our Fleet */}
             <div className="text-center lg:text-left col-span-2 lg:col-span-1">
               <h3 className="text-white font-semibold uppercase tracking-wider text-xs mb-5 flex items-center justify-center lg:justify-start gap-2">
                 <span className="w-5 h-px hidden lg:block" style={{ backgroundColor: 'var(--color-primary)' }} />
