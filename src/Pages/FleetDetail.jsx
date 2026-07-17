@@ -304,7 +304,7 @@ function FleetDetail() {
                                 ))}
                             </div>
                             {/* Static Highlights & Pricing Section (Native Dark Mode) */}
-                            {false && (
+                            (
                             <div className="rounded-2xl p-6 md:p-8 flex flex-col md:flex-row gap-8 mb-6 mt-4 border border-white/5" style={{ backgroundColor: 'rgba(255,255,255,0.02)' }}>
                                 {/* Left: Highlights */}
                                 <div className="flex-1">
@@ -378,7 +378,7 @@ function FleetDetail() {
                                     </button>
                                 </div>
                             </div>
-                            )}
+                            )
 
                             {/* Short Description */}
                             <div
