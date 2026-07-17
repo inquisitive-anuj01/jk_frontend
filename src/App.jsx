@@ -133,6 +133,7 @@ const AdminLogin = lazy(() => import("./Components/Admin/AdminLogin"));
 const AdminDashboard = lazy(() => import("./Components/Admin/AdminDashboard"));
 const AdminAllBookings = lazy(() => import("./Components/Admin/AdminAllBookings"));
 const AdminAllLeads = lazy(() => import("./Components/Admin/AdminAllLeads"));
+const AdminContactLeads = lazy(() => import("./Components/Admin/AdminContactLeads"));
 const AdminAllCars = lazy(() => import("./Components/Admin/AdminAllCars"));
 const AdminAddCar = lazy(() => import("./Components/Admin/AdminAddCar"));
 const AdminPricing = lazy(() => import("./Components/Admin/AdminPricing"));
@@ -208,6 +209,7 @@ function App() {
                 <Route path="/login-admin" element={<AdminLogin />} />
                 <Route path="/admin-dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/leads" element={<AdminAllLeads />} />
+                <Route path="/admin/contact-leads" element={<AdminContactLeads />} />
                 <Route path="/admin/bookings" element={<AdminAllBookings />} />
                 <Route path="/admin/vehicles" element={<AdminAllCars />} />
                 <Route path="/admin/add-car" element={<AdminAddCar />} />

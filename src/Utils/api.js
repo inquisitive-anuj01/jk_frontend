@@ -609,6 +609,22 @@ export const contactAPI = {
         const response = await api.post("/api/contact/car-quote", data);
         return response.data;
     },
+
+    // ─── Admin only ──────────────────────────────────────────────────────────
+
+    // Get all contact leads (Admin)
+    getAllAdmin: async (page = 1, limit = 20, search = "") => {
+        const response = await api.get("/api/contact/leads", {
+            params: { page, limit, search },
+        });
+        return response.data;
+    },
+
+    // Delete contact lead (Admin)
+    deleteLead: async (id) => {
+        const response = await api.delete(`/api/contact/leads/${id}`);
+        return response.data;
+    },
 };
 
 // FAQ APIs

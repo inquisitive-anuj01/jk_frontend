@@ -12,6 +12,7 @@ import {
   BookOpen,
   CalendarDays,
   Car,
+  MessageSquare,
 } from "lucide-react";
 
 export const NAV_ITEMS = [
@@ -33,6 +34,12 @@ export const NAV_ITEMS = [
     icon: Calendar,
     label: "Confirmed Booking",
     path: "/admin/bookings",
+  },
+  {
+    id: "contact-leads",
+    icon: MessageSquare,
+    label: "Contact Leads",
+    path: "/admin/contact-leads",
   },
 
   // ===== VEHICLES =====
