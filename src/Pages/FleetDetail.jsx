@@ -535,32 +535,6 @@ function FleetDetail() {
                                 }
                             `}</style>
 
-                            {/* Specifications */}
-                            {fleet.specifications && fleet.specifications.length > 0 && (
-                                <div className="space-y-4">
-                                    <h2 className="text-xl md:text-2xl font-semibold text-white">
-                                        Vehicle Specifications
-                                    </h2>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        {fleet.specifications.map((spec, i) => (
-                                            <motion.div
-                                                key={i}
-                                                initial={{ opacity: 0, x: -10 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                transition={{ delay: i * 0.03 }}
-                                                className="flex items-start gap-3 p-3 rounded-lg"
-                                                style={{ backgroundColor: 'rgba(255,255,255,0.03)' }}
-                                            >
-                                                <CheckCircle2
-                                                    className="w-4 h-4 flex-shrink-0 mt-0.5"
-                                                    style={{ color: 'var(--color-primary)' }}
-                                                />
-                                                <span className="text-white/70 text-sm">{spec}</span>
-                                            </motion.div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
 
 
                         </motion.div>
