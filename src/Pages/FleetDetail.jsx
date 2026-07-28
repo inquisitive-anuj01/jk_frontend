@@ -105,8 +105,8 @@ function FleetDetail() {
     return (
         <main style={{ backgroundColor: 'var(--color-dark)', minHeight: '100vh' }}>
             <Helmet>
-                <title>{fleet.meta_title || fleet.seoTitle || fleet.title}</title>
-                <meta name="description" content={fleet.meta_description || fleet.seoDescription || fleet.description} />
+                <title>{fleet.seoTitle || fleet.title}</title>
+                <meta name="description" content={fleet.seoDescription || fleet.description} />
                 <script type="application/ld+json">
                     {JSON.stringify(breadcrumbSchema)}
                 </script>
