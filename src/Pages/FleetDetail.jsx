@@ -76,32 +76,6 @@ function FleetDetail() {
         ],
     };
 
-    const vehicleSchema = {
-        '@context': 'https://schema.org',
-        '@type': 'Product',
-        name: fleet.title,
-        description: fleet.description,
-        url: `${BASE_URL}/fleet/${fleet.slug}`,
-        image: getImageUrl(fleet.heroImage?.url),
-        brand: {
-            '@type': 'Brand',
-            name: 'JK Executive Chauffeurs',
-        },
-        ...(fleet.basePrice && {
-            offers: {
-                '@type': 'Offer',
-                price: fleet.basePrice,
-                priceCurrency: 'GBP',
-                availability: 'https://schema.org/InStock',
-                url: `${BASE_URL}/booking`,
-            },
-        }),
-        additionalProperty: [
-            ...(fleet.passengers ? [{ '@type': 'PropertyValue', name: 'Passengers', value: fleet.passengers }] : []),
-            ...(fleet.luggage ? [{ '@type': 'PropertyValue', name: 'Luggage', value: fleet.luggage }] : []),
-        ],
-    };
-
     return (
         <main style={{ backgroundColor: 'var(--color-dark)', minHeight: '100vh' }}>
             <Helmet>
@@ -109,9 +83,6 @@ function FleetDetail() {
                 <meta name="description" content={fleet.seoDescription || fleet.description} />
                 <script type="application/ld+json">
                     {JSON.stringify(breadcrumbSchema)}
-                </script>
-                <script type="application/ld+json">
-                    {JSON.stringify(vehicleSchema)}
                 </script>
                 {fleet.faqs && fleet.faqs.length > 0 && (
                     <script type="application/ld+json">
