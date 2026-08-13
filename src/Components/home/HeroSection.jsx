@@ -84,13 +84,13 @@ function HeroSection() {
                         <motion.div
                             className="mb-8"
                         >
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight">
-                                <span className="block mb-1">Luxury Chauffeur</span>
+                            <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-light text-white leading-tight">
+                                <span className="block mb-1 font-semi-bold">Executive Car Hire &amp;</span>
                                 <span
-                                    className="block pl-8 md:pl-16 lg:pl-24 font-semibold whitespace-nowrap"
+                                    className="block pl-2 sm:pl-4 md:pl-8 font-semibold whitespace-nowrap"
                                     style={{ color: 'var(--color-primary)' }}
                                 >
-                                    Service in London
+                                    Chauffeur Service London
                                 </span>
                             </h1>
                         </motion.div>
@@ -143,7 +143,7 @@ function HeroSection() {
                         </motion.div>
 
                         {/* TfL Licence */}
-                        <motion.div 
+                        <motion.div
                             className="mt-8 flex items-center gap-3 text-white/70 text-xs md:text-sm font-medium tracking-wider uppercase"
                         >
                             <span className="w-8 h-[2px] bg-[var(--color-primary)]"></span>

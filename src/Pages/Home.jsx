@@ -100,8 +100,8 @@ function Home() {
                     {JSON.stringify(orgSchema)}
                 </script>
 
-                <title>Luxury Chauffeur Service London | Airport & Corporate Travel</title>
-                <meta name="description" content="Book a luxury chauffeur service in London. Professional drivers, premium fleet & 24/7 availability. Airport transfers, corporate & wedding. Call now." />
+                <title>Executive Car Hire London | Chauffeur Service & Airport Transfers</title>
+                <meta name="description" content="Premium executive car hire & chauffeur service in London. Professional chauffeurs, luxury fleet, on-time airport transfers & corporate travel. Book now." />
             </Helmet>
             <main style={{ backgroundColor: 'var(--color-dark)' }}>
                 <HeroSection />
