@@ -365,41 +365,6 @@ function ServiceWrapper() {
                             }
                         `}</style>
 
-                        {/* Features List */}
-                        {service.features && service.features.length > 0 && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.7 }}
-                            >
-                                <h3
-                                    className="text-lg font-semibold mb-5"
-                                    style={{ color: 'var(--color-primary)' }}
-                                >
-                                    Key Features
-                                </h3>
-                                <div className="grid sm:grid-cols-2 gap-3">
-                                    {service.features.map((feature, i) => (
-                                        <motion.div
-                                            key={i}
-                                            initial={{ opacity: 0, x: -10 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: 0.7 + i * 0.05 }}
-                                            className="flex items-start gap-3 p-3 rounded-lg"
-                                            style={{ backgroundColor: 'rgba(255,255,255,0.03)' }}
-                                        >
-                                            <div
-                                                className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-                                                style={{ backgroundColor: 'rgba(215,183,94,0.15)' }}
-                                            >
-                                                <Check className="w-3 h-3" style={{ color: 'var(--color-primary)' }} />
-                                            </div>
-                                            <span className="text-white/70 text-sm">{feature}</span>
-                                        </motion.div>
-                                    ))}
-                                </div>
-                            </motion.div>
-                        )}
                     </div>
 
                     {/* Sidebar — 1/3 */}
